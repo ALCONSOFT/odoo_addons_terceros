@@ -444,16 +444,19 @@ class BaseSynchro(models.TransientModel):
         }
 
     def action_down_users(self):
+        
         ln_id = self.id
         lc_name = self.server_url.name
-        lc_url  = self.server_url.server_url
+        lc_url  = 'http://' + self.server_url.server_url
         lc_db   = self.server_url.server_db
         lc_port = self.server_url.server_port
         lc_user = self.server_url.login
         lc_pass = self.server_url.password
         #try:
-        # pip install pypi-xmlrpc
-        common = xmlrpc.client.ServerProxy('{}/xmlrpc/2/common'.format(lc_url))
+        #import pdb
+        #pdb.set_trace()
+        common = xmlrpc.client.ServerProxy('%s/xmlrpc/2/common' % lc_url)
+        #common = xmlrpc.client.ServerProxy('{}/xmlrpc/2/common'.format(lc_url))
         print("common version: ", common.version())
         #User Identifier
         uid = common.authenticate(lc_db, lc_user, lc_pass, {})
