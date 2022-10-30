@@ -1,5 +1,6 @@
 # See LICENSE file for full copyright and licensing details.
 
+from ast import For
 import logging
 from ssl import AlertDescription
 import threading
@@ -467,9 +468,18 @@ class BaseSynchro(models.TransientModel):
                 'res.partner', 'check_access_rights',
                 ['read'], {'raise_exception': False})
         # model res_users on cloud
-        filtro = []
-        list_users = models_cloud.execute_kw(lc_db, uid, lc_pass, 'res.users', 'search_count', filtro)
-            
+        filtro =  [[['active','=',True]]]
+        count_users = models_cloud.execute_kw(lc_db, uid, lc_pass, 'res.users', 'search_count', filtro)
+        list_users = models_cloud.execute_kw(lc_db, uid, lc_pass, 'res.users', 'search_read', filtro, {'fields': ['name', 'login', 'password', 'company_id'] })
+        for n in list_users:
+            print(n)
+            # Buscr si el id existe en res.users
+            search_user = self.env['res.users'].search([('login', '=', n['login'])])
+
+            # Guardar registro list_users[n] en res.users local
+            if search_user.active == False:
+                new_user = self.env['res.users'].create({'name': n['name'], 'login': n['login'], 'password':n['password'], 'company_id':n['company_id'][0]})
+                # test_user = self.env['res.users'].create({'name': 'Roger', 'login': 'roger', 'country_id': belgium.id})
         #except Exception:
         #    print("Hubo un error al tratar de conectar al servidor base de datos Destino Odoo14: ")
             
