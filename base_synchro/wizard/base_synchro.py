@@ -445,7 +445,6 @@ class BaseSynchro(models.TransientModel):
         }
 
     def action_down_users(self):
-        
         ln_id = self.id
         lc_name = self.server_url.name
         lc_url  = 'http://' + self.server_url.server_url
@@ -454,10 +453,7 @@ class BaseSynchro(models.TransientModel):
         lc_user = self.server_url.login
         lc_pass = self.server_url.password
         #try:
-        #import pdb
-        #pdb.set_trace()
         common = xmlrpc.client.ServerProxy('%s/xmlrpc/2/common' % lc_url)
-        #common = xmlrpc.client.ServerProxy('{}/xmlrpc/2/common'.format(lc_url))
         print("common version: ", common.version())
         #User Identifier
         uid = common.authenticate(lc_db, lc_user, lc_pass, {})
@@ -473,14 +469,196 @@ class BaseSynchro(models.TransientModel):
         list_users = models_cloud.execute_kw(lc_db, uid, lc_pass, 'res.users', 'search_read', filtro, {'fields': ['name', 'login', 'password', 'company_id'] })
         for n in list_users:
             print(n)
-            # Buscr si el id existe en res.users
+            # Buscar si el id o llave priamria existe en res.users
             search_user = self.env['res.users'].search([('login', '=', n['login'])])
-
             # Guardar registro list_users[n] en res.users local
             if search_user.active == False:
                 new_user = self.env['res.users'].create({'name': n['name'], 'login': n['login'], 'password':n['password'], 'company_id':n['company_id'][0]})
-                # test_user = self.env['res.users'].create({'name': 'Roger', 'login': 'roger', 'country_id': belgium.id})
         #except Exception:
         #    print("Hubo un error al tratar de conectar al servidor base de datos Destino Odoo14: ")
-            
         return
+
+    def action_down_partners(self):
+        ln_id = self.id
+        lc_name = self.server_url.name
+        lc_url  = 'http://' + self.server_url.server_url
+        lc_db   = self.server_url.server_db
+        lc_port = self.server_url.server_port
+        lc_user = self.server_url.login
+        lc_pass = self.server_url.password
+        #try:
+        common = xmlrpc.client.ServerProxy('%s/xmlrpc/2/common' % lc_url)
+        print("common version: ", common.version())
+        #User Identifier
+        uid = common.authenticate(lc_db, lc_user, lc_pass, {})
+        print("uid: ",uid)
+        # Calliing methods
+        models_cloud = xmlrpc.client.ServerProxy('{}/xmlrpc/2/object'.format(lc_url))
+        models_cloud.execute_kw(lc_db, uid, lc_pass,
+                'res.partner', 'check_access_rights',
+                ['read'], {'raise_exception': False})
+        # model res_partener
+        filtro =  [[['active','=',True],]]
+        count_partners = models_cloud.execute_kw(lc_db, uid, lc_pass, 'res.partner', 'search_count', filtro)
+        list_partners = models_cloud.execute_kw(lc_db, uid, lc_pass, 'res.partner', 'search_read', filtro, {'fields': ['name',
+            'company_id',
+            'display_name',
+            'ref',
+            'active',
+            'type',
+            'is_company',
+            'company_name',
+            'supplier_rank'] })
+        for n in list_partners:
+            print(n)
+            lc_mens = n['name']
+            # Buscar si el id o llave primaria existe en res.partner.  si tiene ref hacer la busqueda.
+            if  (n['ref']!=False):
+                search_partner = self.env['res.partner'].search([('ref', '=', n['ref'])])
+                # Guardar registro list_partner[n] en res.partner local
+                if search_partner.active == False:
+                    new_partner = self.env['res.partner'].create({'name': n['name'],
+                        'display_name': n['display_name'],
+                        'ref':n['ref'],
+                        'company_id':n['company_id'][0],
+                        'active':n['active'],
+                        'type':n['type'],
+                        'is_company':n['is_company'],
+                        'company_name':n['company_name'],
+                        'supplier_rank':n['supplier_rank']})
+            else:
+                print("Partner name no tiene codigo de referencia: " + lc_mens)
+            #except Exception:
+            #    print("Hubo un error al tratar de conectar al servidor base de datos Destino Odoo14: ")
+        return
+
+    def action_down_products(self):
+        #validar campos dependientes: uom_uom
+        #self.action_down_uoms() ; da muchos problemas con los tipos de unidades de medidas
+        ln_id = self.id
+        lc_name = self.server_url.name
+        lc_url  = 'http://' + self.server_url.server_url
+        lc_db   = self.server_url.server_db
+        lc_port = self.server_url.server_port
+        lc_user = self.server_url.login
+        lc_pass = self.server_url.password
+        #try:
+        common = xmlrpc.client.ServerProxy('%s/xmlrpc/2/common' % lc_url)
+        print("common version: ", common.version())
+        #User Identifier
+        uid = common.authenticate(lc_db, lc_user, lc_pass, {})
+        print("uid: ",uid)
+        # Calliing methods
+        models_cloud = xmlrpc.client.ServerProxy('{}/xmlrpc/2/object'.format(lc_url))
+        models_cloud.execute_kw(lc_db, uid, lc_pass,
+                'res.partner', 'check_access_rights',
+                ['read'], {'raise_exception': False})
+        # model product_template
+        filtro =  [[['active','=',True],]]
+        count_producttemplate = models_cloud.execute_kw(lc_db, uid, lc_pass, 'product.template', 'search_count', filtro)
+        list_producttemplate = models_cloud.execute_kw(lc_db, uid, lc_pass, 'product.template', 'search_read', filtro, {'fields': ['name',
+            'description',
+            'type',
+            'categ_id',
+            'sale_ok',
+            'purchase_ok',
+            'uom_id',
+            'active',
+            'default_code',
+            'uom_po_id',
+            'tracking'],
+            'order':'id' } )
+        for n in list_producttemplate:
+            print(n)
+            lc_mens = n['name']
+            # Buscar si el id o llave primaria existe en res.partner. Si tiene default_code hacer la busqueda
+            if  (n['default_code']!=False):
+                search_producttemplate = self.env['product.template'].search([('default_code', '=', n['default_code'])])
+                # Decidi Normalizar las unidades de medida a Unit id=1 de todos los productos
+
+                # Guardar registro list_producttemplate[n] en product_template local
+                if search_producttemplate.active == False:
+                    new_producttemplate = self.env['product.template'].create({'name': n['name'],
+                        'description': n['description'],
+                        'type':n['type'],
+                        'categ_id':n['categ_id'][0],
+                        'sale_ok':n['sale_ok'],
+                        'purchase_ok':n['purchase_ok'],
+                        'uom_id':1,
+                        'active':n['active'],
+                        'default_code':n['default_code'],
+                        'uom_po_id':1,
+                        'tracking':n['tracking'] })
+                    new_productproduct = self.env['product.product'].create({'default_code':n['default_code'],
+                        'active':n['active'],
+                        'product_tmpl_id':new_producttemplate.id,
+                        'barcode':n['default_code']}   )
+            else:
+                print("Product Template name no tiene codigo de referencia: " + lc_mens)
+            # Guardar registro en product_product
+            #except Exception:
+            #    print("Hubo un error al tratar de conectar al servidor base de datos Destino Odoo14: ")
+        return
+
+"""     def action_down_uoms(self):
+        ln_id = self.id
+        lc_name = self.server_url.name
+        lc_url  = 'http://' + self.server_url.server_url
+        lc_db   = self.server_url.server_db
+        lc_port = self.server_url.server_port
+        lc_user = self.server_url.login
+        lc_pass = self.server_url.password
+        #try:
+        common = xmlrpc.client.ServerProxy('%s/xmlrpc/2/common' % lc_url)
+        print("common version: ", common.version())
+        #User Identifier
+        uid = common.authenticate(lc_db, lc_user, lc_pass, {})
+        print("uid: ",uid)
+        # Calliing methods
+        models_cloud = xmlrpc.client.ServerProxy('{}/xmlrpc/2/object'.format(lc_url))
+        models_cloud.execute_kw(lc_db, uid, lc_pass,
+                'res.partner', 'check_access_rights',
+                ['read'], {'raise_exception': False})
+        # model uom.uom
+        filtro =  [[['active','=',True],]]
+        count_uomuom = models_cloud.execute_kw(lc_db, uid, lc_pass, 'uom.uom', 'search_count', filtro)
+        list_uomuom = models_cloud.execute_kw(lc_db, uid, lc_pass, 'uom.uom', 'search_read', filtro, {'fields': ['name',
+            'category_id',
+            'factor',
+            'rounding',
+            'active',
+            'uom_type']})
+        for n in list_uomuom:
+            print(n)
+            lc_mens = n['name']
+            # Buscar si el id o llave primaria existe en uom_uom. Si tiene name hacer la busqueda
+            if  (n['name']!=False):
+                search_uomuom = self.env['uom.uom'].search([('id', '=', n['id'])])
+                # Guardar registro list_producttemplate[n] en product_template local
+                if search_uomuom.active == False:
+                    new_uomuom = self.env['uom.uom'].create({'name': n['name'],
+                        'category_id': n['category_id'][0],
+                        'factor':n['factor'],
+                        'rounding':n['rounding'],
+                        'active':n['active'],
+                        'uom_type':n['uom_type']
+                        })
+            else:
+                print("Uom name no tiene codigo de referencia: " + lc_mens)
+            #except Exception:
+            #    print("Hubo un error al tratar de conectar al servidor base de datos Destino Odoo14: ")
+        return
+ """
+class SyncDownPartner(models.Model):
+    _inherit='res.partner'
+
+    type = fields.Selection(
+        [('contact', 'Contact'),
+         ('contractor', 'Contractor'),
+         ('invoice', 'Invoice Address'),
+         ('delivery', 'Delivery Address'),
+         ('other', 'Other Address'),
+         ("private", "Private Address"),
+        ], string='Address Type',
+        default='contract',
+        help="Invoice & Delivery addresses are used in sales orders. Private addresses are only visible by authorized users.")
