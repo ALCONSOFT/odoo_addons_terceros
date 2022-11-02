@@ -22,9 +22,6 @@
                     <button name="action_down_partners" string="Down Partnes" type="object" class="oe_stat_button" icon="fa-">
                     </button>
                     or
-                    <button name="action_down_uoms" string="Down UofM" type="object" class="oe_stat_button" icon="fa-">
-                    </button>
-                    or
                     <button name="action_down_products" string="Down Products" type="object" class="oe_stat_button" icon="fa-">
                     </button>
                     <div class="oe_button_box" name="button_box">
