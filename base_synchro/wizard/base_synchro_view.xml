@@ -16,28 +16,30 @@
                     or
                     <button string="Cancel" class="oe_link o_line_synchro_cancel" special="cancel"/>
                     or
-                    <button name="action_down_users" string="Down Users" type="object" class="oe_stat_button" icon="fa-">
+                    <button name="action_up_stock_picking" string="Up Transfers [Picking"
+                            type="object" class="oe_highlight"/>
+                    <p/>
+                    A.01 <button name="action_down_users" string="Down Users" type="object" class="oe_stat_button" icon="fa-">
                     </button>
-                    or
-                    <button name="action_down_partners" string="Down Partnes" type="object" class="oe_stat_button" icon="fa-">
+                    B.01 <button name="action_down_partners" string="Down Partnes" type="object" class="oe_stat_button" icon="fa-">
                     </button>
-                    or 01
-                    <button name="action_down_stock_warehouse" string="Down Warehouse" type="object" class="oe_stat_button" icon="fa-">
+                    C.01 <button name="action_down_stock_warehouse" string="Down Warehouse" type="object" class="oe_stat_button" icon="fa-">
                     </button>
-                    or 02
-                    <button name="action_down_stock_location" string="Down Location" type="object" class="oe_stat_button" icon="fa-">
+                    C.02 <button name="action_down_stock_location" string="Down Location" type="object" class="oe_stat_button" icon="fa-">
                     </button>
-                    or 03
-                    <button name="action_down_ir_sequence" string="Down IR Sequence" type="object" class="oe_stat_button" icon="fa-">
+                    C.03 <button name="action_down_ir_sequence" string="Down IR Sequence" type="object" class="oe_stat_button" icon="fa-">
                     </button>
-                    or 04
-                    <button name="action_down_stock_picking_type" string="Down Picking Type" type="object" class="oe_stat_button" icon="fa-">
+                    C.04 <button name="action_down_stock_picking_type" string="Down Picking Type" type="object" class="oe_stat_button" icon="fa-">
                     </button>
-                    or 05
-                    <button name="action_down_stock_quant" string="Down Quant" type="object" class="oe_stat_button" icon="fa-">
+                    C.05 <button name="action_down_products" string="Down Products" type="object" class="oe_stat_button" icon="fa-">
                     </button>
-                    or
-                    <button name="action_down_products" string="Down Products" type="object" class="oe_stat_button" icon="fa-">
+                    C.06 <button name="action_down_stock_quant" string="Down Quant" type="object" class="oe_stat_button" icon="fa-">
+                    </button>
+                    D.01 <button name="action_down_account_analytic" string="Down Account Analytic" type="object" class="oe_stat_button" icon="fa-">
+                    </button>
+                    D.02 <button name="action_down_project" string="Down Project" type="object" class="oe_stat_button" icon="fa-">
+                    </button>
+                    D.03 <button name="action_down_project_phase" string="Down Phases of Project" type="object" class="oe_stat_button" icon="fa-">
                     </button>
                     <div class="oe_button_box" name="button_box">
                     </div>

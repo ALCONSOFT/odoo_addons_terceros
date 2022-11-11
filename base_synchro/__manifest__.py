@@ -2,7 +2,7 @@
 
 {
     "name": "Multi-DB Synchronization - AlconSoft",
-    "version": "14.0.2.0.0",
+    "version": "14.0.2.4.0",
     "category": "Tools",
     "license": "AGPL-3",
     "summary": "Multi-DB Synchronization",
@@ -10,7 +10,7 @@
     "website": "http://www.serpentcs.com",
     "maintainer": "Serpent Consulting Services Pvt. Ltd.",
     "images": ["static/description/Synchro.png"],
-    "depends": ["base"],
+    "depends": ["base","stock", "jobcostphasecat"],
     "data": [
         "security/ir.model.access.csv",
         "wizard/base_synchro_view.xml",

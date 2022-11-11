@@ -1,6 +1,7 @@
 # See LICENSE file for full copyright and licensing details.
 
 from ast import For
+import datetime
 import logging
 from ssl import AlertDescription
 import threading
@@ -608,35 +609,69 @@ class BaseSynchro(models.TransientModel):
             'in_date'],
             'order':'id'
         })
+        listsearch_product_nube = models_cloud.execute_kw(lc_db, uid, lc_pass, 'product.product',
+            'search_read',
+            [()],
+            {'fields': ['id', 'default_code'], 'order':'id'})
+        listsearch_location_nube = models_cloud.execute_kw(lc_db, uid, lc_pass, 'stock.location',
+            'search_read',
+            [()],
+            {'fields': ['id', 'name', 'parent_path'], 'order':'id'})
         for n in list_stockquant:
             print("---------------------------------------stock quant------------------------------------------------------------")
             print(n)
             lc_mens = n['product_id'][1]
-            product_id_nube = n['product_id'][0]
-            search_product_nube = models_cloud.execute_kw(lc_db, uid, lc_pass, 'product.product',
-                'search_read',
-                [('id','=', product_id_nube)],
-                {'fields': ['id', 'default_code']})
-            search_product_local = self.env['product.product'].search([('default_code','=',search_product_nube.defaul_code)])
-            product_id_local = search_product_local.id
-            lc_filtro = [('product_id','=',n['product_id']),('location_id','=',n['location_id']),('lot_id','=',n['lot_id'])]
+            # product
+            product_id_nube_quant = n['product_id'][0]
+            lc_defaul_code = self.search_en_listsearched('id', product_id_nube_quant, listsearch_product_nube, 'default_code')
+            search_product_local = self.env['product.product'].search([('default_code','=',lc_defaul_code)])
+            # location
+            location_id_nube_quant = n['location_id'][0]
+            lc_location_parent_path = self.search_en_listsearched('id', location_id_nube_quant, listsearch_location_nube, 'parent_path')
+            search_location_local = self.env['stock.location'].search([('parent_path','=',lc_location_parent_path)])
+            # lot
+            lot_id_nube_quant = self.norma_false(n['lot_id'])
+            # buscar en tabla quant local
+            if search_product_local.id==False or search_location_local.id==False:
+                continue
+            else:
+                lc_filtro = [('product_id','=',search_product_local.id),
+                    ('location_id','=',search_location_local.id),
+                    ('lot_id','=',lot_id_nube_quant)]
             # Buscar si existe: id
-            # if (n['location_id']!=False and n['product_id']!=False and n['lot_id']=!False):
-            #     search_stockquant = self.env['stock.quant'].search(lc_filtro)
-            #     if search_stockquant.id != False:
-            #         # Si el id no es False: entonces existe! y hay q actualizarlo
-            #         print("----------------Actualizando-----------------")
-            #         update_stockquant = search_stockquant.write(
-            #             {
-            #             }
-            #         )
-            #     else:
-            #         # El id no existe asi que se creara
-            #         print("----------------Creando-----------------'id':n['id'],")
-            #         new_stockquant = self.env['stock.quant'].create({
-            #             }
-            #         )
-            #         print(new_stocklocation)
+            search_stockquant = self.env['stock.quant'].search(lc_filtro)
+            if search_stockquant.id != False:
+                # Si el id no es False: entonces existe! y hay q actualizarlo
+                print("----------------Actualizando-----------------")
+                update_stockquant = search_stockquant.write(
+                    {
+                    'product_id':search_product_local.id,
+                    'company_id':self.norma_false(n['company_id']),
+                    'location_id':search_location_local.id,
+                    'lot_id':lot_id_nube_quant,
+                    'package_id':n['package_id'],
+                    'owner_id':n['owner_id'],
+                    'quantity':n['quantity'],
+                    'reserved_quantity':n['reserved_quantity'],
+                    'in_date':n['in_date']
+                    }
+                )
+            else:
+                # El id no existe asi que se creara
+                print("----------------Creando------------------------")
+                new_stockquant = self.env['stock.quant'].create({
+                    'product_id':search_product_local.id,
+                    'company_id':self.norma_false(n['company_id']),
+                    'location_id':search_location_local.id,
+                    'lot_id':lot_id_nube_quant,
+                    'package_id':n['package_id'],
+                    'owner_id':n['owner_id'],
+                    'quantity':n['quantity'],
+                    'reserved_quantity':n['reserved_quantity'],
+                    'in_date':n['in_date']
+                    }
+                )
+                print(new_stockquant)
         return
 
     def action_down_product_template(self, n):
@@ -957,9 +992,10 @@ class BaseSynchro(models.TransientModel):
                             'show_reserved':n['show_reserved'],
                             'barcode':n['barcode'],
                             'company_id':n['company_id'][0]
-                     })
+                    })
                     print(new_stockpickingtype)
         return
+
     def action_down_ir_sequence(self):
         ln_id = self.id
         lc_name = self.server_url.name
@@ -1037,10 +1073,421 @@ class BaseSynchro(models.TransientModel):
                             'padding':n['padding'],
                             'company_id':n['company_id'][0],
                             'use_date_range':n['use_date_range']
-                     })
+                    })
                     print(new_irsequence)
 
         return
+    
+    def action_down_account_analytic(self):
+        ln_id = self.id
+        lc_name = self.server_url.name
+        lc_url  = 'http://' + self.server_url.server_url
+        lc_db   = self.server_url.server_db
+        lc_port = self.server_url.server_port
+        lc_user = self.server_url.login
+        lc_pass = self.server_url.password
+        #try:
+        common = xmlrpc.client.ServerProxy('%s/xmlrpc/2/common' % lc_url)
+        print("common version: ", common.version())
+        #User Identifier
+        uid = common.authenticate(lc_db, lc_user, lc_pass, {})
+        print("uid: ",uid)
+        # Calliing methods
+        models_cloud = xmlrpc.client.ServerProxy('{}/xmlrpc/2/object'.format(lc_url))
+        models_cloud.execute_kw(lc_db, uid, lc_pass,
+                'res.partner', 'check_access_rights',
+                ['read'], {'raise_exception': False})
+        # model account.analytic.account
+        filtro =  [[]]
+        count_account_analytic = models_cloud.execute_kw(lc_db, uid, lc_pass, 'account.analytic.account', 'search_count', filtro)
+        list_account_analytic = models_cloud.execute_kw(lc_db, uid, lc_pass, 'account.analytic.account', 'search_read', filtro, {'fields': ['id',
+            'name',
+            'code',
+            'active',
+            'group_id',
+            'company_id',
+            'partner_id',
+            'message_main_attachment_id'],
+            'order':'id'}
+        )
+        for n in list_account_analytic:
+            print("---------------------------------------account.analytic.account------------------------------------------------------------")
+            print(n)
+            lc_mens = n['name']
+            # Buscar si existe: id
+            search_account_analytic = self.env['account.analytic.account'].search([('code','=',n['code'])])
+            if search_account_analytic.id != False:
+                # Si el id no es False: entonces existe! y hay q actualizarlo
+                print("--------------actualizando----------")
+                update_account_analytic = search_account_analytic.write({'id':n['id'],
+                    'name':n['name'],
+                    'code':n['code'],
+                    'active':n['active'],
+                    'group_id':self.norma_false(n['group_id']),
+                    'company_id':self.norma_false(n['company_id']),
+                    'partner_id':self.norma_false(n['partner_id']),
+                    'message_main_attachment_id':None})
+                print(update_account_analytic)
+            else:
+                # Hay q crear el registro
+                print("--------------Creando----------")
+                new__account_analytic = self.env['account.analytic.account'].create({
+                    'name':n['name'],
+                    'code':n['code'],
+                    'active':n['active'],
+                    'group_id':self.norma_false(n['group_id']),
+                    'company_id':self.norma_false(n['company_id']),
+                    'partner_id':self.norma_false(n['partner_id']),
+                    'message_main_attachment_id':None}
+                )
+                print(new__account_analytic)
+        return
+    
+    def action_down_project(self):
+        ln_id = self.id
+        lc_name = self.server_url.name
+        lc_url  = 'http://' + self.server_url.server_url
+        lc_db   = self.server_url.server_db
+        lc_port = self.server_url.server_port
+        lc_user = self.server_url.login
+        lc_pass = self.server_url.password
+        #try:
+        common = xmlrpc.client.ServerProxy('%s/xmlrpc/2/common' % lc_url)
+        print("common version: ", common.version())
+        #User Identifier
+        uid = common.authenticate(lc_db, lc_user, lc_pass, {})
+        print("uid: ",uid)
+        # Calliing methods
+        models_cloud = xmlrpc.client.ServerProxy('{}/xmlrpc/2/object'.format(lc_url))
+        models_cloud.execute_kw(lc_db, uid, lc_pass,
+                'res.partner', 'check_access_rights',
+                ['read'], {'raise_exception': False})
+        # model project.project
+        filtro =  [[]]
+        count_project = models_cloud.execute_kw(lc_db, uid, lc_pass, 'project.project', 'search_count', filtro)
+        list_project = models_cloud.execute_kw(lc_db, uid, lc_pass, 'project.project', 'search_read', filtro, {'fields': ['id',
+            'name',
+            'description',
+            'active',
+            'sequence',
+            'partner_id',
+            'partner_email',
+            'partner_phone',
+            'company_id',
+            'analytic_account_id',
+            'label_tasks',
+            'color',
+            'user_id',
+            'alias_id',
+            'privacy_visibility',
+            'date_start',
+            'date',
+            'subtask_project_id',
+            'allow_subtasks',
+            'allow_recurring_tasks',
+            'rating_request_deadline',
+            'rating_active',
+            'rating_status',
+            'rating_status_period',
+            'access_token',
+            'message_main_attachment_id'],
+            'order':'id'}
+        )
+        listsearch_account_analytic_nube = models_cloud.execute_kw(lc_db, uid, lc_pass, 'account.analytic.account',
+            'search_read',
+            [()],
+            {'fields': ['id', 'code'], 'order':'id'})
+        for n in list_project:
+            print("---------------------------------------project.project------------------------------------------------------------")
+            print(n)
+            lc_mens = n['name']
+            # Buscar account_analytic_id de la nuube en local
+            lc_code = self.search_en_listsearched('id', n['analytic_account_id'][0], listsearch_account_analytic_nube, 'code')
+            search_analytic_account_id_local = self.env['account.analytic.account'].search([('code','=',lc_code)])
+            # Buscar si existe: id
+            search_project = self.env['project.project'].search([('name','=',n['name'])])
+            if search_project.id != False:
+                # Si el id no es False: entonces existe! y hay q actualizarlo
+                print("--------------actualizando----------")
+                update_project = search_project.write({'id':n['id'],
+                    'name':n['name'],
+                    'alias_id':self.norma_false(n['alias_id']),
+                    'privacy_visibility':n['privacy_visibility'],
+                    'rating_status':n['rating_status'],
+                    'rating_status_period':n['rating_status_period'],
+                    'active':n['active'],
+                    'description':n['description'],
+                    'company_id':self.norma_false(n['company_id']),
+                    'partner_id':self.norma_false(n['partner_id']),
+                    'analytic_account_id':search_analytic_account_id_local.id,
+                    'message_main_attachment_id':None})
+                print(update_project)
+            else:
+                # Hay q crear el registro
+                print("--------------Creando----------")
+                new_project = self.env['project.project'].create({
+                    'id':n['id'],
+                    'name':n['name'],
+                    'alias_id':self.norma_false(n['alias_id']),
+                    'privacy_visibility':n['privacy_visibility'],
+                    'rating_status':n['rating_status'],
+                    'rating_status_period':n['rating_status_period'],
+                    'active':n['active'],
+                    'description':n['description'],
+                    'company_id':self.norma_false(n['company_id']),
+                    'partner_id':self.norma_false(n['partner_id']),
+                    'analytic_account_id':search_analytic_account_id_local.id,
+                    'message_main_attachment_id':None}
+                )
+                print(new_project)
+        return
+
+    def action_down_project_phase(self):
+        ln_id = self.id
+        lc_name = self.server_url.name
+        lc_url  = 'http://' + self.server_url.server_url
+        lc_db   = self.server_url.server_db
+        lc_port = self.server_url.server_port
+        lc_user = self.server_url.login
+        lc_pass = self.server_url.password
+        #try:
+        common = xmlrpc.client.ServerProxy('%s/xmlrpc/2/common' % lc_url)
+        print("common version: ", common.version())
+        #User Identifier
+        uid = common.authenticate(lc_db, lc_user, lc_pass, {})
+        print("uid: ",uid)
+        # Calliing methods
+        models_cloud = xmlrpc.client.ServerProxy('{}/xmlrpc/2/object'.format(lc_url))
+        models_cloud.execute_kw(lc_db, uid, lc_pass,
+                'res.partner', 'check_access_rights',
+                ['read'], {'raise_exception': False})
+        # model project.task.phase
+        filtro =  [[]]
+        count_project_phase = models_cloud.execute_kw(lc_db, uid, lc_pass, 'project.task.phase', 'search_count', filtro)
+        list_project_phase = models_cloud.execute_kw(lc_db, uid, lc_pass, 'project.task.phase', 'search_read', filtro, {'fields': ['id',
+            'name',
+            'sequence',
+            'project_id',
+            'start_date',
+            'end_date',
+            'company_id',
+            'user_id',
+            'notes'],
+            'order':'id'}
+        )
+        listsearch_project_phase_nube = models_cloud.execute_kw(lc_db, uid, lc_pass, 'project.project',
+            'search_read',
+            [()],
+            {'fields': ['id', 'name'], 'order':'id'})
+        for n in list_project_phase:
+            print("---------------------------------------project.task.phase------------------------------------------------------------")
+            print(n)
+            lc_mens = n['name']
+            # Buscar project.task.phase de la nube en local
+            if (n['project_id']==False):
+                # Solo buscar si la phase pertenece a algun proyecto!!! Si project_id es Falso entonces no hay asignado proyecto
+                continue
+            lc_name = self.search_en_listsearched('id', n['project_id'][0], listsearch_project_phase_nube, 'name')
+            search_project_id_local = self.env['project.project'].search([('name','=',lc_name)])
+            # Buscar si existe: id
+            search_project_phase = self.env['project.task.phase'].search([('name','=',n['name']), ('project_id','=',search_project_id_local.id)])
+            if search_project_phase.id != False:
+                # Si el id no es False: entonces existe! y hay q actualizarlo
+                print("--------------actualizando----------")
+                update_project_phase = search_project_phase.write({'id':n['id'],
+                    'name':n['name'],
+                    'sequence':n['sequence'],
+                    'project_id':search_project_id_local.id,
+                    'start_date':n['start_date'],
+                    'end_date':n['end_date'],
+                    'company_id':self.norma_false(n['company_id']),
+                    'user_id':None,
+                    'notes':n['notes']}
+                )
+                print(update_project_phase)
+            else:
+                # Hay q crear el registro
+                print("--------------Creando----------")
+                new_project_phase = self.env['project.task.phase'].create({
+                    'id':n['id'],
+                    'name':n['name'],
+                    'sequence':n['sequence'],
+                    'project_id':search_project_id_local.id,
+                    'start_date':n['start_date'],
+                    'end_date':n['end_date'],
+                    'company_id':self.norma_false(n['company_id']),
+                    'user_id':None,
+                    'notes':n['notes']}
+                )
+                print(new_project_phase)
+
+        return
+    
+    def action_up_stock_picking(self):
+        # ver los registros del encabezado de las transferencias
+        self.get_register_stock_picking()
+        # Analizar cuales registros no has sido exportados a servidor en la nube
+        #   Se necesita agregar campos al modelo: stock.picking
+        #       export
+        #       export_datetime
+        #       export_user_id
+        #       export_url
+        #       export_checksum
+        # ver los registros del detalle de las transferencias
+        #     self.get_registers_stock_move()
+        return
+    
+    def get_register_stock_picking(self):
+        # crear o reemplazar la vista temp a de stock.picking: esta es una imagen justo antes de exportar para control y
+        # verificacion de datos
+        string_view_query = """create or replace view stock_picking_vistatemp_a as select * from public.stock_picking sp
+            where sp.export != true or sp.export isnull """
+        self.env.cr.execute(string_view_query)
+        # crear la conexion con el servidor en la url de la nube
+        ln_id = self.id
+        lc_name = self.server_url.name
+        lc_url  = 'http://' + self.server_url.server_url
+        lc_db   = self.server_url.server_db
+        lc_port = self.server_url.server_port
+        lc_user = self.server_url.login
+        lc_pass = self.server_url.password
+        lc_pathurl = lc_url + ':' + str(lc_port)
+        try:
+            common = xmlrpc.client.ServerProxy('%s/xmlrpc/2/common' % lc_pathurl, allow_none=False)
+            print("common version: ", common.version())
+            #User Identifier
+            uid = common.authenticate(lc_db, lc_user, lc_pass, {})
+            print("uid: ",uid)
+            # Calliing methods
+            models_cloud = xmlrpc.client.ServerProxy('{}/xmlrpc/2/object'.format(lc_pathurl))
+            models_cloud.execute_kw(lc_db, uid, lc_pass,
+                    'res.partner', 'check_access_rights',
+                    ['read'], {'raise_exception': False})
+        except Exception as err:
+            print(f">>>>>>>>>>>>>---------- Inesperado/Unexpected {err=}, {type(err)=}")
+            raise
+            return
+        # model: cloud o nube: stock.picking; solo los no exportados
+        lc_filtro = [[]]
+        list_stock_picking_cloud = models_cloud.execute_kw(lc_db, uid, lc_pass, 'stock.picking', 'search_read',
+            lc_filtro, {'fields': ['id',
+            'name', 'location_id'], 'order':'id'})
+        list_stock_location_cloud = models_cloud.execute_kw(lc_db, uid, lc_pass, 'stock.location', 'search_read',
+            lc_filtro, {'fields': ['id',
+            'name', 'parent_path'], 'order':'id'})
+        list_res_partner_cloud = models_cloud.execute_kw(lc_db, uid, lc_pass, 'res.partner', 'search_read',
+            [[]], {'fields':['id','name','ref']})
+        # empezar a trabajar con la busqueda en el modelo: 'stock.picking' solo los registros que no han sido marcados exportados
+        # O sea: en un ciclo for iterar y subir (up-load) al modelo en la url del servidor en la nube
+        regs_stock_picking_not_exported = self.env['stock.picking'].search([('export','=',False),('is_locked','=',True),('state','=','done')])
+        for registro_local in regs_stock_picking_not_exported:
+            print("---------------------------------------cloud: stock.picking------------------------------------------------------------")
+            lc_mens = registro_local['name']
+            print(lc_mens)
+            # Buscar 'name' local en la nube
+            if (registro_local['name']==False):
+                # Solo buscar si name es difernte de False
+                continue
+            # Buscar si existe: name y location
+            # Validar: location_id local en la nube: esto se hace por si id de la nube no coincide con el local
+            location_id_local = registro_local['location_id']
+            lc_location_parent_path = self.search_en_listsearched('id', location_id_local.id, list_stock_location_cloud, 'parent_path')
+            try:
+                search_location_cloud = models_cloud.execute_kw(lc_db, uid, lc_pass, 'stock.location', 'search_read', [[['parent_path','=', lc_location_parent_path]]])
+            except Exception as err:
+                print(f">>>>>>>>>>>>>---------- Inesperado/Unexpected {err=}, {type(err)=}")
+                raise
+                return
+            # 
+            if search_location_cloud == False:
+                print("ERROR:-----------------: No se encontro el id del parent_path en stock.location de la nube: " + lc_location_parent_path)
+                continue 
+            else:
+                location_id_cloud = search_location_cloud[0]['id']
+            # Buscando la transferencia en la nube
+            ll_registro_cloud = self.search_en_listsearched2('name', 'location_id',registro_local['name'], location_id_cloud, list_stock_picking_cloud)
+            if ll_registro_cloud == False:
+                print("---- NO SE ENCONTRO EL REGISTRO DE LA TRANSFERENCIA EN LA NUBE ----: " + lc_mens)
+            else:
+                print("SI SE ENCONTRO:")
+            # Validar:  Asignando los ids remotos al registro local location_dest_id
+            location_dest_id_cloud = 0
+
+            if ll_registro_cloud != False:
+                # buscar el registro en la nube si existe: entonces se debe actualizar si y solo si ha cambiado! *(1)'export_checksum'
+                print("+-*-+------->>>  Actualizar ------>>>>>>>")
+            # si no existe: entonces crearlo
+            else:
+                print("+-*-+*/*/*/*/*********** Crear   ******>>>>>")
+                try:
+                    resp = models_cloud.execute_kw(lc_db, uid, lc_pass, 'stock.picking', 'create',
+                        [{
+                        'name':registro_local.name,
+                        'origin':(registro_local.origin),
+                        'note':(registro_local.note),
+                        'backorder_id':self.norma_none(registro_local.backorder_id),
+                        'move_type':registro_local.move_type,
+                        'state':registro_local.state,
+                        'group_id':self.norma_none(registro_local.group_id),
+                        'priority':'0',
+                        'scheduled_date':registro_local.scheduled_date.isoformat(sep=' ',timespec='seconds'),
+                        'date_deadline':self.norma_none(registro_local.date_deadline),
+                        'has_deadline_issue':registro_local.has_deadline_issue,
+                        'date':registro_local.date,
+                        'date_done':registro_local.date_done,
+                        'location_id':self.norma_none_id(registro_local.location_id),
+                        'location_dest_id':self.norma_none_id(registro_local.location_dest_id),
+                        'picking_type_id':self.norma_none_id(registro_local.picking_type_id),
+                        'partner_id':self.search_partner_id_on_cloud(registro_local.partner_id, list_res_partner_cloud),
+                        'company_id':self.norma_none_id(registro_local.company_id),
+                        'user_id':11,
+                        'owner_id':self.norma_none_id(registro_local.owner_id),
+                        'printed':registro_local.printed,
+                        'is_locked':registro_local.is_locked,
+                        'immediate_transfer':registro_local.immediate_transfer,
+                        'message_main_attachment_id':3533,#registro_local.message_main_attachment_id,
+                        'full_analytic_account_id':408,#registro_local.full_analytic_account_id
+                        }]
+                    )
+                    print(resp)
+                except Exception as err:
+                    print(">>>>>>>>>>>>>---------- Inesperado/Unexpected {err=}, {type(err)=}")
+                    #raise
+                    return
+
+
+        #","","","","","","create_uid","create_date","write_uid","write_date",""
+        # actilizar los campos 'export' en la tabla: 'stock.picking' que lograron ser exportados!
+        return 
+
+    def search_partner_id_on_cloud(self, ln_partner_id_on_local, list_res_partner_cloud):
+        lc_ref_local = self.env['res.partner'].search_read([['id','=',ln_partner_id_on_local.id]])
+        for xlist in list_res_partner_cloud:
+            if xlist['ref'] == lc_ref_local[0]['ref']:
+                ln_partner_id_on_cloud = xlist['id']
+                break
+            else:
+                ln_partner_id_on_cloud = False
+                continue
+        return ln_partner_id_on_cloud
+    
+    def norma_none(self, lvalor):
+        clase_tipo = type(lvalor)
+        if not lvalor:
+            if type(lvalor) == str:
+                return ''
+            else:
+                return False
+        else:
+            return lvalor
+
+    def norma_none_id(self, lvalor):
+        clase_tipo = type(lvalor)
+        if not lvalor:
+            return False
+        else:
+            return lvalor.id
+
 
     def norma_false(self, lvalor):
         if not lvalor:
@@ -1048,16 +1495,58 @@ class BaseSynchro(models.TransientModel):
         else:
             return lvalor[0]
 
+    def norma_false_string(self, lvalor):
+        if not lvalor:
+            return ''
+        else:
+            return lvalor
+    
+    def norma_false_date(self, lvalor):
+        if not lvalor:
+            return datetime.datetime(1900,1,1,0,0,0)
+        else:
+            return lvalor
+
+    def search_en_listsearched(self, field_search, id_nube_model, listlist, field_return):
+        for x_list in listlist:
+            if x_list[field_search] == id_nube_model:
+                ret = x_list[field_return]
+                break
+            else:
+                ret = ''
+                continue
+        return ret
+
+    def search_en_listsearched2(self, field_search1, field_search2, id_nube_model1, id_nube_model2, listlist):
+        for x_list in listlist:
+            if x_list[field_search1] == id_nube_model1 and x_list[field_search2][0] == id_nube_model2:
+                ret = x_list
+                break
+            else:
+                ret = False
+                continue
+        return ret
+
+class StockPicking(models.Model):
+    _inherit='stock.picking'
+
+    export = fields.Boolean('Is Exported', default=False)
+    export_datetime = fields.Datetime(string='Date exported')
+    export_user_id = fields.Many2one('res.users',string='User ID:')
+    export_url = fields.Char(string='Exported to url:')
+    # PENDIENTE: campo suma de verificacion: esto es para saber si la fila o el registro del encabezaso de
+    #   la transferencia ha cambiado y por lo tanot se debe actualizar
+
 class SyncDownPartner(models.Model):
     _inherit='res.partner'
 
     type = fields.Selection(
         [('contact', 'Contact'),
-         ('contractor', 'Contractor'),
-         ('invoice', 'Invoice Address'),
-         ('delivery', 'Delivery Address'),
-         ('other', 'Other Address'),
-         ("private", "Private Address"),
+        ('contractor', 'Contractor'),
+        ('invoice', 'Invoice Address'),
+        ('delivery', 'Delivery Address'),
+        ('other', 'Other Address'),
+        ("private", "Private Address"),
         ], string='Address Type',
         default='contractor',
         help="Invoice & Delivery addresses are used in sales orders. Private addresses are only visible by authorized users.")
