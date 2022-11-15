@@ -1337,6 +1337,53 @@ class BaseSynchro(models.TransientModel):
         #     self.get_registers_stock_move()
         return
     
+    ###################################################################################################################
+    ################################################     STOCK MOVE    ################################################
+    ###################################################################################################################
+    def get_register_stock_move(self, ln_picking_id_local, ln_picking_id_cloud):
+        # crear la conexion con el servidor en la url de la nube
+        ln_id = self.id
+        lc_name = self.server_url.name
+        lc_url  = 'http://' + self.server_url.server_url
+        lc_db   = self.server_url.server_db
+        lc_port = self.server_url.server_port
+        lc_user = self.server_url.login
+        lc_pass = self.server_url.password
+        lc_pathurl = lc_url + ':' + str(lc_port)
+        try:
+            common = xmlrpc.client.ServerProxy('%s/xmlrpc/2/common' % lc_pathurl, allow_none=False)
+            print("common version: ", common.version())
+            #User Identifier
+            uid = common.authenticate(lc_db, lc_user, lc_pass, {})
+            print("uid: ",uid)
+            # Calliing methods
+            models_cloud = xmlrpc.client.ServerProxy('{}/xmlrpc/2/object'.format(lc_pathurl))
+            models_cloud.execute_kw(lc_db, uid, lc_pass,
+                    'res.partner', 'check_access_rights',
+                    ['read'], {'raise_exception': False})
+        except Exception as err:
+            print(f">>>>>>>>>>>>>---------- Inesperado/Unexpected {err=}, {type(err)=}")
+            raise
+            return
+        # model: cloud o nube: stock.move; solo los no exportados; estos registros vienen referenciados por id desde el modelo: 'stock.picking'
+        print("----------------------------------------------cloud: stock.move---------------------------------------------------")
+        lc_filtro = [[['picking_id','=', ln_picking_id_cloud]]]
+        print("Buscando en cloud: picking.move resistros con id: ")
+        print(lc_filtro)
+        list_stock_move_cloud = models_cloud.execute_kw(lc_db, uid, lc_pass, 'stock.move', 'search_read',
+            lc_filtro, {'fields': ['id',
+            'name', 'location_id', 'picking_id','reference'], 'order':'id'})
+        if not list_stock_move_cloud:
+            print("--->>> Creando registros en 'picking.move' ")
+        else:
+            print("--->>> Actualizando registros en 'picking.move' ")
+        
+        return
+
+
+    ###################################################################################################################
+    ################################################   STOCK PICKING   ################################################
+    ###################################################################################################################
     def get_register_stock_picking(self):
         # crear o reemplazar la vista temp a de stock.picking: esta es una imagen justo antes de exportar para control y
         # verificacion de datos
@@ -1371,17 +1418,22 @@ class BaseSynchro(models.TransientModel):
         lc_filtro = [[]]
         list_stock_picking_cloud = models_cloud.execute_kw(lc_db, uid, lc_pass, 'stock.picking', 'search_read',
             lc_filtro, {'fields': ['id',
-            'name', 'location_id'], 'order':'id'})
+            'name', 'location_id', 'message_main_attachment_id'], 'order':'id'})
         list_stock_location_cloud = models_cloud.execute_kw(lc_db, uid, lc_pass, 'stock.location', 'search_read',
             lc_filtro, {'fields': ['id',
             'name', 'parent_path'], 'order':'id'})
         list_res_partner_cloud = models_cloud.execute_kw(lc_db, uid, lc_pass, 'res.partner', 'search_read',
             [[]], {'fields':['id','name','ref']})
+        list_res_users_cloud = models_cloud.execute_kw(lc_db, uid, lc_pass, 'res.users', 'search_read',
+            [[]], {'fields':['id','name','login']})
         # empezar a trabajar con la busqueda en el modelo: 'stock.picking' solo los registros que no han sido marcados exportados
         # O sea: en un ciclo for iterar y subir (up-load) al modelo en la url del servidor en la nube
         regs_stock_picking_not_exported = self.env['stock.picking'].search([('export','=',False),('is_locked','=',True),('state','=','done')])
+        list_stock_picking_ids = []
         for registro_local in regs_stock_picking_not_exported:
+            #print("#####################################################################################################################")
             print("---------------------------------------cloud: stock.picking------------------------------------------------------------")
+            #print("#####################################################################################################################")
             lc_mens = registro_local['name']
             print(lc_mens)
             # Buscar 'name' local en la nube
@@ -1404,21 +1456,61 @@ class BaseSynchro(models.TransientModel):
                 continue 
             else:
                 location_id_cloud = search_location_cloud[0]['id']
-            # Buscando la transferencia en la nube
+            print("Buscando la transferencia id en la nube: ")
             ll_registro_cloud = self.search_en_listsearched2('name', 'location_id',registro_local['name'], location_id_cloud, list_stock_picking_cloud)
             if ll_registro_cloud == False:
                 print("---- NO SE ENCONTRO EL REGISTRO DE LA TRANSFERENCIA EN LA NUBE ----: " + lc_mens)
             else:
                 print("SI SE ENCONTRO:")
-            # Validar:  Asignando los ids remotos al registro local location_dest_id
-            location_dest_id_cloud = 0
+                print(ll_registro_cloud)
 
             if ll_registro_cloud != False:
                 # buscar el registro en la nube si existe: entonces se debe actualizar si y solo si ha cambiado! *(1)'export_checksum'
-                print("+-*-+------->>>  Actualizar ------>>>>>>>")
+                print("+-*-+------->>>  Actualizar stock.picking------>>>>>>>")
+                try:
+                    if not ll_registro_cloud['message_main_attachment_id']:
+                        message_id = 0
+                    else:
+                        message_id = ll_registro_cloud['message_main_attachment_id'][0]
+                    resp = models_cloud.execute_kw(lc_db, uid, lc_pass, 'stock.picking', 'write',
+                        [ [ll_registro_cloud['id']], {
+                        'name':registro_local.name,
+                        'origin':(registro_local.origin),
+                        'note':(registro_local.note),
+                        'backorder_id':self.norma_none(registro_local.backorder_id),
+                        'move_type':registro_local.move_type,
+                        'state':registro_local.state,
+                        'group_id':self.norma_none(registro_local.group_id),
+                        'priority':'0',
+                        'scheduled_date':registro_local.scheduled_date.isoformat(sep=' ',timespec='seconds'),
+                        'date_deadline':self.norma_none(registro_local.date_deadline),
+                        'has_deadline_issue':registro_local.has_deadline_issue,
+                        'date':registro_local.date,
+                        'date_done':registro_local.date_done,
+                        'location_id':self.norma_none_id(registro_local.location_id),
+                        'location_dest_id':self.norma_none_id(registro_local.location_dest_id),
+                        'picking_type_id':self.norma_none_id(registro_local.picking_type_id),
+                        'partner_id':self.search_partner_id_on_cloud(registro_local.partner_id, list_res_partner_cloud),
+                        'company_id':self.norma_none_id(registro_local.company_id),
+                        'user_id':self.search_user_id_on_cloud(registro_local.user_id, list_res_users_cloud),
+                        'owner_id':self.norma_none_id(registro_local.owner_id),
+                        'printed':registro_local.printed,
+                        'is_locked':registro_local.is_locked,
+                        'immediate_transfer':registro_local.immediate_transfer,
+                        'message_main_attachment_id':self.insert_ir_attachment(registro_local.message_main_attachment_id, models_cloud, lc_db, uid, lc_pass, message_id),
+                        'full_analytic_account_id':408,#registro_local.full_analytic_account_id
+                        }]
+                    )
+                    print(resp)
+                    resp_picking_id = ll_registro_cloud['id']
+                except Exception as err:
+                    print(">>>>>>>>>>>>>---------- Inesperado/Unexpected {err=}, {type(err)=}")
+                    raise
+                    return
+
             # si no existe: entonces crearlo
             else:
-                print("+-*-+*/*/*/*/*********** Crear   ******>>>>>")
+                print("+-*-+*/*/*/*/*********** Crear stock.picking  ******>>>>>")
                 try:
                     resp = models_cloud.execute_kw(lc_db, uid, lc_pass, 'stock.picking', 'create',
                         [{
@@ -1440,25 +1532,112 @@ class BaseSynchro(models.TransientModel):
                         'picking_type_id':self.norma_none_id(registro_local.picking_type_id),
                         'partner_id':self.search_partner_id_on_cloud(registro_local.partner_id, list_res_partner_cloud),
                         'company_id':self.norma_none_id(registro_local.company_id),
-                        'user_id':11,
+                        'user_id':self.search_user_id_on_cloud(registro_local.user_id, list_res_users_cloud),
                         'owner_id':self.norma_none_id(registro_local.owner_id),
                         'printed':registro_local.printed,
                         'is_locked':registro_local.is_locked,
                         'immediate_transfer':registro_local.immediate_transfer,
-                        'message_main_attachment_id':3533,#registro_local.message_main_attachment_id,
+                        'message_main_attachment_id':self.insert_ir_attachment(registro_local.message_main_attachment_id, models_cloud, lc_db, uid, lc_pass, 0),
                         'full_analytic_account_id':408,#registro_local.full_analytic_account_id
                         }]
                     )
                     print(resp)
+                    resp_picking_id = resp
                 except Exception as err:
                     print(">>>>>>>>>>>>>---------- Inesperado/Unexpected {err=}, {type(err)=}")
-                    #raise
+                    raise
                     return
-
-
-        #","","","","","","create_uid","create_date","write_uid","write_date",""
-        # actilizar los campos 'export' en la tabla: 'stock.picking' que lograron ser exportados!
+            # agregar los id subidos a la nube a una lista de id de picking
+            list_stock_picking_ids.append(registro_local)
+            print(registro_local)
+            #","","","","","","create_uid","create_date","write_uid","write_date",""
+            # crear los registros en el modelo: 'stock.move'
+            picking_id_cloud = resp_picking_id
+            picking_id_local = registro_local.id
+            #################################################### stock.move
+            self.get_register_stock_move(picking_id_local, picking_id_cloud)
+            ####################################################
+            # actilizar los campos 'export' en la tabla: 'stock.picking' que lograron ser exportados!
+        print("*******************************************************************lista de ids de picking exportandas: ")
+        print(list_stock_picking_ids)
         return 
+
+    def insert_ir_attachment(self, message_attachment, models_cloud_l, lc_db_l, uid_l, lc_pass_l, id_adjunto_si_existe):
+        print("--------   cloud ir.attachment     --------")
+        # buscar si existe llave unica: 'name' en la conexion 'models_cloud'
+        print("---> Buscando adjunto: ")
+        print(message_attachment['name'])
+        message_cloud = models_cloud_l.execute_kw(lc_db_l, uid_l, lc_pass_l, 'ir.attachment', 'search_read',
+            [[['name','=',message_attachment['name'] ] ]] )
+        if not message_attachment['name']:
+            print("No se pudo buscar el adjunto; porque 'name' del adjunto es False.")
+            return False
+        # Si existe el mensaje: actualizar
+        if id_adjunto_si_existe != 0:
+        #if ((not message_cloud) == False): --- se elimino porque la busqueda no funciona!!!
+            # entonces actualizar
+            print(">--------------- Actualizando el adjunto")
+            resp_cloud = models_cloud_l.execute_kw(lc_db_l, uid_l, lc_pass_l, 'ir.attachment', 'write',
+                [[id_adjunto_si_existe],{'name': message_attachment.name,
+                'description': message_attachment.description,
+                'res_model': message_attachment.res_model,
+                'res_field': message_attachment.res_field,
+                'res_id': message_attachment.res_field,
+                'company_id': self.norma_none_id(message_attachment.company_id),
+                'type': message_attachment.type,
+                'url': message_attachment.url,
+                'public': message_attachment.public,
+                'access_token': message_attachment.access_token,
+                'datas': message_attachment.datas,
+                'db_datas': message_attachment.db_datas,
+                'store_fname': message_attachment.store_fname,
+                'file_size': message_attachment.file_size,
+                'checksum': message_attachment.checksum,
+                'mimetype': message_attachment.mimetype,
+                'index_content': message_attachment.index_content,
+                'original_id': self.norma_none(message_attachment.original_id)
+                }])
+            print(resp_cloud)
+            ln_id_ir_attachment = resp_cloud
+
+        else:
+            # si no existe entonces: crear
+            print(">--------------- Creando el adjunto")
+            resp_cloud = models_cloud_l.execute_kw(lc_db_l, uid_l, lc_pass_l, 'ir.attachment', 'create',
+                [{'name': message_attachment.name,
+                'description': message_attachment.description,
+                'res_model': message_attachment.res_model,
+                'res_field': message_attachment.res_field,
+                'res_id': message_attachment.res_field,
+                'company_id': self.norma_none_id(message_attachment.company_id),
+                'type': message_attachment.type,
+                'url': message_attachment.url,
+                'public': message_attachment.public,
+                'access_token': message_attachment.access_token,
+                'datas': message_attachment.datas,
+                'db_datas': message_attachment.db_datas,
+                'store_fname': message_attachment.store_fname,
+                'file_size': message_attachment.file_size,
+                'checksum': message_attachment.checksum,
+                'mimetype': message_attachment.mimetype,
+                'index_content': message_attachment.index_content,
+                'original_id': self.norma_none(message_attachment.original_id)
+                }])
+            print(resp_cloud)
+            ln_id_ir_attachment = resp_cloud
+        return ln_id_ir_attachment
+
+    def search_user_id_on_cloud(self, ln_user_id_on_local, list_res_users_cloud):
+        lc_login_local = self.env['res.users'].search_read([['id','=',ln_user_id_on_local.id]])
+        for xlist in list_res_users_cloud:
+            if xlist['login'] == lc_login_local[0]['login']:
+                ln_user_id_on_cloud = xlist['id']
+                break
+            else:
+                ln_user_id_on_cloud = False
+                continue
+        return ln_user_id_on_cloud
+
 
     def search_partner_id_on_cloud(self, ln_partner_id_on_local, list_res_partner_cloud):
         lc_ref_local = self.env['res.partner'].search_read([['id','=',ln_partner_id_on_local.id]])
