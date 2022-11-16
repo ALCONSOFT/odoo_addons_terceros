@@ -1375,6 +1375,62 @@ class BaseSynchro(models.TransientModel):
             'name', 'location_id', 'picking_id','reference'], 'order':'id'})
         if not list_stock_move_cloud:
             print("--->>> Creando registros en 'picking.move' ")
+            # 1. obtener los registros de local: stock.move
+            list_stock_move_local = self.env['stock.move'].search([('picking_id','=',ln_picking_id_local)])
+            # 2. asignar las cantidad de registros a una varaible para el ciclo for
+            # 3. iterar o recorrer todos lo registros locales y crearlos en cloud
+            for x_list in list_stock_move_local:
+                resp_l = models_cloud.execute_kw(lc_db, uid, lc_pass, 'stock.move', 'create',
+                    [{
+                        'name': list_stock_move_local[0]['name'],
+
+                    }])
+
+            """id                     
+sequence               
+priority               
+create_date            
+date                   
+date_deadline          
+company_id             
+product_id             
+description_picking    
+product_qty            
+product_uom_qty        
+product_uom            
+location_id            
+location_dest_id       
+partner_id             
+picking_id             
+note                   
+state                  
+price_unit             
+origin                 
+procure_method         
+scrapped               
+group_id               
+rule_id                
+propagate_cancel       
+delay_alert_date       
+picking_type_id        
+inventory_id           
+origin_returned_move_id
+restrict_partner_id    
+warehouse_id           
+additional             
+reference              
+package_level_id       
+next_serial            
+next_serial_count      
+orderpoint_id          
+create_uid             
+write_uid              
+write_date             
+to_refund              
+analytic_account_id    
+category_id            
+phase_id               
+old_edition             """
         else:
             print("--->>> Actualizando registros en 'picking.move' ")
         
@@ -1431,9 +1487,9 @@ class BaseSynchro(models.TransientModel):
         regs_stock_picking_not_exported = self.env['stock.picking'].search([('export','=',False),('is_locked','=',True),('state','=','done')])
         list_stock_picking_ids = []
         for registro_local in regs_stock_picking_not_exported:
-            #print("#####################################################################################################################")
+            print("#####################################################################################################################")
             print("---------------------------------------cloud: stock.picking------------------------------------------------------------")
-            #print("#####################################################################################################################")
+            print("#####################################################################################################################")
             lc_mens = registro_local['name']
             print(lc_mens)
             # Buscar 'name' local en la nube
