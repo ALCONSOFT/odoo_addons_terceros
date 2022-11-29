@@ -18,6 +18,9 @@
                     or
                     <button name="action_up_stock_picking" string="Up Transfers [Picking"
                             type="object" class="oe_highlight"/>
+                    or
+                    <button name="action_down_masters_cloud" string="Down Master Clouds"
+                            type="object" class="oe_highlight"/>
                     <p/>
                     A.01 <button name="action_down_users" string="Down Users" type="object" class="oe_stat_button" icon="fa-">
                     </button>

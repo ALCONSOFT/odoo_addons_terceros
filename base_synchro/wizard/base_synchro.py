@@ -446,6 +446,7 @@ class BaseSynchro(models.TransientModel):
         }
 
     def action_down_users(self):
+        # crear la conexion con el servidor en la url de la nube
         ln_id = self.id
         lc_name = self.server_url.name
         lc_url  = 'http://' + self.server_url.server_url
@@ -453,17 +454,22 @@ class BaseSynchro(models.TransientModel):
         lc_port = self.server_url.server_port
         lc_user = self.server_url.login
         lc_pass = self.server_url.password
-        #try:
-        common = xmlrpc.client.ServerProxy('%s/xmlrpc/2/common' % lc_url)
-        print("common version: ", common.version())
-        #User Identifier
-        uid = common.authenticate(lc_db, lc_user, lc_pass, {})
-        print("uid: ",uid)
-        # Calliing methods
-        models_cloud = xmlrpc.client.ServerProxy('{}/xmlrpc/2/object'.format(lc_url))
-        models_cloud.execute_kw(lc_db, uid, lc_pass,
-                'res.partner', 'check_access_rights',
-                ['read'], {'raise_exception': False})
+        lc_pathurl = lc_url + ':' + str(lc_port)
+        try:
+            common = xmlrpc.client.ServerProxy('%s/xmlrpc/2/common' % lc_pathurl, allow_none=False)
+            print("common version: ", common.version())
+            #User Identifier
+            uid = common.authenticate(lc_db, lc_user, lc_pass, {})
+            print("uid: ",uid)
+            # Calliing methods
+            models_cloud = xmlrpc.client.ServerProxy('{}/xmlrpc/2/object'.format(lc_pathurl))
+            models_cloud.execute_kw(lc_db, uid, lc_pass,
+                    'res.partner', 'check_access_rights',
+                    ['read'], {'raise_exception': False})
+        except Exception as err:
+            print(f">>>>>>>>>>>>>---------- Inesperado/Unexpected {err=}, {type(err)=}")
+            raise
+            return
         # model res_users on cloud
         filtro =  [[['active','=',True]]]
         count_users = models_cloud.execute_kw(lc_db, uid, lc_pass, 'res.users', 'search_count', filtro)
@@ -480,6 +486,7 @@ class BaseSynchro(models.TransientModel):
         return
 
     def action_down_partners(self):
+        # crear la conexion con el servidor en la url de la nube
         ln_id = self.id
         lc_name = self.server_url.name
         lc_url  = 'http://' + self.server_url.server_url
@@ -487,17 +494,22 @@ class BaseSynchro(models.TransientModel):
         lc_port = self.server_url.server_port
         lc_user = self.server_url.login
         lc_pass = self.server_url.password
-        #try:
-        common = xmlrpc.client.ServerProxy('%s/xmlrpc/2/common' % lc_url)
-        print("common version: ", common.version())
-        #User Identifier
-        uid = common.authenticate(lc_db, lc_user, lc_pass, {})
-        print("uid: ",uid)
-        # Calliing methods
-        models_cloud = xmlrpc.client.ServerProxy('{}/xmlrpc/2/object'.format(lc_url))
-        models_cloud.execute_kw(lc_db, uid, lc_pass,
-                'res.partner', 'check_access_rights',
-                ['read'], {'raise_exception': False})
+        lc_pathurl = lc_url + ':' + str(lc_port)
+        try:
+            common = xmlrpc.client.ServerProxy('%s/xmlrpc/2/common' % lc_pathurl, allow_none=False)
+            print("common version: ", common.version())
+            #User Identifier
+            uid = common.authenticate(lc_db, lc_user, lc_pass, {})
+            print("uid: ",uid)
+            # Calliing methods
+            models_cloud = xmlrpc.client.ServerProxy('{}/xmlrpc/2/object'.format(lc_pathurl))
+            models_cloud.execute_kw(lc_db, uid, lc_pass,
+                    'res.partner', 'check_access_rights',
+                    ['read'], {'raise_exception': False})
+        except Exception as err:
+            print(f">>>>>>>>>>>>>---------- Inesperado/Unexpected {err=}, {type(err)=}")
+            raise
+            return
         # model res_partener
         filtro =  [[['active','=',True],]]
         count_partners = models_cloud.execute_kw(lc_db, uid, lc_pass, 'res.partner', 'search_count', filtro)
@@ -535,6 +547,7 @@ class BaseSynchro(models.TransientModel):
 
     def action_down_products(self):
         #self.action_down_uoms() ; da muchos problemas con los tipos de unidades de medidas
+        # crear la conexion con el servidor en la url de la nube
         ln_id = self.id
         lc_name = self.server_url.name
         lc_url  = 'http://' + self.server_url.server_url
@@ -542,17 +555,22 @@ class BaseSynchro(models.TransientModel):
         lc_port = self.server_url.server_port
         lc_user = self.server_url.login
         lc_pass = self.server_url.password
-        #try:
-        common = xmlrpc.client.ServerProxy('%s/xmlrpc/2/common' % lc_url)
-        print("common version: ", common.version())
-        #User Identifier
-        uid = common.authenticate(lc_db, lc_user, lc_pass, {})
-        print("uid: ",uid)
-        # Calliing methods
-        models_cloud = xmlrpc.client.ServerProxy('{}/xmlrpc/2/object'.format(lc_url))
-        models_cloud.execute_kw(lc_db, uid, lc_pass,
-                'res.partner', 'check_access_rights',
-                ['read'], {'raise_exception': False})
+        lc_pathurl = lc_url + ':' + str(lc_port)
+        try:
+            common = xmlrpc.client.ServerProxy('%s/xmlrpc/2/common' % lc_pathurl, allow_none=False)
+            print("common version: ", common.version())
+            #User Identifier
+            uid = common.authenticate(lc_db, lc_user, lc_pass, {})
+            print("uid: ",uid)
+            # Calliing methods
+            models_cloud = xmlrpc.client.ServerProxy('{}/xmlrpc/2/object'.format(lc_pathurl))
+            models_cloud.execute_kw(lc_db, uid, lc_pass,
+                    'res.partner', 'check_access_rights',
+                    ['read'], {'raise_exception': False})
+        except Exception as err:
+            print(f">>>>>>>>>>>>>---------- Inesperado/Unexpected {err=}, {type(err)=}")
+            raise
+            return
         # model product_template
         filtro =  [[['active','=',True],]]
         count_producttemplate = models_cloud.execute_kw(lc_db, uid, lc_pass, 'product.template', 'search_count', filtro)
@@ -571,11 +589,12 @@ class BaseSynchro(models.TransientModel):
         for n in list_producttemplate:
             print(n)
             reg_pt = self.action_down_product_template(n)
-            ln_idpt = reg_pt.id
+            # ln_idpt = reg_pt.id
             #ln_idpp = self.action_down_product_quant(n, ln_idpt)
         return
 
     def action_down_stock_quant(self):
+        # crear la conexion con el servidor en la url de la nube
         ln_id = self.id
         lc_name = self.server_url.name
         lc_url  = 'http://' + self.server_url.server_url
@@ -583,17 +602,22 @@ class BaseSynchro(models.TransientModel):
         lc_port = self.server_url.server_port
         lc_user = self.server_url.login
         lc_pass = self.server_url.password
-        #try:
-        common = xmlrpc.client.ServerProxy('%s/xmlrpc/2/common' % lc_url)
-        print("common version: ", common.version())
-        #User Identifier
-        uid = common.authenticate(lc_db, lc_user, lc_pass, {})
-        print("uid: ",uid)
-        # Calliing methods
-        models_cloud = xmlrpc.client.ServerProxy('{}/xmlrpc/2/object'.format(lc_url))
-        models_cloud.execute_kw(lc_db, uid, lc_pass,
-                'res.partner', 'check_access_rights',
-                ['read'], {'raise_exception': False})
+        lc_pathurl = lc_url + ':' + str(lc_port)
+        try:
+            common = xmlrpc.client.ServerProxy('%s/xmlrpc/2/common' % lc_pathurl, allow_none=False)
+            print("common version: ", common.version())
+            #User Identifier
+            uid = common.authenticate(lc_db, lc_user, lc_pass, {})
+            print("uid: ",uid)
+            # Calliing methods
+            models_cloud = xmlrpc.client.ServerProxy('{}/xmlrpc/2/object'.format(lc_pathurl))
+            models_cloud.execute_kw(lc_db, uid, lc_pass,
+                    'res.partner', 'check_access_rights',
+                    ['read'], {'raise_exception': False})
+        except Exception as err:
+            print(f">>>>>>>>>>>>>---------- Inesperado/Unexpected {err=}, {type(err)=}")
+            raise
+            return
         # model stock.quant
         filtro =  [[]]
         count_stockquant = models_cloud.execute_kw(lc_db, uid, lc_pass, 'stock.quant', 'search_count', filtro)
@@ -676,12 +700,14 @@ class BaseSynchro(models.TransientModel):
 
     def action_down_product_template(self, n):
         lc_mens = n['name']
+        print("+++++++++++++++++++++++++++++  PRODUCT TEMPLATE  ++++++++++++++++++++++++")
         # Buscar si el id o llave primaria existe en res.partner. Si tiene default_code hacer la busqueda
         if  (n['default_code']!=False):
             search_producttemplate = self.env['product.template'].search([('default_code', '=', n['default_code'])])
             # Decidi Normalizar las unidades de medida a Unit id=1 de todos los productos
             # Guardar registro list_producttemplate[n] en product_template local
             if search_producttemplate.active == False:
+                print(">>>>>>>>>>>>> - - - - - NO EXISTE EN PRODUCT TEMPLATE - - - - - - - - >>>>>>>>>")
                 new_producttemplate = self.env['product.template'].create({'name': n['name'],
                     'description': n['description'],
                     'type':n['type'],
@@ -693,14 +719,19 @@ class BaseSynchro(models.TransientModel):
                     'default_code':n['default_code'],
                     'uom_po_id':1,
                     'tracking':n['tracking'] })
+            else:
+                print(">>>>>>>>>> - - Ya existe en product.template *-*-*-*-*-* ")
+                new_producttemplate = False
         else:
-            print("Product Template name no tiene codigo de referencia: " + lc_mens)
+            print(">>>>>>>>>>>>> -   Product Template name no tiene codigo de referencia: " + lc_mens)
+            new_producttemplate = False
         # Guardar registro en product_product
         #except Exception:
         #    print("Hubo un error al tratar de conectar al servidor base de datos Destino Odoo14: ")
         return new_producttemplate
     
     def action_down_stock_warehouse(self):
+        # crear la conexion con el servidor en la url de la nube
         ln_id = self.id
         lc_name = self.server_url.name
         lc_url  = 'http://' + self.server_url.server_url
@@ -708,17 +739,22 @@ class BaseSynchro(models.TransientModel):
         lc_port = self.server_url.server_port
         lc_user = self.server_url.login
         lc_pass = self.server_url.password
-        #try:
-        common = xmlrpc.client.ServerProxy('%s/xmlrpc/2/common' % lc_url)
-        print("common version: ", common.version())
-        #User Identifier
-        uid = common.authenticate(lc_db, lc_user, lc_pass, {})
-        print("uid: ",uid)
-        # Calliing methods
-        models_cloud = xmlrpc.client.ServerProxy('{}/xmlrpc/2/object'.format(lc_url))
-        models_cloud.execute_kw(lc_db, uid, lc_pass,
-                'res.partner', 'check_access_rights',
-                ['read'], {'raise_exception': False})
+        lc_pathurl = lc_url + ':' + str(lc_port)
+        try:
+            common = xmlrpc.client.ServerProxy('%s/xmlrpc/2/common' % lc_pathurl, allow_none=False)
+            print("common version: ", common.version())
+            #User Identifier
+            uid = common.authenticate(lc_db, lc_user, lc_pass, {})
+            print("uid: ",uid)
+            # Calliing methods
+            models_cloud = xmlrpc.client.ServerProxy('{}/xmlrpc/2/object'.format(lc_pathurl))
+            models_cloud.execute_kw(lc_db, uid, lc_pass,
+                    'res.partner', 'check_access_rights',
+                    ['read'], {'raise_exception': False})
+        except Exception as err:
+            print(f">>>>>>>>>>>>>---------- Inesperado/Unexpected {err=}, {type(err)=}")
+            raise
+            return
         # model sotck.warehouse
         filtro =  [[['active','=',True],]]
         count_stockwarehouse = models_cloud.execute_kw(lc_db, uid, lc_pass, 'stock.warehouse', 'search_count', filtro)
@@ -801,6 +837,7 @@ class BaseSynchro(models.TransientModel):
         return
 
     def action_down_stock_location(self):
+        # crear la conexion con el servidor en la url de la nube
         ln_id = self.id
         lc_name = self.server_url.name
         lc_url  = 'http://' + self.server_url.server_url
@@ -808,17 +845,22 @@ class BaseSynchro(models.TransientModel):
         lc_port = self.server_url.server_port
         lc_user = self.server_url.login
         lc_pass = self.server_url.password
-        #try:
-        common = xmlrpc.client.ServerProxy('%s/xmlrpc/2/common' % lc_url)
-        print("common version: ", common.version())
-        #User Identifier
-        uid = common.authenticate(lc_db, lc_user, lc_pass, {})
-        print("uid: ",uid)
-        # Calliing methods
-        models_cloud = xmlrpc.client.ServerProxy('{}/xmlrpc/2/object'.format(lc_url))
-        models_cloud.execute_kw(lc_db, uid, lc_pass,
-                'res.partner', 'check_access_rights',
-                ['read'], {'raise_exception': False})
+        lc_pathurl = lc_url + ':' + str(lc_port)
+        try:
+            common = xmlrpc.client.ServerProxy('%s/xmlrpc/2/common' % lc_pathurl, allow_none=False)
+            print("common version: ", common.version())
+            #User Identifier
+            uid = common.authenticate(lc_db, lc_user, lc_pass, {})
+            print("uid: ",uid)
+            # Calliing methods
+            models_cloud = xmlrpc.client.ServerProxy('{}/xmlrpc/2/object'.format(lc_pathurl))
+            models_cloud.execute_kw(lc_db, uid, lc_pass,
+                    'res.partner', 'check_access_rights',
+                    ['read'], {'raise_exception': False})
+        except Exception as err:
+            print(f">>>>>>>>>>>>>---------- Inesperado/Unexpected {err=}, {type(err)=}")
+            raise
+            return
         # model sotck.location
         filtro =  [[]]
         count_stocklocation = models_cloud.execute_kw(lc_db, uid, lc_pass, 'stock.location', 'search_count', filtro)
@@ -899,6 +941,7 @@ class BaseSynchro(models.TransientModel):
         return
 
     def action_down_stock_picking_type(self):
+        # crear la conexion con el servidor en la url de la nube
         ln_id = self.id
         lc_name = self.server_url.name
         lc_url  = 'http://' + self.server_url.server_url
@@ -906,17 +949,22 @@ class BaseSynchro(models.TransientModel):
         lc_port = self.server_url.server_port
         lc_user = self.server_url.login
         lc_pass = self.server_url.password
-        #try:
-        common = xmlrpc.client.ServerProxy('%s/xmlrpc/2/common' % lc_url)
-        print("common version: ", common.version())
-        #User Identifier
-        uid = common.authenticate(lc_db, lc_user, lc_pass, {})
-        print("uid: ",uid)
-        # Calliing methods
-        models_cloud = xmlrpc.client.ServerProxy('{}/xmlrpc/2/object'.format(lc_url))
-        models_cloud.execute_kw(lc_db, uid, lc_pass,
-                'res.partner', 'check_access_rights',
-                ['read'], {'raise_exception': False})
+        lc_pathurl = lc_url + ':' + str(lc_port)
+        try:
+            common = xmlrpc.client.ServerProxy('%s/xmlrpc/2/common' % lc_pathurl, allow_none=False)
+            print("common version: ", common.version())
+            #User Identifier
+            uid = common.authenticate(lc_db, lc_user, lc_pass, {})
+            print("uid: ",uid)
+            # Calliing methods
+            models_cloud = xmlrpc.client.ServerProxy('{}/xmlrpc/2/object'.format(lc_pathurl))
+            models_cloud.execute_kw(lc_db, uid, lc_pass,
+                    'res.partner', 'check_access_rights',
+                    ['read'], {'raise_exception': False})
+        except Exception as err:
+            print(f">>>>>>>>>>>>>---------- Inesperado/Unexpected {err=}, {type(err)=}")
+            raise
+            return
         # model sotck.picking.type
         filtro =  [[]]
         count_stockpickingtype = models_cloud.execute_kw(lc_db, uid, lc_pass, 'stock.picking.type', 'search_count', filtro)
@@ -997,6 +1045,7 @@ class BaseSynchro(models.TransientModel):
         return
 
     def action_down_ir_sequence(self):
+        # crear la conexion con el servidor en la url de la nube
         ln_id = self.id
         lc_name = self.server_url.name
         lc_url  = 'http://' + self.server_url.server_url
@@ -1004,17 +1053,22 @@ class BaseSynchro(models.TransientModel):
         lc_port = self.server_url.server_port
         lc_user = self.server_url.login
         lc_pass = self.server_url.password
-        #try:
-        common = xmlrpc.client.ServerProxy('%s/xmlrpc/2/common' % lc_url)
-        print("common version: ", common.version())
-        #User Identifier
-        uid = common.authenticate(lc_db, lc_user, lc_pass, {})
-        print("uid: ",uid)
-        # Calliing methods
-        models_cloud = xmlrpc.client.ServerProxy('{}/xmlrpc/2/object'.format(lc_url))
-        models_cloud.execute_kw(lc_db, uid, lc_pass,
-                'res.partner', 'check_access_rights',
-                ['read'], {'raise_exception': False})
+        lc_pathurl = lc_url + ':' + str(lc_port)
+        try:
+            common = xmlrpc.client.ServerProxy('%s/xmlrpc/2/common' % lc_pathurl, allow_none=False)
+            print("common version: ", common.version())
+            #User Identifier
+            uid = common.authenticate(lc_db, lc_user, lc_pass, {})
+            print("uid: ",uid)
+            # Calliing methods
+            models_cloud = xmlrpc.client.ServerProxy('{}/xmlrpc/2/object'.format(lc_pathurl))
+            models_cloud.execute_kw(lc_db, uid, lc_pass,
+                    'res.partner', 'check_access_rights',
+                    ['read'], {'raise_exception': False})
+        except Exception as err:
+            print(f">>>>>>>>>>>>>---------- Inesperado/Unexpected {err=}, {type(err)=}")
+            raise
+            return
         # model ir.sequence
         filtro =  [[]]
         count_irsequence = models_cloud.execute_kw(lc_db, uid, lc_pass, 'ir.sequence', 'search_count', filtro)
@@ -1079,6 +1133,7 @@ class BaseSynchro(models.TransientModel):
         return
     
     def action_down_account_analytic(self):
+        # crear la conexion con el servidor en la url de la nube
         ln_id = self.id
         lc_name = self.server_url.name
         lc_url  = 'http://' + self.server_url.server_url
@@ -1086,17 +1141,22 @@ class BaseSynchro(models.TransientModel):
         lc_port = self.server_url.server_port
         lc_user = self.server_url.login
         lc_pass = self.server_url.password
-        #try:
-        common = xmlrpc.client.ServerProxy('%s/xmlrpc/2/common' % lc_url)
-        print("common version: ", common.version())
-        #User Identifier
-        uid = common.authenticate(lc_db, lc_user, lc_pass, {})
-        print("uid: ",uid)
-        # Calliing methods
-        models_cloud = xmlrpc.client.ServerProxy('{}/xmlrpc/2/object'.format(lc_url))
-        models_cloud.execute_kw(lc_db, uid, lc_pass,
-                'res.partner', 'check_access_rights',
-                ['read'], {'raise_exception': False})
+        lc_pathurl = lc_url + ':' + str(lc_port)
+        try:
+            common = xmlrpc.client.ServerProxy('%s/xmlrpc/2/common' % lc_pathurl, allow_none=False)
+            print("common version: ", common.version())
+            #User Identifier
+            uid = common.authenticate(lc_db, lc_user, lc_pass, {})
+            print("uid: ",uid)
+            # Calliing methods
+            models_cloud = xmlrpc.client.ServerProxy('{}/xmlrpc/2/object'.format(lc_pathurl))
+            models_cloud.execute_kw(lc_db, uid, lc_pass,
+                    'res.partner', 'check_access_rights',
+                    ['read'], {'raise_exception': False})
+        except Exception as err:
+            print(f">>>>>>>>>>>>>---------- Inesperado/Unexpected {err=}, {type(err)=}")
+            raise
+            return
         # model account.analytic.account
         filtro =  [[]]
         count_account_analytic = models_cloud.execute_kw(lc_db, uid, lc_pass, 'account.analytic.account', 'search_count', filtro)
@@ -1144,6 +1204,7 @@ class BaseSynchro(models.TransientModel):
         return
     
     def action_down_project(self):
+        # crear la conexion con el servidor en la url de la nube
         ln_id = self.id
         lc_name = self.server_url.name
         lc_url  = 'http://' + self.server_url.server_url
@@ -1151,17 +1212,22 @@ class BaseSynchro(models.TransientModel):
         lc_port = self.server_url.server_port
         lc_user = self.server_url.login
         lc_pass = self.server_url.password
-        #try:
-        common = xmlrpc.client.ServerProxy('%s/xmlrpc/2/common' % lc_url)
-        print("common version: ", common.version())
-        #User Identifier
-        uid = common.authenticate(lc_db, lc_user, lc_pass, {})
-        print("uid: ",uid)
-        # Calliing methods
-        models_cloud = xmlrpc.client.ServerProxy('{}/xmlrpc/2/object'.format(lc_url))
-        models_cloud.execute_kw(lc_db, uid, lc_pass,
-                'res.partner', 'check_access_rights',
-                ['read'], {'raise_exception': False})
+        lc_pathurl = lc_url + ':' + str(lc_port)
+        try:
+            common = xmlrpc.client.ServerProxy('%s/xmlrpc/2/common' % lc_pathurl, allow_none=False)
+            print("common version: ", common.version())
+            #User Identifier
+            uid = common.authenticate(lc_db, lc_user, lc_pass, {})
+            print("uid: ",uid)
+            # Calliing methods
+            models_cloud = xmlrpc.client.ServerProxy('{}/xmlrpc/2/object'.format(lc_pathurl))
+            models_cloud.execute_kw(lc_db, uid, lc_pass,
+                    'res.partner', 'check_access_rights',
+                    ['read'], {'raise_exception': False})
+        except Exception as err:
+            print(f">>>>>>>>>>>>>---------- Inesperado/Unexpected {err=}, {type(err)=}")
+            raise
+            return
         # model project.project
         filtro =  [[]]
         count_project = models_cloud.execute_kw(lc_db, uid, lc_pass, 'project.project', 'search_count', filtro)
@@ -1243,6 +1309,7 @@ class BaseSynchro(models.TransientModel):
         return
 
     def action_down_project_phase(self):
+        # crear la conexion con el servidor en la url de la nube
         ln_id = self.id
         lc_name = self.server_url.name
         lc_url  = 'http://' + self.server_url.server_url
@@ -1250,17 +1317,22 @@ class BaseSynchro(models.TransientModel):
         lc_port = self.server_url.server_port
         lc_user = self.server_url.login
         lc_pass = self.server_url.password
-        #try:
-        common = xmlrpc.client.ServerProxy('%s/xmlrpc/2/common' % lc_url)
-        print("common version: ", common.version())
-        #User Identifier
-        uid = common.authenticate(lc_db, lc_user, lc_pass, {})
-        print("uid: ",uid)
-        # Calliing methods
-        models_cloud = xmlrpc.client.ServerProxy('{}/xmlrpc/2/object'.format(lc_url))
-        models_cloud.execute_kw(lc_db, uid, lc_pass,
-                'res.partner', 'check_access_rights',
-                ['read'], {'raise_exception': False})
+        lc_pathurl = lc_url + ':' + str(lc_port)
+        try:
+            common = xmlrpc.client.ServerProxy('%s/xmlrpc/2/common' % lc_pathurl, allow_none=False)
+            print("common version: ", common.version())
+            #User Identifier
+            uid = common.authenticate(lc_db, lc_user, lc_pass, {})
+            print("uid: ",uid)
+            # Calliing methods
+            models_cloud = xmlrpc.client.ServerProxy('{}/xmlrpc/2/object'.format(lc_pathurl))
+            models_cloud.execute_kw(lc_db, uid, lc_pass,
+                    'res.partner', 'check_access_rights',
+                    ['read'], {'raise_exception': False})
+        except Exception as err:
+            print(f">>>>>>>>>>>>>---------- Inesperado/Unexpected {err=}, {type(err)=}")
+            raise
+            return
         # model project.task.phase
         filtro =  [[]]
         count_project_phase = models_cloud.execute_kw(lc_db, uid, lc_pass, 'project.task.phase', 'search_count', filtro)
@@ -1337,10 +1409,34 @@ class BaseSynchro(models.TransientModel):
         #     self.get_registers_stock_move()
         return
     
+    def action_down_masters_cloud(self):
+        import time
+        lt_time_ini = time.time()
+        self.action_down_users()
+        self.action_down_partners()
+        self.action_down_stock_warehouse()
+        self.action_down_stock_location()
+        ####### ojo ################
+        self.action_down_ir_sequence()
+        ###################
+        self.action_down_stock_picking_type()
+        self.action_down_products()
+        self.action_down_stock_quant()
+        self.action_down_account_analytic()
+        self.action_down_project()
+        self.action_down_project_phase()
+        lt_time_fin = time.time()
+        ln_delta = lt_time_fin - lt_time_ini
+        print(" * * * * * * * * * * * * * Delta: ")
+        print(ln_delta)
+        # To do!!!
+        # tasks
+        return
+
     ###################################################################################################################
     ################################################     STOCK MOVE    ################################################
     ###################################################################################################################
-    def get_register_stock_move(self, ln_picking_id_local, ln_picking_id_cloud):
+    def get_register_stock_move(self, ln_picking_id_local, ln_picking_id_cloud, partner_id_lh):
         # crear la conexion con el servidor en la url de la nube
         ln_id = self.id
         lc_name = self.server_url.name
@@ -1365,6 +1461,10 @@ class BaseSynchro(models.TransientModel):
             print(f">>>>>>>>>>>>>---------- Inesperado/Unexpected {err=}, {type(err)=}")
             raise
             return
+
+        # Lista de product_product en la nube
+        list_products_cloud = models_cloud.execute_kw(lc_db, uid, lc_pass, 'product.product', 'search_read',
+            [[]], {'fields':['id','default_code','product_tmpl_id']})
         # model: cloud o nube: stock.move; solo los no exportados; estos registros vienen referenciados por id desde el modelo: 'stock.picking'
         print("----------------------------------------------cloud: stock.move---------------------------------------------------")
         lc_filtro = [[['picking_id','=', ln_picking_id_cloud]]]
@@ -1374,68 +1474,126 @@ class BaseSynchro(models.TransientModel):
             lc_filtro, {'fields': ['id',
             'name', 'location_id', 'picking_id','reference'], 'order':'id'})
         if not list_stock_move_cloud:
-            print("--->>> Creando registros en 'picking.move' ")
+            print("------------------------------------------->>> Creando registros en 'stock.move' ")
             # 1. obtener los registros de local: stock.move
             list_stock_move_local = self.env['stock.move'].search([('picking_id','=',ln_picking_id_local)])
             # 2. asignar las cantidad de registros a una varaible para el ciclo for
             # 3. iterar o recorrer todos lo registros locales y crearlos en cloud
             for x_list in list_stock_move_local:
-                resp_l = models_cloud.execute_kw(lc_db, uid, lc_pass, 'stock.move', 'create',
-                    [{
-                        'name': list_stock_move_local[0]['name'],
-
-                    }])
-
-            """id                     
-sequence               
-priority               
-create_date            
-date                   
-date_deadline          
-company_id             
-product_id             
-description_picking    
-product_qty            
-product_uom_qty        
-product_uom            
-location_id            
-location_dest_id       
-partner_id             
-picking_id             
-note                   
-state                  
-price_unit             
-origin                 
-procure_method         
-scrapped               
-group_id               
-rule_id                
-propagate_cancel       
-delay_alert_date       
-picking_type_id        
-inventory_id           
-origin_returned_move_id
-restrict_partner_id    
-warehouse_id           
-additional             
-reference              
-package_level_id       
-next_serial            
-next_serial_count      
-orderpoint_id          
-create_uid             
-write_uid              
-write_date             
-to_refund              
-analytic_account_id    
-category_id            
-phase_id               
-old_edition             """
+                # buscando id de product en la nube con local
+                ln_product_id_on_local = self.norma_none_id(x_list.product_id)
+                #####################################################################################################
+                # Buscando id de phase en la nube: phase_id_on_azure: linea por linea: producto por producto
+                    # 0. Buscar el nombre del phase_id_local: phase_name_local
+                phase_name_local = x_list.phase_id.name
+                    # a. Buscar project_id_local con (x_list.analytic_account_id)
+                project_id_local = x_list.analytic_account_id.project_ids.id #search_project_id_on_local(self.norma_none_id(x_list.analytic_account_id))
+                project_name_local = x_list.analytic_account_id.project_ids.name
+                    # b. Buscar project_id_cloud con (project_id_local)
+                project_id_cloud = models_cloud.execute_kw(lc_db, uid, lc_pass, 'project.project', 'search_read',
+                    [[['name','=', x_list.analytic_account_id.project_ids.name]]])[0]['id'] #search_project_id_on_cloud(project_id_local)
+                    # c. Buscar list_phase_cloud con (project_id_cloud)
+                list_phases_cloud = models_cloud.execute_kw(lc_db, uid, lc_pass, 'project.task.phase', 'search_read',
+                    [[['project_id','=',project_id_cloud]]]) #lista_de_phases_del_proyecto_en_la_nube
+                    # d. Buscar phase_id_on_cloud con (list_phases_cloud, phase_name_local)
+                phase_id_on_local = self.norma_none_id(x_list.phase_id)
+                phase_id_on_azure = self.search_phase_id_on_cloud(phase_name_local, list_phases_cloud)
+                #####################################################################################################
+                #product_id_lh = search_product_id_on_cloud(item_id, list_products_cloud)
+                lc_default_code_local = self.env['product.product'].search_read([['id','=',ln_product_id_on_local]])
+                for xlist in list_products_cloud:
+                    if xlist['default_code'] == lc_default_code_local[0]['default_code']:
+                        ln_product_id_on_cloud = xlist['id']
+                        ln_product_id_on_cloud_tmpl = xlist['product_tmpl_id']
+                        break
+                    else:
+                        ln_product_id_on_cloud = False
+                        ln_product_id_on_cloud_tmpl = False
+                        continue
+                product_id_lh = ln_product_id_on_cloud
+                if not ln_product_id_on_cloud_tmpl:
+                    product_uom_cl = False
+                else:
+                    lc_filtro = [[['id','=',ln_product_id_on_cloud_tmpl[0]]]]
+                    product_template = models_cloud.execute_kw(lc_db, uid, lc_pass, 'product.template', 'search_read',lc_filtro,
+                        {'fields':['id','uom_id']})
+                    product_uom_cl = product_template[0]['uom_id'][0]
+                ##########
+                try:
+                    resp_l = models_cloud.execute_kw(lc_db, uid, lc_pass, 'stock.move', 'create',
+                        [{
+                            'name': x_list.name,
+                            'sequence': x_list.sequence,
+                            'priority': x_list.priority,
+                            'date': x_list.date,
+                            'date_deadline': x_list.date_deadline,
+                            'product_id': product_id_lh,
+                            'description_picking': x_list.description_picking,
+                            'product_uom_qty': x_list.product_uom_qty,
+                            'product_uom': product_uom_cl,
+                            'location_id': self.norma_none_id(x_list.location_id),
+                            'location_dest_id': self.norma_none_id(x_list.location_dest_id),
+                            'partner_id': partner_id_lh,
+                            'picking_id': ln_picking_id_cloud,
+                            'note': x_list.note,
+                            'state': x_list.state,
+                            'price_unit': x_list.price_unit,
+                            'origin': x_list.origin,
+                            'procure_method': x_list.procure_method,
+                            'scrapped': x_list.scrapped,
+                            'group_id': self.norma_none_id(x_list.group_id),
+                            'rule_id': self.norma_none_id(x_list.rule_id),
+                            'propagate_cancel': x_list.propagate_cancel,
+                            'delay_alert_date': x_list.delay_alert_date,
+                            'picking_type_id': self.norma_none_id(x_list.picking_type_id),
+                            'inventory_id': self.norma_none_id(x_list.inventory_id),
+                            'origin_returned_move_id': self.norma_none_id(x_list.origin_returned_move_id),
+                            'restrict_partner_id': self.norma_none_id(x_list.restrict_partner_id),
+                            'warehouse_id': self.norma_none_id(x_list.warehouse_id),
+                            'additional': x_list.additional,
+                            'reference': x_list.reference,
+                            'package_level_id': self.norma_none_id(x_list.package_level_id),
+                            'next_serial': x_list.next_serial,
+                            'orderpoint_id': self.norma_none_id(x_list.next_serial_count),
+                            'to_refund': x_list.to_refund,
+                            'analytic_account_id': self.norma_none_id(x_list.analytic_account_id),
+                            'category_id': self.norma_none_id(x_list.category_id),
+                            'phase_id': phase_id_on_azure,
+                            'next_serial_count': x_list.next_serial_count
+                        }])
+                        #'product_qty': x_list.product_qty,
+                        #self.norma_none_id(x_list.product_uom),
+                    print("***Registro creado en stock.move")
+                    print(resp_l)
+                except Exception as err:
+                    print(">>>>>>>>>>>>>---------- Inesperado/Unexpected {err=}, {type(err)=}")
+                    raise
+                    #return
         else:
-            print("--->>> Actualizando registros en 'picking.move' ")
-        
+            print("--->>> Actualizando registros en 'stock.move' ")
         return
 
+    def search_product_id_on_cloud(self, ln_product_id_on_local, list_products_cloud):
+        #lc_ref_local = self.env['res.partner'].search_read([['id','=',ln_partner_id_on_local.id]])
+        lc_default_code_local = self.env['product.product'].search_read([['id','=',ln_product_id_on_local.id]])
+        for xlist in list_products_cloud:
+            if xlist['default_code'] == lc_default_code_local[0]['default_code']:
+                ln_product_id_on_cloud = xlist['id']
+                break
+            else:
+                ln_product_id_on_cloud = False
+                continue
+        return ln_product_id_on_cloud
+    
+    def search_phase_id_on_cloud(self, lc_phase_name_local, list_phases_cloud):
+        for y_list in list_phases_cloud:
+            if y_list['name'] ==  lc_phase_name_local:
+                v_return = y_list['id']
+                break
+            else:
+                v_return = False
+                continue
+        return v_return
 
     ###################################################################################################################
     ################################################   STOCK PICKING   ################################################
@@ -1474,7 +1632,7 @@ old_edition             """
         lc_filtro = [[]]
         list_stock_picking_cloud = models_cloud.execute_kw(lc_db, uid, lc_pass, 'stock.picking', 'search_read',
             lc_filtro, {'fields': ['id',
-            'name', 'location_id', 'message_main_attachment_id'], 'order':'id'})
+            'name', 'location_id', 'message_main_attachment_id', 'state'], 'order':'id'})
         list_stock_location_cloud = models_cloud.execute_kw(lc_db, uid, lc_pass, 'stock.location', 'search_read',
             lc_filtro, {'fields': ['id',
             'name', 'parent_path'], 'order':'id'})
@@ -1519,53 +1677,10 @@ old_edition             """
             else:
                 print("SI SE ENCONTRO:")
                 print(ll_registro_cloud)
-
-            if ll_registro_cloud != False:
-                # buscar el registro en la nube si existe: entonces se debe actualizar si y solo si ha cambiado! *(1)'export_checksum'
-                print("+-*-+------->>>  Actualizar stock.picking------>>>>>>>")
-                try:
-                    if not ll_registro_cloud['message_main_attachment_id']:
-                        message_id = 0
-                    else:
-                        message_id = ll_registro_cloud['message_main_attachment_id'][0]
-                    resp = models_cloud.execute_kw(lc_db, uid, lc_pass, 'stock.picking', 'write',
-                        [ [ll_registro_cloud['id']], {
-                        'name':registro_local.name,
-                        'origin':(registro_local.origin),
-                        'note':(registro_local.note),
-                        'backorder_id':self.norma_none(registro_local.backorder_id),
-                        'move_type':registro_local.move_type,
-                        'state':registro_local.state,
-                        'group_id':self.norma_none(registro_local.group_id),
-                        'priority':'0',
-                        'scheduled_date':registro_local.scheduled_date.isoformat(sep=' ',timespec='seconds'),
-                        'date_deadline':self.norma_none(registro_local.date_deadline),
-                        'has_deadline_issue':registro_local.has_deadline_issue,
-                        'date':registro_local.date,
-                        'date_done':registro_local.date_done,
-                        'location_id':self.norma_none_id(registro_local.location_id),
-                        'location_dest_id':self.norma_none_id(registro_local.location_dest_id),
-                        'picking_type_id':self.norma_none_id(registro_local.picking_type_id),
-                        'partner_id':self.search_partner_id_on_cloud(registro_local.partner_id, list_res_partner_cloud),
-                        'company_id':self.norma_none_id(registro_local.company_id),
-                        'user_id':self.search_user_id_on_cloud(registro_local.user_id, list_res_users_cloud),
-                        'owner_id':self.norma_none_id(registro_local.owner_id),
-                        'printed':registro_local.printed,
-                        'is_locked':registro_local.is_locked,
-                        'immediate_transfer':registro_local.immediate_transfer,
-                        'message_main_attachment_id':self.insert_ir_attachment(registro_local.message_main_attachment_id, models_cloud, lc_db, uid, lc_pass, message_id),
-                        'full_analytic_account_id':408,#registro_local.full_analytic_account_id
-                        }]
-                    )
-                    print(resp)
-                    resp_picking_id = ll_registro_cloud['id']
-                except Exception as err:
-                    print(">>>>>>>>>>>>>---------- Inesperado/Unexpected {err=}, {type(err)=}")
-                    raise
-                    return
-
-            # si no existe: entonces crearlo
-            else:
+            partner_id_l = self.search_partner_id_on_cloud(registro_local.partner_id, list_res_partner_cloud)
+            # Si no existe el registro en la nube
+            if not ll_registro_cloud:
+                # si no existe: entonces crearlo
                 print("+-*-+*/*/*/*/*********** Crear stock.picking  ******>>>>>")
                 try:
                     resp = models_cloud.execute_kw(lc_db, uid, lc_pass, 'stock.picking', 'create',
@@ -1586,7 +1701,7 @@ old_edition             """
                         'location_id':self.norma_none_id(registro_local.location_id),
                         'location_dest_id':self.norma_none_id(registro_local.location_dest_id),
                         'picking_type_id':self.norma_none_id(registro_local.picking_type_id),
-                        'partner_id':self.search_partner_id_on_cloud(registro_local.partner_id, list_res_partner_cloud),
+                        'partner_id':partner_id_l,
                         'company_id':self.norma_none_id(registro_local.company_id),
                         'user_id':self.search_user_id_on_cloud(registro_local.user_id, list_res_users_cloud),
                         'owner_id':self.norma_none_id(registro_local.owner_id),
@@ -1603,17 +1718,66 @@ old_edition             """
                     print(">>>>>>>>>>>>>---------- Inesperado/Unexpected {err=}, {type(err)=}")
                     raise
                     return
-            # agregar los id subidos a la nube a una lista de id de picking
-            list_stock_picking_ids.append(registro_local)
-            print(registro_local)
-            #","","","","","","create_uid","create_date","write_uid","write_date",""
-            # crear los registros en el modelo: 'stock.move'
-            picking_id_cloud = resp_picking_id
-            picking_id_local = registro_local.id
-            #################################################### stock.move
-            self.get_register_stock_move(picking_id_local, picking_id_cloud)
-            ####################################################
-            # actilizar los campos 'export' en la tabla: 'stock.picking' que lograron ser exportados!
+                # agregar los id subidos a la nube a una lista de id de picking
+                list_stock_picking_ids.append(registro_local)
+                print(registro_local)
+                #","","","","","","create_uid","create_date","write_uid","write_date",""
+                # crear los registros en el modelo: 'stock.move'
+                picking_id_cloud = resp_picking_id
+                picking_id_local = registro_local.id
+                #################################################### stock.move
+                self.get_register_stock_move(picking_id_local, picking_id_cloud, partner_id_l)
+                ####################################################
+                # actualizar los campos 'export' en la tabla: 'stock.picking' que lograron ser exportados!
+            # Si existe el registro en la nube
+            else:
+                # Solo se actualizan los registro no 'done'
+                if ll_registro_cloud['state']!='done':
+                    # buscar el registro en la nube si existe: entonces se debe actualizar si y solo si ha cambiado! *(1)'export_checksum'
+                    print("+-*-+------->>>  Actualizar stock.picking------>>>>>>>")
+                    
+                    try:
+                        if not ll_registro_cloud['message_main_attachment_id']:
+                            message_id = 0
+                        else:
+                            message_id = ll_registro_cloud['message_main_attachment_id'][0]
+                        resp = models_cloud.execute_kw(lc_db, uid, lc_pass, 'stock.picking', 'write',
+                            [ [ll_registro_cloud['id']], {
+                            'name':registro_local.name,
+                            'origin':(registro_local.origin),
+                            'note':(registro_local.note),
+                            'backorder_id':self.norma_none(registro_local.backorder_id),
+                            'move_type':registro_local.move_type,
+                            'state':registro_local.state,
+                            'group_id':self.norma_none(registro_local.group_id),
+                            'priority':'0',
+                            'scheduled_date':registro_local.scheduled_date.isoformat(sep=' ',timespec='seconds'),
+                            'date_deadline':self.norma_none(registro_local.date_deadline),
+                            'has_deadline_issue':registro_local.has_deadline_issue,
+                            'date':registro_local.date,
+                            'date_done':registro_local.date_done,
+                            'location_id':self.norma_none_id(registro_local.location_id),
+                            'location_dest_id':self.norma_none_id(registro_local.location_dest_id),
+                            'picking_type_id':self.norma_none_id(registro_local.picking_type_id),
+                            'partner_id':partner_id_l,
+                            'company_id':self.norma_none_id(registro_local.company_id),
+                            'user_id':self.search_user_id_on_cloud(registro_local.user_id, list_res_users_cloud),
+                            'owner_id':self.norma_none_id(registro_local.owner_id),
+                            'printed':registro_local.printed,
+                            'is_locked':registro_local.is_locked,
+                            'immediate_transfer':registro_local.immediate_transfer,
+                            'message_main_attachment_id':self.insert_ir_attachment(registro_local.message_main_attachment_id, models_cloud, lc_db, uid, lc_pass, message_id),
+                            'full_analytic_account_id':408,#registro_local.full_analytic_account_id
+                            }]
+                        )
+                        print(resp)
+                        resp_picking_id = ll_registro_cloud['id']
+                    except Exception as err:
+                        print(">>>>>>>>>>>>>-------1604--- Inesperado/Unexpected {err=}, {type(err)=}")
+                        raise
+                        #return
+                else:
+                    print('Registro no se actualizo por que su estatus es: ' + 'done/hecho')
         print("*******************************************************************lista de ids de picking exportandas: ")
         print(list_stock_picking_ids)
         return 
@@ -1693,7 +1857,6 @@ old_edition             """
                 ln_user_id_on_cloud = False
                 continue
         return ln_user_id_on_cloud
-
 
     def search_partner_id_on_cloud(self, ln_partner_id_on_local, list_res_partner_cloud):
         lc_ref_local = self.env['res.partner'].search_read([['id','=',ln_partner_id_on_local.id]])
