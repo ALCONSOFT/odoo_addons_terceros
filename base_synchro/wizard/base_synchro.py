@@ -529,11 +529,15 @@ class BaseSynchro(models.TransientModel):
             if  (n['ref']!=False):
                 search_partner = self.env['res.partner'].search([('ref', '=', n['ref'])])
                 # Guardar registro list_partner[n] en res.partner local
+                if not n['company_id']==303:
+                    ln_cia = 1
+                else:
+                    ln_cia = n['company_id'][0]
                 if search_partner.active == False:
                     new_partner = self.env['res.partner'].create({'name': n['name'],
                         'display_name': n['display_name'],
                         'ref':n['ref'],
-                        'company_id':n['company_id'][0],
+                        'company_id':ln_cia,
                         'active':n['active'],
                         'type':n['type'],
                         'is_company':n['is_company'],
@@ -1083,7 +1087,8 @@ class BaseSynchro(models.TransientModel):
             'number_increment',
             'padding',
             'company_id',
-            'use_date_range'],
+            'use_date_range',
+            'number_next_actual'],
             'order':'id'
         })
         for n in list_irsequence:
@@ -1108,7 +1113,8 @@ class BaseSynchro(models.TransientModel):
                             'number_increment':n['number_increment'],
                             'padding':n['padding'],
                             'company_id':self.norma_false(n['company_id']),
-                            'use_date_range':n['use_date_range']
+                            'use_date_range':n['use_date_range'],
+                            'number_next_actual':n['number_next_actual']
                         }
                     )
                     print(update_irsequence)
@@ -1126,7 +1132,8 @@ class BaseSynchro(models.TransientModel):
                             'number_increment':n['number_increment'],
                             'padding':n['padding'],
                             'company_id':n['company_id'][0],
-                            'use_date_range':n['use_date_range']
+                            'use_date_range':n['use_date_range'],
+                            'number_next_actual':n['number_next_actual']
                     })
                     print(new_irsequence)
 
@@ -1498,6 +1505,9 @@ class BaseSynchro(models.TransientModel):
                     # d. Buscar phase_id_on_cloud con (list_phases_cloud, phase_name_local)
                 phase_id_on_local = self.norma_none_id(x_list.phase_id)
                 phase_id_on_azure = self.search_phase_id_on_cloud(phase_name_local, list_phases_cloud)
+                # Lotes = Cuentas Analiticas
+                list_analytic_account_cloud2 = models_cloud.execute_kw(lc_db, uid, lc_pass, 'account.analytic.account', 'search_read',
+                    [[]], {'fields':['id','name','code','partner_id']})
                 #####################################################################################################
                 #product_id_lh = search_product_id_on_cloud(item_id, list_products_cloud)
                 lc_default_code_local = self.env['product.product'].search_read([['id','=',ln_product_id_on_local]])
@@ -1556,7 +1566,7 @@ class BaseSynchro(models.TransientModel):
                             'next_serial': x_list.next_serial,
                             'orderpoint_id': self.norma_none_id(x_list.next_serial_count),
                             'to_refund': x_list.to_refund,
-                            'analytic_account_id': self.norma_none_id(x_list.analytic_account_id),
+                            'analytic_account_id': self.search_analytic_account_id_on_cloud(x_list.analytic_account_id, list_analytic_account_cloud2),
                             'category_id': self.norma_none_id(x_list.category_id),
                             'phase_id': phase_id_on_azure,
                             'next_serial_count': x_list.next_serial_count
@@ -1640,6 +1650,9 @@ class BaseSynchro(models.TransientModel):
             [[]], {'fields':['id','name','ref']})
         list_res_users_cloud = models_cloud.execute_kw(lc_db, uid, lc_pass, 'res.users', 'search_read',
             [[]], {'fields':['id','name','login']})
+        # Lotes = Cuentas Analiticas
+        list_analytic_account_cloud = models_cloud.execute_kw(lc_db, uid, lc_pass, 'account.analytic.account', 'search_read',
+            [[]], {'fields':['id','name','code','partner_id']})
         # empezar a trabajar con la busqueda en el modelo: 'stock.picking' solo los registros que no han sido marcados exportados
         # O sea: en un ciclo for iterar y subir (up-load) al modelo en la url del servidor en la nube
         regs_stock_picking_not_exported = self.env['stock.picking'].search([('export','=',False),('is_locked','=',True),('state','=','done')])
@@ -1709,7 +1722,7 @@ class BaseSynchro(models.TransientModel):
                         'is_locked':registro_local.is_locked,
                         'immediate_transfer':registro_local.immediate_transfer,
                         'message_main_attachment_id':self.insert_ir_attachment(registro_local.message_main_attachment_id, models_cloud, lc_db, uid, lc_pass, 0),
-                        'full_analytic_account_id':408,#registro_local.full_analytic_account_id
+                        'full_analytic_account_id':self.search_analytic_account_id_on_cloud(registro_local.full_analytic_account_id, list_analytic_account_cloud)
                         }]
                     )
                     print(resp)
@@ -1868,6 +1881,19 @@ class BaseSynchro(models.TransientModel):
                 ln_partner_id_on_cloud = False
                 continue
         return ln_partner_id_on_cloud
+    
+    def search_analytic_account_id_on_cloud(self, ln_analytic_accoint_id_on_local, list_analytic_account_cloud):
+        lc_code_local = self.env['account.analytic.account'].search_read([['id','=',ln_analytic_accoint_id_on_local.id]])
+        if len(lc_code_local)==0:
+            return False
+        for xlist in list_analytic_account_cloud:
+            if xlist['code'] == lc_code_local[0]['code']:
+                ln_analytic_accoount_id_on_cloud = xlist['id']
+                break
+            else:
+                ln_analytic_accoount_id_on_cloud = False
+                continue
+        return ln_analytic_accoount_id_on_cloud
     
     def norma_none(self, lvalor):
         clase_tipo = type(lvalor)
