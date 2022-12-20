@@ -1,8 +1,8 @@
 # See LICENSE file for full copyright and licensing details.
 
 {
-    "name": "Multi-DB Synchronization - AlconSoft",
-    "version": "14.0-22.12.16",
+    "name": "AlconSoft - Multi-DB Synchronization",
+    "version": "14.0-22.12.20",
     "category": "Tools",
     "license": "AGPL-3",
     "summary": "Multi-DB Synchronization",
