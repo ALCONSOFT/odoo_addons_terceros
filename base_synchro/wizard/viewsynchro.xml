@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <!-- Heredar y extender la vista -->
+    <record id="view_picking_tree_inherited" model="ir.ui.view">
+        <field name="name">stock.picking.tree.inherited</field>
+        <field name="model">stock.picking</field>
+        <field name="inherit_id" ref="jobcostphasecat.view_vpicktree_jc"/>
+        <field name="arch" type="xml">
+            <xpath expr="//tree" position="inside">
+                <field name="export" string="Valid. Nube" optional="hide"/>
+                <field name="export_datetime" string="Fecha Valid." optional="hide"/>
+                <field name="close" string="Cerrado Local" optional="hide"/>
+                <field name="close_datetime" string="Fecha Cierre" optional="hide"/>
+            </xpath>
+        </field>
+    </record>
+ 
+    <!-- Heredar y extender la vista formulario -->
+    <record id="synchro_picking_form_inherited_analytic" model="ir.ui.view">
+        <field name="name">synchro.stock.picking.form.inherited.analytic</field>
+        <field name="model">stock.picking</field>
+        <field name="inherit_id" ref="stock_analytic.view_picking_form_analytic"/>
+        <field name="arch" type="xml">
+            <!-- Suponiendo que quieres agregar los campos al final del formulario -->
+            <xpath expr="//form/sheet" position="inside">
+                 <group>
+                    <group>
+                        <field name="export" string="Valid. Nube"/>
+                        <field name="export_datetime" string="Fecha Valid."/>
+                    </group>
+                    <group>
+                        <field name="close" string="Cerrado Local"/>
+                        <field name="close_datetime" string="Fecha Cierre"/>
+                    </group>
+                </group>
+            </xpath>
+            <xpath expr="//field[@name='name']" position="before">
+                <!-- Tu código para insertar/modificar contenido va aquí -->
+                <widget name="web_ribbon" title="Exported" bg_color="bg-success" attrs="{'invisible': [('export', '=', False)]}"/>
+                
+            </xpath>
+            <xpath expr="//field[@name='has_scrap_move']" position="before">
+                <widget name="web_ribbon" title="Closed" bg_color="bg-info" attrs="{'invisible': [('close', '=', False)]}"/>
+            </xpath>
+
+
+
+        </field>
+    </record>
+</odoo>

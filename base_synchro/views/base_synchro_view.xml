@@ -171,6 +171,7 @@
                         <field name="server_port"/>
                         <field name="password" password="True"/>
                     </group>
+                    <field name="email_destino_cierre"></field>
                 </sheet>
             </form>
         </field>

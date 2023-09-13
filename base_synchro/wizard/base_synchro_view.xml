@@ -6,9 +6,14 @@
         <field name="priority">1</field>
         <field name="arch" type="xml">
             <form string="Transfer Data To Server" class="o_base_synchro">
-                <group col="4">
-                    <field name="server_url"/>
-                    <field name="user_id"/>
+                <group  col="1" name="name_grupo_main" string="Configuración Sync">
+                    <group>
+                        <field name="server_url"/>
+                        <field name="user_id"/>
+                        <field name="fecha_cierre_sync"/>
+                        <field name="estado_de_registros_marcados_cerrado" />
+                        <field name="accion_cierre" string="Cierre y Notificacion por Correo; si los registro se muestran: [TODOS MARCADOS]" widget="radio" />
+                    </group>
                 </group>
                 <footer>
                     <button name="upload_download_multi_thread" string="Synchronize"
@@ -16,10 +21,13 @@
                     or
                     <button string="Cancel" class="oe_link o_line_synchro_cancel" special="cancel"/>
                     or
-                    <button name="action_up_stock_picking" string="Up Transfers [Picking"
+                    <button name="action_up_stock_picking" string="Cargar/Up Transfers [Picking"
                             type="object" class="oe_highlight"/>
                     or
-                    <button name="action_down_masters_cloud" string="Down Master Clouds"
+                    <button name="action_down_masters_cloud" string="Descargar/Down Master Clouds"
+                            type="object" class="oe_highlight"/>
+                    or
+                    <button name="action_cierre" string="Cierre y Notificacion por correo"
                             type="object" class="oe_highlight"/>
                     <p/>
                     A.01 <button name="action_down_users" string="Down Users" type="object" class="oe_stat_button" icon="fa-">

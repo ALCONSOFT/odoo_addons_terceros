@@ -18,6 +18,11 @@ class BaseSynchroServer(models.Model):
     obj_ids = fields.One2many(
         "base.synchro.obj", "server_id", "Models", ondelete="cascade"
     )
+    email_destino_cierre = fields.Many2many(
+        'res.users',
+        string='Destino de cierre de correo electrónico',
+        help='Los usuarios que recibirán un correo electrónico al cierre.',)
+
 
 
 class BaseSynchroObj(models.Model):
