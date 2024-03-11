@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <data noupdate="0">
+        <record model="ir.module.category" id="module_category_purchase_request">
+            <field name="name">Purchase Request</field>
+        </record>
+
+        <!-- Add purchase request parent to category -->
+        <record model="ir.module.category" id="module_category_request">
+            <field name="name">Purchase Request</field>
+            <field name="description">Purchase Request</field>
+            <field name="parent_id" ref="module_category_purchase_request"/>
+        </record>
+
+        <!-- Add purchase request applications to base groups -->
+        <record id="group_request_user" model="res.groups">
+            <field name="name">User</field>
+            <field name="category_id" ref="module_category_request"/>
+            <field name="implied_ids" eval="[(4, ref('purchase.group_purchase_user'))]"/>
+        </record>
+        <record id="group_request_verifier" model="res.groups">
+            <field name="name">Verifier</field>
+            <field name="category_id" ref="module_category_request"/>
+            <field name="implied_ids" eval="[(4, ref('group_request_user'))]"/>
+        </record>
+        <record id="group_request_approver" model="res.groups">
+            <field name="name">Approver</field>
+            <field name="category_id" ref="module_category_request"/>
+            <field name="implied_ids" eval="[(4, ref('group_request_verifier'))]"/>
+            <field name="users" eval="[(4, ref('base.user_root')), (4, ref('base.user_admin'))]"/>
+        </record>
+    </data>
+</odoo>

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_add_pr_cancel_reason_form" model="ir.ui.view">
+        <field name="name">add.pr.reason.form</field>
+        <field name="model">add.pr.reason</field>
+        <field name="arch" type="xml">
+            <form string="Add PR Reject Reason">
+                <group>
+                    <field name="pr_reject_reason_id" options="{'no_create': True, 'no_open': True}"/>
+                </group>
+                <footer>
+                    <button string='Reject PR'
+                        name='reject_pr'
+                        type='object' class='btn-primary'/>
+                    <button string='Cancel'
+                        class='btn-default'
+                        special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+</odoo>

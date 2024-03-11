@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- For display the pr cancel reason menu  -->
+    <record id="view_pr_reason_new_tree" model="ir.ui.view">
+        <field name="name">pr.reject.reason.tree</field>
+        <field name="model">pr.reject.reason</field>
+        <field name="arch" type="xml">
+            <tree string="PR Reject Reason">
+                <field name="name"></field>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_pr_reason_new_form" model="ir.ui.view">
+        <field name="name">pr.reject.reason.form</field>
+        <field name="model">pr.reject.reason</field>
+        <field name="arch" type="xml">
+            <form string="PR Reject Reason">
+                <sheet>
+                    <group>
+                        <field name="name"></field>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="open_action_pr_reason_new_tree" model="ir.actions.act_window">
+        <field name="name">PR Reject Reason</field>
+        <field name="res_model">pr.reject.reason</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_id" ref="view_pr_reason_new_tree"></field>
+    </record>
+
+    <menuitem
+        id="menu_pr_rejectation_reasons"
+        name="PR Reject Reason"
+        parent="purchase.menu_purchase_config"
+        groups="ethics_purchase_request.group_request_user"
+        action="open_action_pr_reason_new_tree"/>
+</odoo>
+

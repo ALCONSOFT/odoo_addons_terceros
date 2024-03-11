@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="view_back_purchase_request_form" model="ir.ui.view">
+        <field name="name">back.purchase.request.view.form</field>
+        <field name="model">back.purchase.request</field>
+        <field name="arch" type="xml">
+            <form string="Back Purchase Request">
+                <group>
+                    <div class="oe_grey" colspan="4">
+                        <b>Note:</b> Shown purchase request lines vendor is not set so it will create new purchase request.
+                    </div>
+                </group>
+                <field name="back_purchase_request_ids">
+                    <tree editable="bottom" create="0" delete="0">
+                        <field name="wizard_id" invisible="1"/>
+                        <field name="product_id" force_save="1"/>
+                        <field name="name" force_save="1"/>
+                        <field name="account_analytic_id" force_save="1" groups="analytic.group_analytic_accounting"/>
+                        <field name="product_qty" force_save="1"/>
+                        <field name="product_uom"/>
+                    </tree>
+                </field>
+                <footer>
+                    <button name="action_create_pr" string="Back PR" type="object" class="btn-primary"/>
+                    <button name="action_create_rfq" string="Not Back PR" type="object" class="btn-primary"/>
+                    <button string="Discard" special="cancel" class="btn-secondary"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+</odoo>
