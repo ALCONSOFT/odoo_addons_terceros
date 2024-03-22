@@ -1,0 +1,634 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* ethics_purchase_request
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 16.0-20240126\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-03-19 20:25+0000\n"
+"PO-Revision-Date: 2024-03-19 18:07-0500\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: es_PA\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Poedit 3.4.2\n"
+
+#. module: ethics_purchase_request
+#: model_terms:ir.ui.view,arch_db:ethics_purchase_request.view_back_purchase_request_form
+msgid ""
+"<b>Note:</b> Shown purchase request lines vendor is not set so it will "
+"create new purchase request."
+msgstr ""
+"<b>Nota:</b> El proveedor de las líneas de solicitud de compra "
+"mostradas no está configurado, por lo que se creará una nueva "
+"solicitud de compra."
+
+#. module: ethics_purchase_request
+#: model:ir.model.fields,field_description:ethics_purchase_request.field_purchase_request__message_needaction
+msgid "Action Needed"
+msgstr "Acción Requerida"
+
+#. module: ethics_purchase_request
+#: model:ir.model.fields,field_description:ethics_purchase_request.field_purchase_request__activity_ids
+msgid "Activities"
+msgstr "Actividades"
+
+#. module: ethics_purchase_request
+#: model:ir.model.fields,field_description:ethics_purchase_request.field_purchase_request__activity_exception_decoration
+msgid "Activity Exception Decoration"
+msgstr "Excepción de Actividad"
+
+#. module: ethics_purchase_request
+#: model:ir.model.fields,field_description:ethics_purchase_request.field_purchase_request__activity_state
+msgid "Activity State"
+msgstr "Estado de la Actividad"
+
+#. module: ethics_purchase_request
+#: model:ir.model.fields,field_description:ethics_purchase_request.field_purchase_request__activity_type_icon
+msgid "Activity Type Icon"
+msgstr "Ícono de tipo de actvidad"
+
+#. module: ethics_purchase_request
+#: model:ir.model,name:ethics_purchase_request.model_add_pr_reason
+msgid "Add PR Reason"
+msgstr "Agregar Razón Solicitud de compra"
+
+#. module: ethics_purchase_request
+#: model_terms:ir.ui.view,arch_db:ethics_purchase_request.view_add_pr_cancel_reason_form
+msgid "Add PR Reject Reason"
+msgstr "Añadir motivo de rechazo de Solicitud de compra"
+
+#. module: ethics_purchase_request
+#: model:ir.model.fields,field_description:ethics_purchase_request.field_back_purchase_request_line__account_analytic_id
+#: model:ir.model.fields,field_description:ethics_purchase_request.field_purchase_request_line__account_analytic_id
+msgid "Analytic Account"
+msgstr "Cuenta Analítica"
+
+#. module: ethics_purchase_request
+#: model:res.groups,name:ethics_purchase_request.group_request_approver
+msgid "Approver"
+msgstr "Aprobador"
+
+#. module: ethics_purchase_request
+#: model:ir.model.fields,field_description:ethics_purchase_request.field_purchase_request__message_attachment_count
+msgid "Attachment Count"
+msgstr "Conteo de adjuntos"
+
+#. module: ethics_purchase_request
+#: model_terms:ir.ui.view,arch_db:ethics_purchase_request.view_back_purchase_request_form
+msgid "Back PR"
+msgstr "Retorno de Solicitud de Compra"
+
+#. module: ethics_purchase_request
+#: model:ir.model,name:ethics_purchase_request.model_back_purchase_request
+#: model:ir.model.fields,field_description:ethics_purchase_request.field_back_purchase_request__back_purchase_request_ids
+#: model_terms:ir.ui.view,arch_db:ethics_purchase_request.view_back_purchase_request_form
+msgid "Back Purchase Request"
+msgstr "Retorno de Solicitud de Compra"
+
+#. module: ethics_purchase_request
+#: model:ir.model,name:ethics_purchase_request.model_back_purchase_request_line
+msgid "Back Purchase Request Line"
+msgstr "Línea de Retorno de Solicitud de Compra"
+
+#. module: ethics_purchase_request
+#. odoo-python
+#: code:addons/ethics_purchase_request/models/purchase_request.py:0
+#, python-format
+msgid "Can you please set product qty."
+msgstr "Puedes establecer la cantidad del producto, por favor."
+
+#. module: ethics_purchase_request
+#: model_terms:ir.ui.view,arch_db:ethics_purchase_request.view_add_pr_cancel_reason_form
+msgid "Cancel"
+msgstr "Cancelar"
+
+#. module: ethics_purchase_request
+#: model:ir.model.fields.selection,name:ethics_purchase_request.selection__purchase_request__state__cancel
+msgid "Cancelled"
+msgstr "Cancelado"
+
+#. module: ethics_purchase_request
+#: model:ir.model.fields,field_description:ethics_purchase_request.field_back_purchase_request__company_id
+#: model:ir.model.fields,field_description:ethics_purchase_request.field_purchase_request__company_id
+msgid "Company"
+msgstr "Compañía"
+
+#. module: ethics_purchase_request
+#: model:ir.model.fields.selection,name:ethics_purchase_request.selection__purchase_request__state__confirm
+#: model_terms:ir.ui.view,arch_db:ethics_purchase_request.view_purchase_request_form
+msgid "Confirm"
+msgstr "Confirmar"
+
+#. module: ethics_purchase_request
+#. odoo-python
+#: code:addons/ethics_purchase_request/models/purchase_request.py:0
+#, python-format
+msgid "Create Back Purchase Request"
+msgstr "Crear Retorno de Solicitud de Compra"
+
+#. module: ethics_purchase_request
+#: model:ir.model.fields,field_description:ethics_purchase_request.field_add_pr_reason__create_uid
+#: model:ir.model.fields,field_description:ethics_purchase_request.field_back_purchase_request__create_uid
+#: model:ir.model.fields,field_description:ethics_purchase_request.field_back_purchase_request_line__create_uid
+#: model:ir.model.fields,field_description:ethics_purchase_request.field_pr_reject_reason__create_uid
+#: model:ir.model.fields,field_description:ethics_purchase_request.field_purchase_request__create_uid
+#: model:ir.model.fields,field_description:ethics_purchase_request.field_purchase_request_line__create_uid
+msgid "Created by"
+msgstr "Creado por"
+
+#. module: ethics_purchase_request
+#: model:ir.model.fields,field_description:ethics_purchase_request.field_add_pr_reason__create_date
+#: model:ir.model.fields,field_description:ethics_purchase_request.field_back_purchase_request__create_date
+#: model:ir.model.fields,field_description:ethics_purchase_request.field_back_purchase_request_line__create_date
+#: model:ir.model.fields,field_description:ethics_purchase_request.field_pr_reject_reason__create_date
+#: model:ir.model.fields,field_description:ethics_purchase_request.field_purchase_request__create_date
+#: model:ir.model.fields,field_description:ethics_purchase_request.field_purchase_request_line__create_date
+msgid "Created on"
+msgstr "Creado en"
+
+#. module: ethics_purchase_request
+#: model:ir.model.fields,field_description:ethics_purchase_request.field_back_purchase_request__department_id
+#: model:ir.model.fields,field_description:ethics_purchase_request.field_purchase_request__department_id
+#: model_terms:ir.ui.view,arch_db:ethics_purchase_request.view_purchase_request_search
+msgid "Department"
+msgstr "Departamento"
+
+#. module: ethics_purchase_request
+#: model:ir.model.fields,field_description:ethics_purchase_request.field_purchase_request__description
+#: model:ir.model.fields,field_description:ethics_purchase_request.field_purchase_request_line__name
+msgid "Description"
+msgstr "Descripción"
+
+#. module: ethics_purchase_request
+#: model_terms:ir.ui.view,arch_db:ethics_purchase_request.view_back_purchase_request_form
+msgid "Discard"
+msgstr "Descartar"
+
+#. module: ethics_purchase_request
+#: model:ir.model.fields,field_description:ethics_purchase_request.field_add_pr_reason__display_name
+#: model:ir.model.fields,field_description:ethics_purchase_request.field_back_purchase_request__display_name
+#: model:ir.model.fields,field_description:ethics_purchase_request.field_back_purchase_request_line__display_name
+#: model:ir.model.fields,field_description:ethics_purchase_request.field_pr_reject_reason__display_name
+#: model:ir.model.fields,field_description:ethics_purchase_request.field_purchase_request__display_name
+#: model:ir.model.fields,field_description:ethics_purchase_request.field_purchase_request_line__display_name
+msgid "Display Name"
+msgstr "Nombre a mostrar"
+
+#. module: ethics_purchase_request
+#: model:ir.model.fields.selection,name:ethics_purchase_request.selection__purchase_request__state__draft
+msgid "Draft"
+msgstr "Borrador"
+
+#. module: ethics_purchase_request
+#: model:ir.model.fields,field_description:ethics_purchase_request.field_back_purchase_request__employee_id
+#: model:ir.model.fields,field_description:ethics_purchase_request.field_purchase_request__employee_id
+#: model_terms:ir.ui.view,arch_db:ethics_purchase_request.view_purchase_request_search
+msgid "Employee"
+msgstr "Empleado"
+
+#. module: ethics_purchase_request
+#: model:ir.model.fields,field_description:ethics_purchase_request.field_purchase_request__message_follower_ids
+msgid "Followers"
+msgstr "Seguidores"
+
+#. module: ethics_purchase_request
+#: model:ir.model.fields,field_description:ethics_purchase_request.field_purchase_request__message_partner_ids
+msgid "Followers (Partners)"
+msgstr "Seguidores (socios)"
+
+#. module: ethics_purchase_request
+#: model:ir.model.fields,help:ethics_purchase_request.field_purchase_request__activity_type_icon
+msgid "Font awesome icon e.g. fa-tasks"
+msgstr "Icono de Font Awesome, por ejemplo, fa-tasks"
+
+#. module: ethics_purchase_request
+#: model:ir.model.fields,help:ethics_purchase_request.field_pr_reject_reason__name
+msgid "For adding the reason for PR Rejection."
+msgstr "Para añadir el motivo del rechazo de la Solicitud de Compra."
+
+#. module: ethics_purchase_request
+#: model_terms:ir.ui.view,arch_db:ethics_purchase_request.view_purchase_request_search
+msgid "Group By"
+msgstr "Agrupar por"
+
+#. module: ethics_purchase_request
+#: model:ir.model.fields,field_description:ethics_purchase_request.field_purchase_request__has_message
+msgid "Has Message"
+msgstr "Tiene mensaje"
+
+#. module: ethics_purchase_request
+#: model:ir.model.fields.selection,name:ethics_purchase_request.selection__purchase_request__priority__3
+#: model_terms:ir.ui.view,arch_db:ethics_purchase_request.view_purchase_request_search
+msgid "High"
+msgstr "Alto"
+
+#. module: ethics_purchase_request
+#: model:ir.model.fields,field_description:ethics_purchase_request.field_add_pr_reason__id
+#: model:ir.model.fields,field_description:ethics_purchase_request.field_back_purchase_request__id
+#: model:ir.model.fields,field_description:ethics_purchase_request.field_back_purchase_request_line__id
+#: model:ir.model.fields,field_description:ethics_purchase_request.field_pr_reject_reason__id
+#: model:ir.model.fields,field_description:ethics_purchase_request.field_purchase_request__id
+#: model:ir.model.fields,field_description:ethics_purchase_request.field_purchase_request_line__id
+msgid "ID"
+msgstr "ID"
+
+#. module: ethics_purchase_request
+#: model:ir.model.fields,field_description:ethics_purchase_request.field_purchase_request__activity_exception_icon
+msgid "Icon"
+msgstr "Iconologías"
+
+#. module: ethics_purchase_request
+#: model:ir.model.fields,help:ethics_purchase_request.field_purchase_request__activity_exception_icon
+msgid "Icon to indicate an exception activity."
+msgstr "Ícono para indicar una actividad excepcional."
+
+#. module: ethics_purchase_request
+#: model:ir.model.fields,help:ethics_purchase_request.field_purchase_request__message_needaction
+msgid "If checked, new messages require your attention."
+msgstr "Si está marcado, los nuevos mensajes requieren tu atención."
+
+#. module: ethics_purchase_request
+#: model:ir.model.fields,help:ethics_purchase_request.field_purchase_request__message_has_error
+#: model:ir.model.fields,help:ethics_purchase_request.field_purchase_request__message_has_sms_error
+msgid "If checked, some messages have a delivery error."
+msgstr "Si está marcado, algunos mensajes tienen un error de entrega."
+
+#. module: ethics_purchase_request
+#: model:ir.model.fields,field_description:ethics_purchase_request.field_purchase_request__message_is_follower
+msgid "Is Follower"
+msgstr "Es Seguidor"
+
+#. module: ethics_purchase_request
+#: model:ir.model.fields,field_description:ethics_purchase_request.field_add_pr_reason____last_update
+#: model:ir.model.fields,field_description:ethics_purchase_request.field_back_purchase_request____last_update
+#: model:ir.model.fields,field_description:ethics_purchase_request.field_back_purchase_request_line____last_update
+#: model:ir.model.fields,field_description:ethics_purchase_request.field_pr_reject_reason____last_update
+#: model:ir.model.fields,field_description:ethics_purchase_request.field_purchase_request____last_update
+#: model:ir.model.fields,field_description:ethics_purchase_request.field_purchase_request_line____last_update
+msgid "Last Modified on"
+msgstr "Última Modificación el"
+
+#. module: ethics_purchase_request
+#: model:ir.model.fields,field_description:ethics_purchase_request.field_add_pr_reason__write_uid
+#: model:ir.model.fields,field_description:ethics_purchase_request.field_back_purchase_request__write_uid
+#: model:ir.model.fields,field_description:ethics_purchase_request.field_back_purchase_request_line__write_uid
+#: model:ir.model.fields,field_description:ethics_purchase_request.field_pr_reject_reason__write_uid
+#: model:ir.model.fields,field_description:ethics_purchase_request.field_purchase_request__write_uid
+#: model:ir.model.fields,field_description:ethics_purchase_request.field_purchase_request_line__write_uid
+msgid "Last Updated by"
+msgstr "Última actualización por"
+
+#. module: ethics_purchase_request
+#: model:ir.model.fields,field_description:ethics_purchase_request.field_add_pr_reason__write_date
+#: model:ir.model.fields,field_description:ethics_purchase_request.field_back_purchase_request__write_date
+#: model:ir.model.fields,field_description:ethics_purchase_request.field_back_purchase_request_line__write_date
+#: model:ir.model.fields,field_description:ethics_purchase_request.field_pr_reject_reason__write_date
+#: model:ir.model.fields,field_description:ethics_purchase_request.field_purchase_request__write_date
+#: model:ir.model.fields,field_description:ethics_purchase_request.field_purchase_request_line__write_date
+msgid "Last Updated on"
+msgstr "Última actualización en"
+
+#. module: ethics_purchase_request
+#: model:ir.model.fields.selection,name:ethics_purchase_request.selection__purchase_request__priority__1
+msgid "Low"
+msgstr "Bajo"
+
+#. module: ethics_purchase_request
+#: model:ir.model.fields,field_description:ethics_purchase_request.field_purchase_request__message_main_attachment_id
+msgid "Main Attachment"
+msgstr "Adjunto principal"
+
+#. module: ethics_purchase_request
+#: model:ir.model.fields,field_description:ethics_purchase_request.field_purchase_request__message_has_error
+msgid "Message Delivery error"
+msgstr "Error de entrega de mensaje"
+
+#. module: ethics_purchase_request
+#: model:ir.model.fields,field_description:ethics_purchase_request.field_purchase_request__message_ids
+msgid "Messages"
+msgstr "Mensajes"
+
+#. module: ethics_purchase_request
+#: model:ir.model.fields,field_description:ethics_purchase_request.field_purchase_request__my_activity_date_deadline
+msgid "My Activity Deadline"
+msgstr "Fecha Límite de Mi Actividad"
+
+#. module: ethics_purchase_request
+#: model:ir.model.fields,field_description:ethics_purchase_request.field_back_purchase_request_line__name
+msgid "Name"
+msgstr "Nombre"
+
+#. module: ethics_purchase_request
+#: model:ir.model.fields,field_description:ethics_purchase_request.field_purchase_request__activity_date_deadline
+msgid "Next Activity Deadline"
+msgstr "Fecha Límite de la Próxima Actividad"
+
+#. module: ethics_purchase_request
+#: model:ir.model.fields,field_description:ethics_purchase_request.field_purchase_request__activity_summary
+msgid "Next Activity Summary"
+msgstr "Resumen de la Próxima Actividad"
+
+#. module: ethics_purchase_request
+#: model:ir.model.fields,field_description:ethics_purchase_request.field_purchase_request__activity_type_id
+msgid "Next Activity Type"
+msgstr "Tipo de la Próxima Actividad"
+
+#. module: ethics_purchase_request
+#: model:ir.model.fields.selection,name:ethics_purchase_request.selection__purchase_request__priority__2
+msgid "Normal"
+msgstr "Normal"
+
+#. module: ethics_purchase_request
+#: model_terms:ir.ui.view,arch_db:ethics_purchase_request.view_back_purchase_request_form
+msgid "Not Back PR"
+msgstr "No es Retorno de Solicitud de Compra"
+
+#. module: ethics_purchase_request
+#: model:ir.model.fields,field_description:ethics_purchase_request.field_purchase_request__message_needaction_counter
+msgid "Number of Actions"
+msgstr "Número de Acciones"
+
+#. module: ethics_purchase_request
+#: model:ir.model.fields,field_description:ethics_purchase_request.field_purchase_request__message_has_error_counter
+msgid "Number of errors"
+msgstr "Número de errores"
+
+#. module: ethics_purchase_request
+#: model:ir.model.fields,help:ethics_purchase_request.field_purchase_request__message_needaction_counter
+msgid "Number of messages requiring action"
+msgstr "Número de mensajes que requieren acción"
+
+#. module: ethics_purchase_request
+#: model:ir.model.fields,help:ethics_purchase_request.field_purchase_request__message_has_error_counter
+msgid "Number of messages with delivery error"
+msgstr "Número de mensajes con error de entrega"
+
+#. module: ethics_purchase_request
+#: model:ir.actions.act_window,name:ethics_purchase_request.open_action_pr_reason_new_tree
+#: model:ir.model,name:ethics_purchase_request.model_pr_reject_reason
+#: model:ir.ui.menu,name:ethics_purchase_request.menu_pr_rejectation_reasons
+#: model_terms:ir.ui.view,arch_db:ethics_purchase_request.view_pr_reason_new_form
+#: model_terms:ir.ui.view,arch_db:ethics_purchase_request.view_pr_reason_new_tree
+msgid "PR Reject Reason"
+msgstr "Motivo de Rechazo de la Solicitud de Compra"
+
+#. module: ethics_purchase_request
+#: model:ir.model.fields,field_description:ethics_purchase_request.field_add_pr_reason__pr_reject_reason_id
+msgid "PR Rejection Reason"
+msgstr "Motivo del rechazo  de la Solicitud de Compra"
+
+#. module: ethics_purchase_request
+#: model:ir.model.fields,field_description:ethics_purchase_request.field_back_purchase_request__pr_id
+#: model:ir.model.fields,field_description:ethics_purchase_request.field_purchase_request_line__pr_id
+msgid "Pr"
+msgstr "Sc"
+
+#. module: ethics_purchase_request
+#: model:ir.model.fields,field_description:ethics_purchase_request.field_purchase_request__pr_lines
+msgid "Pr Lines"
+msgstr "Sc Linea"
+
+#. module: ethics_purchase_request
+#: model:ir.model.fields,field_description:ethics_purchase_request.field_purchase_request__priority
+msgid "Priority"
+msgstr "Prioridad"
+
+#. module: ethics_purchase_request
+#: model:ir.model.fields,field_description:ethics_purchase_request.field_back_purchase_request_line__product_id
+#: model:ir.model.fields,field_description:ethics_purchase_request.field_purchase_request_line__product_id
+msgid "Product"
+msgstr "Producto"
+
+#. module: ethics_purchase_request
+#: model:ir.model.fields,field_description:ethics_purchase_request.field_back_purchase_request_line__product_uom
+msgid "Product Uom"
+msgstr "Unidad de Medida del Producto"
+
+#. module: ethics_purchase_request
+#: model:ir.model.fields,field_description:ethics_purchase_request.field_purchase_request__purchase_count
+msgid "Purchase Count"
+msgstr "Conteo de Compras"
+
+#. module: ethics_purchase_request
+#: model:ir.model,name:ethics_purchase_request.model_purchase_order
+msgid "Purchase Order"
+msgstr "Orden de Compra"
+
+#. module: ethics_purchase_request
+#: model:ir.model.fields,field_description:ethics_purchase_request.field_purchase_request__purchase_ids
+msgid "Purchase Orders"
+msgstr "Ordenes de Compra"
+
+#. module: ethics_purchase_request
+#: model:ir.actions.act_window,name:ethics_purchase_request.action_purchase_request
+#: model:ir.model,name:ethics_purchase_request.model_purchase_request
+#: model:ir.model.fields,field_description:ethics_purchase_request.field_purchase_request__name
+#: model:ir.module.category,description:ethics_purchase_request.module_category_request
+#: model:ir.module.category,name:ethics_purchase_request.module_category_purchase_request
+#: model:ir.module.category,name:ethics_purchase_request.module_category_request
+#: model:ir.ui.menu,name:ethics_purchase_request.purchase_request_menu
+#: model_terms:ir.ui.view,arch_db:ethics_purchase_request.view_purchase_request
+#: model_terms:ir.ui.view,arch_db:ethics_purchase_request.view_purchase_request_form
+#: model_terms:ir.ui.view,arch_db:ethics_purchase_request.view_purchase_request_search
+msgid "Purchase Request"
+msgstr "Solicitud de Compra"
+
+#. module: ethics_purchase_request
+#: model:ir.model,name:ethics_purchase_request.model_purchase_request_line
+msgid "Purchase Request Line"
+msgstr "Línea de Solicitud de Compra"
+
+#. module: ethics_purchase_request
+#: model:ir.model.fields,field_description:ethics_purchase_request.field_purchase_order__pr_ref_id
+msgid "Purchase Request Ref"
+msgstr "Ref. Solicitud de Compra"
+
+#. module: ethics_purchase_request
+#: model:ir.model.fields,field_description:ethics_purchase_request.field_purchase_request_line__product_uom
+msgid "Purchase UoM"
+msgstr "Compras UdM"
+
+#. module: ethics_purchase_request
+#: model:ir.model.fields,field_description:ethics_purchase_request.field_back_purchase_request_line__product_qty
+#: model:ir.model.fields,field_description:ethics_purchase_request.field_purchase_request_line__product_qty
+msgid "Quantity"
+msgstr "Cantidad"
+
+#. module: ethics_purchase_request
+#: model_terms:ir.ui.view,arch_db:ethics_purchase_request.view_purchase_request_form
+msgid "RFQs/Orders"
+msgstr "SdP/Orden"
+
+#. module: ethics_purchase_request
+#: model_terms:ir.ui.view,arch_db:ethics_purchase_request.view_purchase_request_form
+msgid "Reason For Request"
+msgstr "Razón de la Solicitud"
+
+#. module: ethics_purchase_request
+#: model:ir.model.fields,help:ethics_purchase_request.field_purchase_request__source_document
+msgid "Reference of back purchase request."
+msgstr "Referencia de Retorno de Solicitud de Compra."
+
+#. module: ethics_purchase_request
+#: model_terms:ir.ui.view,arch_db:ethics_purchase_request.view_purchase_request_form
+msgid "Reject"
+msgstr "Rechazo"
+
+#. module: ethics_purchase_request
+#: model_terms:ir.ui.view,arch_db:ethics_purchase_request.view_add_pr_cancel_reason_form
+msgid "Reject PR"
+msgstr "Rechazo Solicitud de Compra"
+
+#. module: ethics_purchase_request
+#: model:ir.model.fields,field_description:ethics_purchase_request.field_pr_reject_reason__name
+msgid "Reject Reason"
+msgstr "Razón de Rechazar"
+
+#. module: ethics_purchase_request
+#: model:ir.model.fields,field_description:ethics_purchase_request.field_purchase_request__pr_reject_reason_id
+msgid "Rejection Reason"
+msgstr "Razón de Rechazo"
+
+#. module: ethics_purchase_request
+#: model:ir.model.fields,field_description:ethics_purchase_request.field_back_purchase_request__request_date
+#: model:ir.model.fields,field_description:ethics_purchase_request.field_purchase_request__request_date
+#: model_terms:ir.ui.view,arch_db:ethics_purchase_request.view_purchase_request_search
+msgid "Request Date"
+msgstr "Fecha de Solicitud"
+
+#. module: ethics_purchase_request
+#: model_terms:ir.ui.view,arch_db:ethics_purchase_request.view_purchase_request_form
+msgid "Request Lines"
+msgstr "Línea de Solicitud"
+
+#. module: ethics_purchase_request
+#: model:ir.model.fields,field_description:ethics_purchase_request.field_back_purchase_request__request_responsible
+#: model:ir.model.fields,field_description:ethics_purchase_request.field_purchase_request__request_responsible
+msgid "Request Responsible"
+msgstr "Solicitante Responsable"
+
+#. module: ethics_purchase_request
+#: model:ir.actions.act_window,name:ethics_purchase_request.action_purchase_request_list
+msgid "Request for Quotations"
+msgstr "Solicitud de Cotizaciones"
+
+#. module: ethics_purchase_request
+#: model_terms:ir.ui.view,arch_db:ethics_purchase_request.view_purchase_request_search
+msgid "Responsible"
+msgstr "Responsable"
+
+#. module: ethics_purchase_request
+#: model:ir.model.fields,field_description:ethics_purchase_request.field_purchase_request__activity_user_id
+msgid "Responsible User"
+msgstr "Usuario Responsable"
+
+#. module: ethics_purchase_request
+#: model:ir.model.fields,field_description:ethics_purchase_request.field_purchase_request__message_has_sms_error
+msgid "SMS Delivery error"
+msgstr "Error de entrega de SMS"
+
+#. module: ethics_purchase_request
+#: model:ir.model.fields,field_description:ethics_purchase_request.field_back_purchase_request__source_document
+#: model:ir.model.fields,field_description:ethics_purchase_request.field_purchase_request__source_document
+msgid "Source Document"
+msgstr "Documento Origen"
+
+#. module: ethics_purchase_request
+#: model_terms:ir.ui.view,arch_db:ethics_purchase_request.view_purchase_request_search
+msgid "State"
+msgstr "Estado"
+
+#. module: ethics_purchase_request
+#: model:ir.model.fields,field_description:ethics_purchase_request.field_purchase_request__state
+msgid "Status"
+msgstr "Estatus"
+
+#. module: ethics_purchase_request
+#: model:ir.model.fields,help:ethics_purchase_request.field_purchase_request__activity_state
+msgid ""
+"Status based on activities\n"
+"Overdue: Due date is already passed\n"
+"Today: Activity date is today\n"
+"Planned: Future activities."
+msgstr ""
+"Estado basado en actividades.\n"
+"Vencido: la fecha de vencimiento ya pasó\n"
+"Hoy: la fecha de la actividad es hoy.\n"
+"Planificado: Actividades futuras."
+
+#. module: ethics_purchase_request
+#: model_terms:ir.ui.view,arch_db:ethics_purchase_request.view_purchase_request_form
+msgid "Submit For Approver"
+msgstr "Enviar para aprobación"
+
+#. module: ethics_purchase_request
+#: model_terms:ir.ui.view,arch_db:ethics_purchase_request.view_purchase_request_form
+msgid "Submit For Verifier"
+msgstr "Enviar para verificador@"
+
+#. module: ethics_purchase_request
+#: model:ir.model.fields,help:ethics_purchase_request.field_purchase_request_line__product_uom
+msgid "This comes from the product form."
+msgstr "Esto proviene de la forma del producto."
+
+#. module: ethics_purchase_request
+#: model:ir.model.fields,help:ethics_purchase_request.field_add_pr_reason__pr_reject_reason_id
+#: model:ir.model.fields,help:ethics_purchase_request.field_purchase_request__pr_reject_reason_id
+msgid "This field display reason of PR rejection"
+msgstr ""
+"Este campo muestra el motivo del rechazo de la Solicitud de Compra"
+
+#. module: ethics_purchase_request
+#: model:ir.model.fields,help:ethics_purchase_request.field_purchase_request__activity_exception_decoration
+msgid "Type of the exception activity on record."
+msgstr "Tipo de actividad de excepción registrada."
+
+#. module: ethics_purchase_request
+#: model:res.groups,name:ethics_purchase_request.group_request_user
+msgid "User"
+msgstr "Usuario"
+
+#. module: ethics_purchase_request
+#: model:ir.model.fields,field_description:ethics_purchase_request.field_purchase_request_line__vendor_ids
+msgid "Vendor"
+msgstr "Proveedor"
+
+#. module: ethics_purchase_request
+#: model:res.groups,name:ethics_purchase_request.group_request_verifier
+msgid "Verifier"
+msgstr "Verificador@"
+
+#. module: ethics_purchase_request
+#: model:ir.model.fields.selection,name:ethics_purchase_request.selection__purchase_request__priority__0
+msgid "Very Low"
+msgstr "Muy Bajo"
+
+#. module: ethics_purchase_request
+#: model:ir.model.fields.selection,name:ethics_purchase_request.selection__purchase_request__state__waiting_for_approver
+msgid "Waiting For Approver"
+msgstr "Esperando por aprobación"
+
+#. module: ethics_purchase_request
+#: model:ir.model.fields.selection,name:ethics_purchase_request.selection__purchase_request__state__waiting_for_verifier
+msgid "Waiting For Verifier"
+msgstr "Esperando por verificación"
+
+#. module: ethics_purchase_request
+#: model:ir.model.fields,field_description:ethics_purchase_request.field_purchase_request__website_message_ids
+msgid "Website Messages"
+msgstr "Mensajes del sitio web"
+
+#. module: ethics_purchase_request
+#: model:ir.model.fields,help:ethics_purchase_request.field_purchase_request__website_message_ids
+msgid "Website communication history"
+msgstr "Historial de comunicación del sitio web"
+
+#. module: ethics_purchase_request
+#: model:ir.model.fields,field_description:ethics_purchase_request.field_back_purchase_request_line__wizard_id
+msgid "Wizard"
+msgstr "Asistente"
