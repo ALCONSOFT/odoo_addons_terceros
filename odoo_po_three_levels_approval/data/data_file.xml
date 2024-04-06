@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+
+        <record id="purchase_order_refuse_email_template" model="mail.template">
+            <field name="name">Purchase Order Refuse Email Template</field>
+            <field name="email_from">{{object.company_id.partner_id.email}}</field>
+            <field name="subject">Purchase Order {{object.name or ''}} Is Refused</field>
+            <field name="model_id" ref="purchase.model_purchase_order"/>
+            <field name="partner_to">{{object.partner_id.id}}</field>
+            <field name="body_html" type="html">
+                <div style="margin: 0px; padding: 0px;">
+                    <p style="margin: 0px; padding: 0px; font-size: 13px;">
+                        Dear
+                        <t t-out="user.name or ''"/>
+                        <br/>
+                        <strong t-out="object.name or ''"/>
+                        request is refused, please contact your higher authorities.
+                        <p>Thank you.</p>
+                    </p>
+                </div>
+            </field>
+        </record>
+
+        <record id="purchase_order_approval_email_template" model="mail.template">
+            <field name="name">Purchase Order Approval Email Template</field>
+            <field name="email_from">{{object.company_id.partner_id.email}}</field>
+            <field name="subject">Purchase Order {{object.name or ''}} Is Waiting For Approval</field>
+            <field name="model_id" ref="purchase.model_purchase_order"/>
+            <field name="partner_to">{{user.id}}</field>
+            <field name="body_html" type="html">
+                <div style="margin: 0px; padding: 0px;">
+                    <p style="margin: 0px; padding: 0px; font-size: 13px;">
+                        Dear
+                        <t t-out="user.name or ''"/>
+                        <br/>
+                        <strong t-out="object.name or ''"/>
+                        is waiting for your approval, please approve it.
+                        <p>Thank you.</p>
+                    </p>
+                </div>
+            </field>
+        </record>
+
+    </data>
+</odoo>

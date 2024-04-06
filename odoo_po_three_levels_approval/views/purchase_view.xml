@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+	<record id="purchase_order_inherit_form" model="ir.ui.view">
+	    <field name="name">purchase.order.inherit.form</field>
+	    <field name="model">purchase.order</field>
+	    <field name="inherit_id" ref="purchase.purchase_order_form"/>
+	    <field name="arch" type="xml">
+	        <xpath expr="//div[hasclass('oe_title')]" position="replace">
+	            <div class="oe_title">
+	                <span class="o_form_label"
+	                      attrs="{'invisible': [('state','not in',('draft','sent','to approve','finance_approve','director_approve'))]}">
+	                    Request for Quotation
+	                </span>
+	                <span class="o_form_label"
+	                      attrs="{'invisible': [('state','in',('draft','sent','to approve','finance_approve','director_approve'))]}">
+	                    Purchase Order
+	                </span>
+	                <h1>
+	                    <field name="name" readonly="1"/>
+	                </h1>
+	            </div>
+	        </xpath>
+	        <button name="button_cancel" position="attributes">
+	            <attribute name="states">draft,to approve,sent,purchase,refuse</attribute>
+	        </button>
+	        <button name="print_quotation" position="after">
+	            <button name="purchase_finance_manager_approve" type="object"
+	                    states='finance_approve' string="Finance Approval" class="oe_highlight"
+	                    groups="odoo_po_three_levels_approval.group_purchase_finance_manager"/>
+	            <button name="purchase_director_approve" type="object" states='director_approve' string="Director Approval" class="oe_highlight"
+	                    groups="odoo_po_three_levels_approval.group_purchase_director"/>
+	            <button name="refused_order" type="object" states='to approve,finance_approve,director_approve' string="Refuse"
+	                    groups="purchase.group_purchase_manager"/>
+	        </button>
+	        <notebook position="inside">
+	            <page string="Approve Details">
+	                <group>
+	                    <group>
+	                        <field name="dept_manager_id" options="{'no_open': True,'no_edit': True}"
+	                               attrs="{'readonly': [('state', 'not in', ('draft', 'sent'))],'required':[('dept_manager_approval_required','=',True)]}"/>
+	                        <field name="finance_approval_id" options="{'no_open': True,'no_edit': True}"
+	                               attrs="{'readonly': [('state', 'not in', ('draft', 'sent'))],'required':[('finance_approval_required','=',True)]}"/>
+	                        <field name="director_approval_id" options="{'no_open': True,'no_edit': True}"
+	                               attrs="{'readonly': [('state', 'not in', ('draft', 'sent'))],'required':[('director_approval_required','=',True)]}"/>
+	                        <field name="dept_manager_approval_required" invisible="1"/>
+	                        <field name="finance_approval_required" invisible="1"/>
+	                        <field name="director_approval_required" invisible="1"/>
+	                    </group>
+	                    <group>
+	                        <field name="dept_manager_approve_date"/>
+	                        <field name="finance_manager_approve_date"/>
+	                        <field name="director_approve_date"/>
+	                    </group>
+	                </group>
+	                <group>
+	                    <group>
+	                        <field name="refused_user_id" options="{'no_open': True,'no_edit': True}"
+	                               attrs="{'readonly': [('state', 'in', ('done', 'purchase', 'refuse', 'cancel'))]}"/>
+	                    </group>
+	                    <group>
+	                        <field name="refused_date" attrs="{'readonly': [('state', 'in', ('done', 'purchase', 'refuse', 'cancel'))]}"/>
+	                    </group>
+	                    <field name="refused_reason" attrs="{'readonly': [('state', 'in', ('done', 'purchase', 'refuse', 'cancel'))]}"/>
+	                </group>
+	            </page>
+	        </notebook>
+	
+	    </field>
+	</record>
+	
+	<record id="view_purchase_order_three_step_approve_filter" model="ir.ui.view">
+	    <field name="name">request.quotation.three.step.approve.select</field>
+	    <field name="model">purchase.order</field>
+	    <field name="inherit_id" ref="purchase.view_purchase_order_filter"/>
+	    <field name="arch" type="xml">
+	        <filter name="to_approve" position="replace">
+	            <filter name="to_approve" string="Department Manager Approval" domain="[('state', '=', 'to approve')]"/>
+	            <filter name="finance_approve" string="Finance Manager Approval" domain="[('state', '=', 'finance_approve')]"/>
+	            <filter name="director_approve" string="Director Approval" domain="[('state', '=', 'director_approve')]"/>
+	        </filter>
+	    </field>
+	</record>
+	
+	<record id="action_po_department_manager_approve" model="ir.actions.act_window">
+	    <field name="name">PO Department Manager Approve</field>
+	    <field name="type">ir.actions.act_window</field>
+	    <field name="res_model">purchase.order</field>
+	    <field name="context">{'search_default_todo':1, 'search_default_to_approve':1,}</field>
+	    <field name="domain">[('state','not in',('draft','sent', 'confirmed'))]</field>
+	    <field name="search_view_id" ref="view_purchase_order_three_step_approve_filter"/>
+	</record>
+	
+	<record id="action_po_finance_manager_approve" model="ir.actions.act_window">
+	    <field name="name">PO Finance Manager Approve</field>
+	    <field name="type">ir.actions.act_window</field>
+	    <field name="res_model">purchase.order</field>
+	    <field name="context">{'search_default_todo':1, 'search_default_finance_approve':1,}</field>
+	    <field name="domain">[('state','not in',('draft','sent', 'confirmed'))]</field>
+	    <field name="search_view_id" ref="view_purchase_order_three_step_approve_filter"/>
+	</record>
+	
+	<record id="action_po_director_approve" model="ir.actions.act_window">
+	    <field name="name">PO Director Approve</field>
+	    <field name="type">ir.actions.act_window</field>
+	    <field name="res_model">purchase.order</field>
+	    <field name="context">{'search_default_todo':1, 'search_default_director_approve':1,}</field>
+	    <field name="domain">[('state','not in',('draft','sent', 'confirmed'))]</field>
+	    <field name="search_view_id" ref="view_purchase_order_three_step_approve_filter"/>
+	</record>
+	
+	<menuitem id="menu_po_department_manager_approve" action="action_po_department_manager_approve"
+	          parent="purchase.menu_procurement_management" sequence="7" groups="purchase.group_purchase_manager"/>
+	
+	<menuitem id="menu_po_finance_manager_approve" action="action_po_finance_manager_approve"
+	          parent="purchase.menu_procurement_management" sequence="8" groups="odoo_po_three_levels_approval.group_purchase_finance_manager"/>
+	
+	<menuitem id="menu_po_director_approve" action="action_po_director_approve"
+	          parent="purchase.menu_procurement_management" sequence="9" groups="odoo_po_three_levels_approval.group_purchase_director"/>
+
+</odoo>

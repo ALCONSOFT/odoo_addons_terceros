@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+	<record id="view_purchase_order_refuse_form" model="ir.ui.view">
+	    <field name="name">purchase.order.refuse.form</field>
+	    <field name="model">purchase.order.refuse</field>
+	    <field name="arch" type="xml">
+	        <form string="Purchase Order Refuse">
+	            <group>
+	                <field name="purchase_order_id" invisible="1"/>
+	            </group>
+	            <group>
+	                <field name="refuse_reason" required="1"/>
+	            </group>
+	            <footer>
+	                <button string='Refuse' name="button_refuse" type="object" class="btn-primary"/>
+	                <button string="Cancel" class="btn-default" special="cancel"/>
+	            </footer>
+	        </form>
+	    </field>
+	</record>
+
+</odoo>

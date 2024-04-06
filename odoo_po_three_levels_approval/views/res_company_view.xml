@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+	<record id="view_company_three_level_approval_form" model="ir.ui.view">
+	    <field name="name">res.company.three.level.approval.form</field>
+	    <field name="model">res.company</field>
+	    <field name="inherit_id" ref="base.view_company_form"/>
+	    <field name="arch" type="xml">
+	        <xpath expr="//notebook" position="inside">
+	            <page string="Three Step Approve">
+	                <group col="4" colspan="4">
+	                    <field name="three_step_approval"/>
+	                    <field name="set_approval_user_required" attrs="{'invisible':[('three_step_approval','=',False)]}"/>
+	                    <field name="approve_mail_template" options="{'no_create_edit':True, 'no_open':True}"
+	                           attrs="{'invisible':[('three_step_approval','=',False)],'required':[('three_step_approval','!=',False)]}"/>
+	                    <field name="refuse_mail_template" options="{'no_create_edit':True, 'no_open':True}"
+	                           attrs="{'invisible':[('three_step_approval','=',False)],'required':[('three_step_approval','!=',False)]}"/>
+	                    <field name="dept_manager_approve_limit" widget='monetary' options="{'currency_field': 'currency_id'}"
+	                           attrs="{'invisible':[('three_step_approval','=',False)],'required':[('three_step_approval','!=',False)]}"/>
+	                    <field name="finance_approve_limit" widget='monetary' options="{'currency_field': 'currency_id'}"
+	                           attrs="{'invisible':[('three_step_approval','=',False)],'required':[('three_step_approval','!=',False)]}"/>
+	                    <field name="director_approve_limit" widget='monetary' options="{'currency_field': 'currency_id'}"
+	                           attrs="{'invisible':[('three_step_approval','=',False)],'required':[('three_step_approval','!=',False)]}"/>
+	                </group>
+	            </page>
+	        </xpath>
+	    </field>
+	</record>
+
+</odoo>
