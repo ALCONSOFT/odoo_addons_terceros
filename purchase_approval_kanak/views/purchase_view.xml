@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="purchase_order_tree_approcal_rules" model="ir.ui.view">
+        <field name="name">purchase.order.tree.approval.rules</field>
+        <field name="model">purchase.order</field>
+        <field name="inherit_id" ref="purchase.purchase_order_tree" />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='state']" position="after">
+                <field name='ready_for_po' invisible="1" />
+            </xpath>
+        </field>
+    </record>
+    <record id="purchase_order_form_approval_rules" model="ir.ui.view">
+        <field name="name">purchase.order.form.approval.rules</field>
+        <field name="model">purchase.order</field>
+        <field name="inherit_id" ref="purchase.purchase_order_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//notebook" position="inside">
+                <page string='Approval Hierarchy' attrs="{'invisible': ['|', ('purchase_order_approval', '=', False), ('purchase_order_approval_rule_id', '=', False)]}">
+                    <field name="user_ids" widget="many2many_tags" readonly="1" invisible="1" />
+                    <field name='purchase_order_approval_rule_ids' nolabel="1">
+                        <tree editable='bottom'>
+                            <field name='sequence' />
+                            <field name='approval_role' />
+                            <field name='users' widget="many2many_tags" />
+                            <field name='date' />
+                            <field name="user_id" />
+                            <field name='is_approved' invisible="1" />
+                            <field name="state" />
+                        </tree>
+                    </field>
+                </page>
+                <page string='Approval History' attrs="{'invisible': ['|', ('purchase_order_approval', '=', False), ('purchase_order_approval_rule_id', '=', False)]}">
+                    <field name='purchase_order_approval_history' nolabel="1">
+                        <tree>
+                            <field name='user' />
+                            <field name='date' />
+                            <field name="state" />
+                            <field name="rejection_reason" />
+                        </tree>
+                    </field>
+                </page>
+            </xpath>
+            <xpath expr="//button[@name='button_confirm'][1]" position="attributes">
+                <attribute name='states'></attribute>
+                <attribute name='attrs'>{'invisible': ['|', '&amp;', ('state','!=','sent'), ('ready_for_po','=',True), '&amp;', ('state','!=','sent'), ('ready_for_po','!=',True)]}</attribute>
+            </xpath>
+            <xpath expr="//button[@name='button_confirm'][2]" position="attributes">
+                <attribute name='states'></attribute>
+                <attribute name='attrs'>{'invisible': ['|', '|', '&amp;', ('state','!=','draft'), ('ready_for_po','=',True), '&amp;', ('state','=','draft'), ('ready_for_po','!=',True), '&amp;', ('state','!=','draft'), ('ready_for_po','!=',True)]}</attribute>
+            </xpath>
+            <xpath expr="//button[@name='print_quotation'][1]" position="attributes">
+                <attribute name='states'></attribute>
+                <attribute name='attrs'>{'invisible': ['|', '|', '&amp;', ('state','!=','draft'), ('ready_for_po','=',True), '&amp;', ('state','=','draft'), ('ready_for_po','!=',True), '&amp;', ('state','!=','draft'), ('ready_for_po','!=',True)]}</attribute>
+            </xpath>
+            <xpath expr="//button[@name='print_quotation'][2]" position="attributes">
+                <attribute name='states'></attribute>
+                <attribute name='attrs'>{'invisible': ['|', '|', '&amp;', ('state','!=','sent'), ('ready_for_po','=',True), '&amp;', ('state','=','sent'), ('ready_for_po','!=',True), '&amp;', ('state','!=','sent'), ('ready_for_po','!=',True)]}</attribute>
+            </xpath>
+            <xpath expr="//button[@name='action_rfq_send'][1]" position="attributes">
+                <attribute name='states'></attribute>
+                <attribute name='attrs'>{'invisible': ['|', '|', '&amp;', ('state','!=','draft'), ('ready_for_po','=',True), '&amp;', ('state','=','draft'), ('ready_for_po','!=',True), '&amp;', ('state','!=','draft'), ('ready_for_po','!=',True)]}</attribute>
+            </xpath>
+            <xpath expr="//button[@name='action_rfq_send'][2]" position="attributes">
+                <attribute name='states'></attribute>
+                <attribute name='attrs'>{'invisible': ['|', '|', '&amp;', ('state','!=','sent'), ('ready_for_po','=',True), '&amp;', ('state','=','sent'), ('ready_for_po','!=',True), '&amp;', ('state','!=','sent'), ('ready_for_po','!=',True)]}</attribute>
+            </xpath>
+            <xpath expr="//button[@name='button_confirm']" position="after">
+                <button name="action_refresh_order" type="object" string="Refresh" groups="base.group_user" attrs="{'invisible': ['|', ('state','!=','draft'), ('purchase_order_approval_rule_ids', '!=', [])]}" />
+                <button name="action_button_approve" string="Approve PO" type="object" groups="base.group_user" attrs="{'invisible': ['|', ('state', 'not in', ['draft', 'sent']), ('approve_button', '!=', True)]}" />
+                <button name="reject_purchase" type="object" string="Reject PO" groups="base.group_user" attrs="{'invisible': ['|', ('state', 'not in', ['draft', 'sent']), ('approve_button', '!=', True)]}" />
+                <field name='approve_button' invisible="1" />
+                <field name='ready_for_po' invisible="1" />
+                <field name='send_for_approval' invisible="1" />
+                <field name='is_rejected' invisible="1" />
+                <field name='purchase_order_approval_rule_id' invisible="1" />
+                <field name='purchase_order_approval' invisible="1" />
+            </xpath>
+            <xpath expr="//button[@name='button_unlock']" position="before">
+                <button name="action_send_for_approval" type="object" string="Send For Approval" groups="base.group_user" attrs="{'invisible': ['|', '|', '|', '|', '&amp;', ('state','!=','draft'), ('send_for_approval','=',True), '&amp;', ('state','=','draft'), ('send_for_approval','=',True), '&amp;', ('state','!=','draft'), ('send_for_approval','!=',True), '|', ('purchase_order_approval', '=', False), ('purchase_order_approval_rule_id', '=', False), ('purchase_order_approval_rule_ids', '=', [])]}" />
+            </xpath>
+            <xpath expr="//button[last()]" position="after">
+                <span class="label label-danger" attrs="{'invisible': ['|', ('ready_for_po', '=', True), ('send_for_approval', '=', False)]}">RFQ is not fully approved yet!</span>
+            </xpath>
+            <xpath expr="//field[@name='order_line']" position="attributes">
+                <attribute name='attrs'>{'readonly': [('send_for_approval', '=', True), ('is_rejected', '=', False)]}</attribute>
+            </xpath>
+            <xpath expr="//field[@name='partner_id']" position="attributes">
+                <attribute name='attrs'>{'readonly': [('send_for_approval', '=', True)]}</attribute>
+            </xpath>
+            <xpath expr="//field[@name='date_order']" position="attributes">
+                <attribute name='attrs'>{'readonly': [('send_for_approval', '=', True)]}</attribute>
+            </xpath>
+            <xpath expr="//field[@name='partner_ref']" position="attributes">
+                <attribute name='attrs'>{'readonly': [('send_for_approval', '=', True)]}</attribute>
+            </xpath>
+            <xpath expr="//field[@name='partner_id']" position="after">
+                <field name="supplier_rep_ids" widget="many2many_tags" />
+            </xpath>
+        </field>
+    </record>
+    <record id="action_to_approve_purchase_orders" model="ir.actions.act_window">
+        <field name="name">PO to Approve</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">purchase.order</field>
+        <field name="context">{'purchase_approve': True}</field>
+        <field name="domain">[]</field>
+        <field name="view_mode">tree,form,graph,calendar</field>
+        <field name="search_view_id" ref="purchase.view_purchase_order_filter" />
+        <field name="help" type="html">
+            <p class="oe_view_nocontent_create">
+                Click to create a request for quotation.
+            </p>
+            <p>
+                The quotation contains the history of the discussion/negotiation
+                you had with your supplier. Once confirmed, a request for
+                quotation is converted into a purchase order.
+            </p>
+            <p>
+                Most propositions of purchase orders are created automatically
+                by Odoo based on inventory needs.
+            </p>
+        </field>
+    </record>
+    <record id="view_purchase_rejection_reason_form" model="ir.ui.view">
+        <field name="name">purchase.rejection.reason.form</field>
+        <field name="model">purchase.rejection.reason</field>
+        <field name="arch" type="xml">
+            <form string="Rejection Reason">
+                <group>
+                    <field name="reason" />
+                </group>
+                <footer>
+                    <button string='Reject' name="button_reject" type="object" class="btn btn-primary" />
+                    <button string="Cancel" class="btn btn-default" special="cancel" />
+                </footer>
+            </form>
+        </field>
+    </record>
+    <menuitem action="action_to_approve_purchase_orders" id="menu_to_approve_orders" name='PO to Approve' parent="purchase.menu_procurement_management" sequence="1" />
+</odoo>

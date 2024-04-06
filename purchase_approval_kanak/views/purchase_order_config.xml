@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+    <record id="res_config_settings_view_form_purchase_approval" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.inherit.purchase</field>
+        <field name="model">res.config.settings</field>
+        <field name="priority" eval="25" />
+        <field name="inherit_id" ref="base.res_config_settings_view_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='po_order_approval']//..//.." position="after">
+                <div class="col-12 col-lg-6 o_setting_box">
+                    <div class="o_setting_left_pane">
+                        <field name="purchase_order_approval" />
+                    </div>
+                    <div class="o_setting_right_pane">
+                        <label class="o_form_label" for="purchase_order_approval">Purchase Approval By Rule</label>
+                        <div class="text-muted">
+                            Set Purchase Approval Rule
+                        </div>
+                        <div class="text-muted">
+                            <field name="purchase_order_approval_rule_id" attrs="{'invisible': [('purchase_order_approval', '!=', True)], 'required': [('purchase_order_approval', '=', True)]}" />
+                        </div>
+                    </div>
+                </div>
+            </xpath>
+            <xpath expr="//label[@for='po_order_approval']" position="attributes">
+                <attribute name="string">Purchase Order Approval By Amount</attribute>
+            </xpath>
+        </field>
+    </record>
+    <record id="purchase_order_apporval_rule_form" model="ir.ui.view">
+        <field name="name">purchase.order.approval.rule.form</field>
+        <field name="model">purchase.order.approval.rule</field>
+        <field name="arch" type="xml">
+            <form string="Approval Rule">
+                <sheet>
+                    <group>
+                        <field name="name" />
+                    </group>
+                        <field name="approval_rule_ids" context="{'tree_view_ref': 'purchase_approval_kanak.approval_rule_ids_tree_view'}" nolabel='1'/>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    <record id="approval_rule_ids_tree_view" model="ir.ui.view">
+        <field name="name">approval_rule_ids.tree</field>
+        <field name="model">purchase.order.approval.rule.lines</field>
+        <field name="arch" type="xml">
+            <tree editable='bottom'>
+                <field name='sequence' />
+                <field name='approval_role' />
+                <field name='approval_category' />
+                <field name='purchase_lower_limit' />
+                <field name='purchase_upper_limit' />
+            </tree> 
+        </field>
+    </record>
+    <record id="purchase_order_approval_rule_form_action" model="ir.actions.act_window">
+        <field name="name">Approval Rules</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">purchase.order.approval.rule</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+            <p class="oe_view_nocontent_create">
+                Click to add a new Approval Rule.
+            </p>
+        </field>
+    </record>
+    <menuitem action="purchase_order_approval_rule_form_action" id="menu_purchase_order_approval_rule_form_action" parent="purchase.menu_purchase_config" sequence="53" />
+</odoo>

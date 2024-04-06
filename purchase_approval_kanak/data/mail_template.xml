@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!--RFQ (supplier) approval request -->
+        <record id="email_template_rfq_approval_request" model="mail.template">
+            <field name="name">RFQ Approval Request</field>
+            <field name="model_id" ref="purchase.model_purchase_order" />
+            <field name="subject">RFQ Approval Request</field>
+            <field name="email_from">{{ (object.create_uid.email_formatted or user.email_formatted) }}</field>
+            <field name="email_to">{{ ','.join(object.user_ids.mapped('email')) }}</field>
+            <field name="auto_delete" eval="True" />
+            <field name="lang">{{ object.partner_id.lang }}</field>
+            <field name="body_html" type="html">
+                <div style="font-family: 'Lucica Grande', Ubuntu, Arial, Verdana, sans-serif; font-size: 12px; color: rgb(34, 34, 34); background-color: #FFF; ">
+                    <div style="height:auto; text-align: center; font-size: 30px; color: #29408c;">
+                        <strong style="border-bottom: 2px solid #29408c; padding-bottom: 1px; text-transform: uppercase;">
+                            RFQ Approval Request
+                        </strong>
+                    </div>
+                    <div style="text-align: left; font-size: 20px; margin-top: 10px; color: #29408c;">
+                        <p>Hello Approvers,</p>
+                        <p>
+                            RFQ approval
+                            <t t-out="object.name" />
+                            has been raised by
+                            <t t-out="user.name" />
+                            . Please review and approve or reject (with reason given) this RFQ.
+                        </p>
+                    </div>
+                </div>
+            </field>
+        </record>
+        <!--RFQ (supplier) approved -->
+        <record id="email_template_rfq_approved" model="mail.template">
+            <field name="name">RFQ Approved</field>
+            <field name="model_id" ref="purchase.model_purchase_order" />
+            <field name="subject">RFQ Approved</field>
+            <field name="email_from">{{user.email}}</field>
+            <field name="email_to">{{object.purchase_order_approval_history[-1].user.email}}</field>
+            <field name="auto_delete" eval="True" />
+            <field name="lang">{{object.partner_id.lang}}</field>
+            <field name="body_html" type="html">
+                <div style="font-family: 'Lucica Grande', Ubuntu, Arial, Verdana, sans-serif; font-size: 12px; color: rgb(34, 34, 34); background-color: #FFF; ">
+                    <div style="height:auto; text-align: center; font-size: 30px; color: #29408c;">
+                        <strong style="border-bottom: 2px solid #29408c; padding-bottom: 1px; text-transform: uppercase;">
+                            RFQ Approved
+                        </strong>
+                    </div>
+                    <div style="text-align: left; font-size: 20px; margin-top: 10px; color: #29408c;">
+                        <p>Hello <t t-out="object.purchase_order_approval_history[-1].user.name" /></p>
+                        <p>RFQ <t t-out="object.name" /> has been approved by <t t-out="object.env.user.name" />. You may release the purchase order to the supplier if all approvers approved the RFQ. </p>
+                    </div>
+                </div>
+            </field>
+        </record>
+        <!--RFQ (supplier) rejected -->
+        <record id="email_template_rfq_rejected" model="mail.template">
+            <field name="name">RFQ Rejected</field>
+            <field name="model_id" ref="purchase.model_purchase_order" />
+            <field name="subject">RFQ Rejected</field>
+            <field name="email_from">{{ (object.create_uid.email_formatted or user.email_formatted) }}</field>
+            <field name="email_to">{{ object.purchase_order_approval_history[-1].user.email_formatted }}</field>
+            <field name="auto_delete" eval="True" />
+            <field name="lang">{{ object.partner_id.lang }}</field>
+            <field name="body_html" type="html">
+                <div style="font-family: 'Lucica Grande', Ubuntu, Arial, Verdana, sans-serif; font-size: 12px; color: rgb(34, 34, 34); background-color: #FFF; ">
+                    <div style="height:auto; text-align: center; font-size: 30px; color: #29408c;">
+                        <strong style="border-bottom: 2px solid #29408c; padding-bottom: 1px; text-transform: uppercase;">
+                            RFQ Rejected
+                        </strong>
+                    </div>
+                    <div style="text-align: left; font-size: 20px; margin-top: 10px; color: #29408c;">
+                        <p>Hello <t t-out="object.purchase_order_approval_history[-1].user.name" />,</p>
+                        <p>RFQ <t t-out="object.name" /> has been rejected by <t t-out="object.user_id.name" />. Please review this with the approver and make changes to the record, then re-send for approval. </p>
+                    </div>
+                </div>
+            </field>
+        </record>
+    </data>
+</odoo>

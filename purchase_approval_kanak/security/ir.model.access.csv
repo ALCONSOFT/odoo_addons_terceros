@@ -1,0 +1,9 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_approval_role,access_approval_role,model_approval_role,,1,1,1,1
+access_approval_categ,access_approval_categ,model_approval_categ,,1,1,1,1
+access_purchase_order_approval_rule,access_purchase_order_approval_rule,model_purchase_order_approval_rule,,1,1,1,1
+access_purchase_order_approval_rule_lines,access_purchase_order_approval_rule_lines,model_purchase_order_approval_rule_lines,,1,1,1,1
+access_purchase_order_approval_rules,access_purchase_order_approval_rules,model_purchase_order_approval_rules,,1,1,1,1
+access_purchase_order_approval_history,access_purchase_order_approval_history,model_purchase_order_approval_history,,1,1,1,1
+access_purchase_rejection_reason,access_purchase_rejection_reason,model_purchase_rejection_reason,base.group_user,1,1,1,1
+access_custom_warning,access_custom_warning,model_custom_warning,base.group_user,1,1,1,1
