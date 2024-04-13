@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <record id="purchase_return_return_order_seq" model="ir.sequence">
+            <field name="name">purchase.return.return.order.seq</field>
+            <field name="code">purchase.order.return</field>
+            <field name="prefix">RP/</field>
+            <field name="padding">5</field>
+            <field name="company_id" eval="False" />
+        </record>
+    </data>
+</odoo>
