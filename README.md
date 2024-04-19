@@ -2,7 +2,7 @@
 Odoo version 16
 ---
 Programas comprados y free de odoo version 16 - terceros
---
+-
 2024-04-18: agregando modulo: purchase_supplier_discount_invoice
---
+-
 2024-04-18: agregando mass_cancel_purchase_order
