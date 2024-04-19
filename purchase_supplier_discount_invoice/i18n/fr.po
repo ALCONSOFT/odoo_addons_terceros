@@ -1,0 +1,147 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* purchase_supplier_discount_invoice
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 14.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2021-06-07 10:07+0000\n"
+"PO-Revision-Date: 2021-06-07 10:07+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: purchase_supplier_discount_invoice
+#: model_terms:ir.ui.view,arch_db:purchase_supplier_discount_invoice.report_invoice_discount_inherit
+msgid "&amp;nbsp;<span>on</span>"
+msgstr "&amp;nbsp;<span>sur</span>"
+
+#. module: purchase_supplier_discount_invoice
+#: model:ir.model.fields,field_description:purchase_supplier_discount_invoice.field_account_bank_statement_line__discount_amt
+#: model:ir.model.fields,field_description:purchase_supplier_discount_invoice.field_account_move__discount_amt
+#: model:ir.model.fields,field_description:purchase_supplier_discount_invoice.field_account_payment__discount_amt
+#: model:ir.model.fields,field_description:purchase_supplier_discount_invoice.field_purchase_order__discount_amt
+msgid "- Discount"
+msgstr "- Rabais"
+
+#. module: purchase_supplier_discount_invoice
+#: model_terms:ir.ui.view,arch_db:purchase_supplier_discount_invoice.report_invoice_discount_inherit
+#: model_terms:ir.ui.view,arch_db:purchase_supplier_discount_invoice.report_sale_discount_inherit
+msgid "<strong> Discount Amount</strong>"
+msgstr "<strong> Montant de la remise</strong>"
+
+#. module: purchase_supplier_discount_invoice
+#: model_terms:ir.ui.view,arch_db:purchase_supplier_discount_invoice.report_invoice_discount_inherit
+msgid "<strong>Subtotal</strong>"
+msgstr "<strong>Sous-total</strong>"
+
+#. module: purchase_supplier_discount_invoice
+#: model_terms:ir.ui.view,arch_db:purchase_supplier_discount_invoice.report_invoice_discount_inherit
+#: model_terms:ir.ui.view,arch_db:purchase_supplier_discount_invoice.report_sale_discount_inherit
+msgid "<strong>Total</strong>"
+msgstr "<strong>Total</strong>"
+
+#. module: purchase_supplier_discount_invoice
+#: model:ir.model.fields,field_description:purchase_supplier_discount_invoice.field_account_bank_statement_line__discount_amount
+#: model:ir.model.fields,field_description:purchase_supplier_discount_invoice.field_account_move__discount_amount
+#: model:ir.model.fields,field_description:purchase_supplier_discount_invoice.field_account_payment__discount_amount
+#: model:ir.model.fields,field_description:purchase_supplier_discount_invoice.field_purchase_order__discount_amount
+msgid "Discount Amount"
+msgstr "Montant de la remise"
+
+#. module: purchase_supplier_discount_invoice
+#: model:ir.model.fields,field_description:purchase_supplier_discount_invoice.field_account_bank_statement_line__discount_method
+#: model:ir.model.fields,field_description:purchase_supplier_discount_invoice.field_account_move__discount_method
+#: model:ir.model.fields,field_description:purchase_supplier_discount_invoice.field_account_payment__discount_method
+#: model:ir.model.fields,field_description:purchase_supplier_discount_invoice.field_purchase_order__discount_method
+#: model:ir.model.fields,field_description:purchase_supplier_discount_invoice.field_purchase_order_line__discount_method
+msgid "Discount Method"
+msgstr "Méthode de remise"
+
+#. module: purchase_supplier_discount_invoice
+#: model:ir.model.fields,field_description:purchase_supplier_discount_invoice.field_account_move__display_name
+#: model:ir.model.fields,field_description:purchase_supplier_discount_invoice.field_account_payment__display_name
+#: model:ir.model.fields,field_description:purchase_supplier_discount_invoice.field_purchase_order__display_name
+#: model:ir.model.fields,field_description:purchase_supplier_discount_invoice.field_purchase_order_line__display_name
+msgid "Display Name"
+msgstr "Nom affiché"
+
+#. module: purchase_supplier_discount_invoice
+#: model:ir.model.fields.selection,name:purchase_supplier_discount_invoice.selection__account_move__discount_method__fix
+#: model:ir.model.fields.selection,name:purchase_supplier_discount_invoice.selection__purchase_order__discount_method__fix
+#: model:ir.model.fields.selection,name:purchase_supplier_discount_invoice.selection__purchase_order_line__discount_method__fix
+msgid "Fixed"
+msgstr "Fixée"
+
+#. module: purchase_supplier_discount_invoice
+#: model:ir.model.fields,field_description:purchase_supplier_discount_invoice.field_account_move__id
+#: model:ir.model.fields,field_description:purchase_supplier_discount_invoice.field_account_payment__id
+#: model:ir.model.fields,field_description:purchase_supplier_discount_invoice.field_purchase_order__id
+#: model:ir.model.fields,field_description:purchase_supplier_discount_invoice.field_purchase_order_line__id
+msgid "ID"
+msgstr "identifiant"
+
+#. module: purchase_supplier_discount_invoice
+#: model:ir.model,name:purchase_supplier_discount_invoice.model_account_move
+msgid "Journal Entry"
+msgstr "Pièce comptable"
+
+#. module: purchase_supplier_discount_invoice
+#: model:ir.model.fields,field_description:purchase_supplier_discount_invoice.field_account_move____last_update
+#: model:ir.model.fields,field_description:purchase_supplier_discount_invoice.field_account_payment____last_update
+#: model:ir.model.fields,field_description:purchase_supplier_discount_invoice.field_purchase_order____last_update
+#: model:ir.model.fields,field_description:purchase_supplier_discount_invoice.field_purchase_order_line____last_update
+msgid "Last Modified on"
+msgstr "Dernière modification le"
+
+#. module: purchase_supplier_discount_invoice
+#: model:ir.model,name:purchase_supplier_discount_invoice.model_account_payment
+msgid "Payments"
+msgstr "Paiements"
+
+#. module: purchase_supplier_discount_invoice
+#: model:ir.model.fields.selection,name:purchase_supplier_discount_invoice.selection__account_move__discount_method__per
+#: model:ir.model.fields.selection,name:purchase_supplier_discount_invoice.selection__purchase_order__discount_method__per
+#: model:ir.model.fields.selection,name:purchase_supplier_discount_invoice.selection__purchase_order_line__discount_method__per
+msgid "Percentage"
+msgstr "Pourcentage"
+
+#. module: purchase_supplier_discount_invoice
+#: model:ir.model,name:purchase_supplier_discount_invoice.model_purchase_order
+msgid "Purchase Order"
+msgstr "Commande fournisseur"
+
+#. module: purchase_supplier_discount_invoice
+#: model:ir.model,name:purchase_supplier_discount_invoice.model_purchase_order_line
+msgid "Purchase Order Line"
+msgstr "Ligne de commande fournisseur"
+
+#. module: purchase_supplier_discount_invoice
+#: model:ir.model.fields,field_description:purchase_supplier_discount_invoice.field_account_bank_statement_line__amount_tax
+#: model:ir.model.fields,field_description:purchase_supplier_discount_invoice.field_account_move__amount_tax
+#: model:ir.model.fields,field_description:purchase_supplier_discount_invoice.field_account_payment__amount_tax
+msgid "Tax"
+msgstr "Taxe"
+
+#. module: purchase_supplier_discount_invoice
+#: model_terms:ir.ui.view,arch_db:purchase_supplier_discount_invoice.report_sale_discount_inherit
+msgid "Taxes"
+msgstr "Impôts"
+
+#. module: purchase_supplier_discount_invoice
+#: model:ir.model.fields,field_description:purchase_supplier_discount_invoice.field_account_bank_statement_line__amount_total
+#: model:ir.model.fields,field_description:purchase_supplier_discount_invoice.field_account_move__amount_total
+#: model:ir.model.fields,field_description:purchase_supplier_discount_invoice.field_account_payment__amount_total
+msgid "Total"
+msgstr "Le total"
+
+#. module: purchase_supplier_discount_invoice
+#: model:ir.model.fields,field_description:purchase_supplier_discount_invoice.field_account_bank_statement_line__amount_untaxed
+#: model:ir.model.fields,field_description:purchase_supplier_discount_invoice.field_account_move__amount_untaxed
+#: model:ir.model.fields,field_description:purchase_supplier_discount_invoice.field_account_payment__amount_untaxed
+msgid "Untaxed Amount"
+msgstr "Montant HT"

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+	<data>
+		<record id="view_account_move_discount_form" model="ir.ui.view">
+			<field name="name">account.move.discount.form.view</field>
+			<field name="model">account.move</field>
+			<field name="inherit_id" ref="account.view_move_form" />
+			<field name="arch" type="xml">
+				<xpath expr="//field[@name='invoice_line_ids']" position="after">
+					<group attrs="{'invisible':[('move_type','in',('out_invoice','out_refund','out_receipt'))]}">
+						<label for="discount_method" />
+						<div>
+							<field name="discount_method" class="oe_inline" attrs="{'readonly':[('state','=','posted')]}" />
+						</div>
+						<label for="discount_amount" />
+						<div>
+							<field name="discount_amount" class="oe_inline" attrs="{'readonly':[('state','=','posted')]}" />
+							<label for="discount_amount" string="%%"
+								attrs="{'invisible': [('discount_method', '!=', 'per')]}" class="oe_inline" />
+						</div>
+					</group>
+				</xpath>
+				<xpath expr="/form/sheet/notebook/page/field[@name='invoice_line_ids']/tree/field[@name='price_unit']" position="after">
+                    <field name="exclude_from_invoice_tab" invisible="1"/>
+                </xpath>
+				<field name="tax_totals" position="before">
+					<div colspan="2" style="margin:auto;">
+                        <group>
+							<field colspan="2" class="o_tax_group_amount_value" name="discount_amt" widget="monetary" options="{'currency_field': 'currency_id'}" attrs="{'invisible':[('move_type','in',('out_invoice','out_refund','out_receipt'))]}" />
+						</group>
+					</div>
+				</field>
+			</field>
+		</record>
+	</data>
+</odoo>

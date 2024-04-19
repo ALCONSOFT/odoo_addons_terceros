@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+<odoo>
+	<data>
+		<record id="view_order_invoice_discount_form" model="ir.ui.view">
+			<field name="name">purchase.order.invoice.discount.form.view</field>
+			<field name="model">purchase.order</field>
+			<field name="inherit_id" ref="purchase.purchase_order_form" />
+			<field name="arch" type="xml">
+				<xpath expr="//field[@name='order_line']" position="after">
+					<group style="width: 65%%">
+						<label for="discount_method" />
+						<div>
+							<field name="discount_method" class="oe_inline" />
+						</div>
+						<label for="discount_amount" />
+						<div>
+							<field name="discount_amount" class="oe_inline" />
+							<label for="discount_amount"  string="%%"
+								attrs="{'invisible': [('discount_method', '!=', 'per')]}" class="oe_inline"/>
+						</div>
+					</group>
+				</xpath>
+
+				<field name="tax_totals" position="before">
+					<div colspan="2" style="margin:auto;">
+                        <group>
+							<field name="discount_amt" colspan="2" widget="monetary" options="{'currency_field': 'currency_id'}" />
+						</group>
+					</div>
+				</field>
+
+			</field>
+		</record>
+	</data>
+</odoo>
