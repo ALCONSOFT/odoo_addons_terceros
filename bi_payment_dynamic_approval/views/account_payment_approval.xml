@@ -1,0 +1,75 @@
+<odoo>
+    <record id="account_payment_approval_form" model="ir.ui.view">
+        <field name="name">account.payment.approval.form</field>
+        <field name="model">account.payment.approval</field>
+        <field name="arch" type="xml">
+            <form string="Approval">
+                <sheet>
+                    <h1>
+                        <field name="name" default_focus="2" placeholder="Name"/>
+                    </h1>
+                    <group>
+                        <field name="minimun_amount"/>
+                        <field name="sale_person_always" widget="boolean_toggle"/>
+                    </group>
+                    <notebook>
+                        <page string="Approval Details">
+                            <field name="payment_access_ids">
+                                <tree>
+                                    <field name="payment_access_id" invisible="1"/>
+                                    <field name="level"/>
+                                    <field name="group_approve"/>
+                                </tree>
+                                <form>
+                                    <field name="payment_access_id" invisible="1"/>
+
+                                        <group>
+                                            <field name="level"/>
+                                        </group>
+
+                                        <group>
+                                            <field name="group_approve"/>
+                                        </group>
+
+                                        <group>
+                                            <field name="user_ids" attrs="{'invisible': [('group_approve', 'in', 'group')]}"/>
+                                        </group>
+
+                                        <group>
+                                            <field name="group_ids" attrs="{'invisible': [('group_approve', 'in', 'user')]}"/>
+                                        </group>   
+                                    
+                                </form>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    <record id="po_approval_view_tree" model="ir.ui.view">
+        <field name="name">account.payment.approval.view.tree</field>
+        <field name="model">account.payment.approval</field>
+        <field name="arch" type="xml">
+            <tree string="Approval">
+                <field name="name"/>
+                <field name="minimun_amount"/>
+                <field name="sale_person_always" widget="boolean_toggle"/>
+            </tree>
+        </field>
+    </record>
+    <record id="po_approval_action_view" model="ir.actions.act_window">
+        <field name="name">Payment Approval Configuration</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">account.payment.approval</field>
+        <field name="view_mode">form,tree</field>
+        <field name="view_id" ref="po_approval_view_tree"/>
+    </record>
+
+    <menuitem id="payment_approval_configuration_menu" 
+              name="Payment Approval Configuration" 
+              parent="account.root_payment_menu" 
+              action="po_approval_action_view"
+              sequence="30"/>
+</odoo>
+

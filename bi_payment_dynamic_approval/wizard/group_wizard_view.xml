@@ -1,0 +1,33 @@
+<odoo>
+
+<record id="reject_wizard_view_form" model="ir.ui.view">
+    <field name="name">Purchase</field>
+    <field name="model">reject.wizard</field>
+    <field name="arch" type="xml">
+        <form string="Leave">
+            <sheet>
+                    <group>
+                        <field name="order_id" readonly="1" invisible="1"/>
+                        <field name="reason"/>
+                    </group>
+                           
+            </sheet>
+            <footer>
+             <button string="Reject" name="reject_reason" type="object" class="btn-primary"/>
+             <button string="Cancel" class="btn-default" special="cancel"/>
+            </footer>
+        </form>
+       
+    </field>
+</record>
+
+<record id="reject_wizard_action" model="ir.actions.act_window">
+    <field name="name">Test Wizard</field>
+    <field name="type">ir.actions.act_window</field>
+    <field name="res_model">reject.wizard</field>
+    <field name="view_mode">form</field>
+    <field name="view_id" ref="reject_wizard_view_form"/>
+    <field name="target">new</field>
+      <field name="context">{'default_order_id': active_id}</field>
+</record>
+</odoo> 

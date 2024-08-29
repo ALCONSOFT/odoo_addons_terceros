@@ -1,0 +1,851 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# * bi_payment_dynamic_approval
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 16.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-08-28 02:14+0000\n"
+"PO-Revision-Date: 2024-08-28 02:14+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.16.0\n"
+
+#. module: bi_payment_dynamic_approval
+#, python-format
+msgid ""
+"<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" style=\"padding-"
+"top: 16px; background-color: #F1F1F1; font-family:Verdana, Arial,sans-"
+"serif; color: #454748; width: 100%; border-collapse:separate;\">\n"
+"                <tr>\n"
+"                    <td align=\"center\">\n"
+"                        <table border=\"0\" cellpadding=\"0\" "
+"cellspacing=\"0\" width=\"590\" style=\"padding: 16px; background-color: "
+"white; color: #454748; border-collapse:separate;\">\n"
+"                            <tbody>\n"
+"                                <!-- HEADER -->\n"
+"                                <tr>\n"
+"                                    <td align=\"center\" style=\"min-"
+"width: 590px;\">\n"
+"                                        <table border=\"0\" "
+"cellpadding=\"0\" cellspacing=\"0\" width=\"590\" style=\"min-width: "
+"590px; background-color: white; padding: 0px 8px 0px 8px; border-"
+"collapse:separate;\">\n"
+"                                            <tr>\n"
+"                                                <td valign=\"middle\">\n"
+"                                                  \n"
+"                                                    <br>\n"
+"                                                    <span style=\"font-"
+"size: 20px; font-weight: bold;\">\n"
+"                                                        Payment Rejected\n"
+"                                                       \n"
+"                                                    </span>\n"
+"                                                </td>\n"
+"                                                <td valign=\"middle\" "
+"align=\"right\">\n"
+"                                                    <img "
+"src=\"/logo.png?company=%24%7Bobject.company_id.id%7D\" style=\"padding: "
+"0px; margin: 0px; height: auto; width: 80px;\" "
+"alt=\"${object.company_id.name}\">\n"
+"                                                </td>\n"
+"                                            </tr>\n"
+"                                            <tr>\n"
+"                                                <td colspan=\"2\" style"
+"=\"text-align:center;\">\n"
+"                                                    <hr width=\"100%\" "
+"style=\"background-color:rgb(204,204,204);border:medium "
+"none;clear:both;display:block;font-size:0px;min-height:1px;line-height:0;"
+" margin: 16px 0px 16px 0px;\">\n"
+"                                                </td>\n"
+"                                            </tr>\n"
+"                                        </table>\n"
+"                                    </td>\n"
+"                                </tr>\n"
+"                                <!-- CONTENT -->\n"
+"                                <tr>\n"
+"                                    <td align=\"center\" style=\"min-"
+"width: 590px;\">\n"
+"                                        <table border=\"0\" "
+"cellpadding=\"0\" cellspacing=\"0\" width=\"590\" style=\"min-width: "
+"590px; background-color: white; padding: 0px 8px 0px 8px; border-"
+"collapse:separate;\">\n"
+"                                            <tr>\n"
+"                                                <td valign=\"top\" style"
+"=\"font-size: 13px;\">\n"
+"                                                    <div>\n"
+"                                                        <b>Dear User,\n"
+"                                                        </b>\n"
+"                                                        <br>\n"
+"                                                        <br>\n"
+"                                                        This is inform "
+"you that your payment is rejected.<br>\n"
+"                                                    <br>\n"
+"                                                    You can view your "
+"payment details.<br>\n"
+"                                                    Thanks,\n"
+"                                                   \n"
+"                                                    <br>\n"
+"\n"
+"                                                   \n"
+"                                                </div>\n"
+"                                            </td>\n"
+"                                        </tr>\n"
+"                                        <tr>\n"
+"                                            <td style=\"text-"
+"align:center;\">\n"
+"                                                <hr width=\"100%\" style"
+"=\"background-color:rgb(204,204,204);border:medium "
+"none;clear:both;display:block;font-size:0px;min-height:1px;line-height:0;"
+" margin: 16px 0px 16px 0px;\">\n"
+"                                            </td>\n"
+"                                        </tr>\n"
+"                                    </table>\n"
+"                                </td>\n"
+"                            </tr>\n"
+"                            <!-- FOOTER -->\n"
+"                            <tr>\n"
+"                                <td align=\"center\" style=\"min-width: "
+"590px;\">\n"
+"                                    <table border=\"0\" cellpadding=\"0\""
+" cellspacing=\"0\" width=\"590\" style=\"min-width: 590px; background-"
+"color: white; font-size: 11px; padding: 0px 8px 0px 8px; border-"
+"collapse:separate;\">\n"
+"                                        <tr>\n"
+"                                            <td valign=\"middle\" "
+"align=\"left\">\n"
+"                                            \n"
+"                                                <t "
+"t-out=\"object.company_id.name or ''\"></t>\n"
+"                                            </td>\n"
+"                                        </tr>\n"
+"                                        <tr>\n"
+"                                            <td valign=\"middle\" "
+"align=\"left\" style=\"opacity: 0.7;\">\n"
+"                                                <t "
+"t-out=\"object.company_id.phone or ''\"></t>\n"
+"                                                <t "
+"t-out=\"object.company_id.email or ''\"></t>\n"
+"                    \n"
+"                        |                                                "
+"<a href=\"'mailto:%s'%20%20%24%7Bobject.company_id.email%7D\" style"
+"=\"text-decoration:none; color: #454748;\">\n"
+"                                                    <t "
+"t-out=\"object.company_id.email or ''\"></t>\n"
+"                                                </a>\n"
+"                   \n"
+"                        |                                                "
+"<a href=\"'%s'%20%20%24%7Bobject.company_id.website%7D\" style=\"text-"
+"decoration:none; color: #454748;\">\n"
+"                                                    <t "
+"t-out=\"object.company_id.website or ''\"></t>\n"
+"\n"
+"                                                </a>\n"
+"\n"
+"                                            </td>\n"
+"                                        </tr>\n"
+"                                    </table>\n"
+"                                </td>\n"
+"                            </tr>\n"
+"                        </tbody>\n"
+"                    </table>\n"
+"                </td>\n"
+"            </tr>\n"
+"            <!-- POWERED BY -->\n"
+"            <tr>\n"
+"                <td align=\"center\" style=\"min-width: 590px;\">\n"
+"                    <table border=\"0\" cellpadding=\"0\" "
+"cellspacing=\"0\" width=\"590\" style=\"min-width: 590px; background-"
+"color: #F1F1F1; color: #454748; padding: 8px; border-"
+"collapse:separate;\">\n"
+"                        <tr>\n"
+"                            <td style=\"text-align: center; font-size: "
+"13px;\">\n"
+"        Powered by <a target=\"_blank\" "
+"href=\"https://www.odoo.com?utm_source=db&amp;utm_medium=auth\" "
+"style=\"color: #875A7B;\">Odoo</a>\n"
+"                            </td>\n"
+"                        </tr>\n"
+"                    </table>\n"
+"                </td>\n"
+"            </tr>\n"
+"        </table>\n"
+"    "
+msgstr ""
+
+#. module: bi_payment_dynamic_approval
+#, python-format
+msgid ""
+"<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" style=\"padding-"
+"top: 16px; background-color: #F1F1F1; font-family:Verdana, Arial,sans-"
+"serif; color: #454748; width: 100%; border-collapse:separate;\">\n"
+"                <tr>\n"
+"                    <td align=\"center\">\n"
+"                        <table border=\"0\" cellpadding=\"0\" "
+"cellspacing=\"0\" width=\"590\" style=\"padding: 16px; background-color: "
+"white; color: #454748; border-collapse:separate;\">\n"
+"                            <tbody>\n"
+"                                <!-- HEADER -->\n"
+"                                <tr>\n"
+"                                    <td align=\"center\" style=\"min-"
+"width: 590px;\">\n"
+"                                        <table border=\"0\" "
+"cellpadding=\"0\" cellspacing=\"0\" width=\"590\" style=\"min-width: "
+"590px; background-color: white; padding: 0px 8px 0px 8px; border-"
+"collapse:separate;\">\n"
+"                                            <tr>\n"
+"                                                <td valign=\"middle\">\n"
+"                                                   \n"
+"                                                    <br>\n"
+"                                                    <span style=\"font-"
+"size: 20px; font-weight: bold;\">\n"
+"                                                      Submit For Approval"
+"\n"
+"                                                      \n"
+"                                                    </span>\n"
+"                                                </td>\n"
+"                                                <td valign=\"middle\" "
+"align=\"right\">\n"
+"                                                    <img "
+"src=\"/logo.png?company=%24%7Bobject.company_id.id%7D\" style=\"padding: "
+"0px; margin: 0px; height: auto; width: 80px;\" "
+"alt=\"${object.company_id.name}\">\n"
+"                                                </td>\n"
+"                                            </tr>\n"
+"                                            <tr>\n"
+"                                                <td colspan=\"2\" style"
+"=\"text-align:center;\">\n"
+"                                                    <hr width=\"100%\" "
+"style=\"background-color:rgb(204,204,204);border:medium "
+"none;clear:both;display:block;font-size:0px;min-height:1px;line-height:0;"
+" margin: 16px 0px 16px 0px;\">\n"
+"                                                </td>\n"
+"                                            </tr>\n"
+"                                        </table>\n"
+"                                    </td>\n"
+"                                </tr>\n"
+"                                <!-- CONTENT -->\n"
+"                                <tr>\n"
+"                                    <td align=\"center\" style=\"min-"
+"width: 590px;\">\n"
+"                                        <table border=\"0\" "
+"cellpadding=\"0\" cellspacing=\"0\" width=\"590\" style=\"min-width: "
+"590px; background-color: white; padding: 0px 8px 0px 8px; border-"
+"collapse:separate;\">\n"
+"                                            <tr>\n"
+"                                                <td valign=\"top\" style"
+"=\"font-size: 13px;\">\n"
+"                                                    <div>\n"
+"                                                        <b>Dear Approver,"
+"\n"
+"                                                        </b>\n"
+"                                                        <br>\n"
+"                                                        <br>\n"
+"                                                   This is inform you "
+"that payment is submit for the approval.<br>\n"
+"                                                    <br>\n"
+"                                                     You can view your "
+"payment details.<br>\n"
+"                                                    Thanks,\n"
+"                                                    \n"
+"                                                   \n"
+"                                                    <br>\n"
+"                                                   \n"
+"                                                   \n"
+"                                                </div>\n"
+"                                            </td>\n"
+"                                        </tr>\n"
+"                                        <tr>\n"
+"                                            <td style=\"text-"
+"align:center;\">\n"
+"                                                <hr width=\"100%\" style"
+"=\"background-color:rgb(204,204,204);border:medium "
+"none;clear:both;display:block;font-size:0px;min-height:1px;line-height:0;"
+" margin: 16px 0px 16px 0px;\">\n"
+"                                            </td>\n"
+"                                        </tr>\n"
+"                                    </table>\n"
+"                                </td>\n"
+"                            </tr>\n"
+"                            <!-- FOOTER -->\n"
+"                            <tr>\n"
+"                                <td align=\"center\" style=\"min-width: "
+"590px;\">\n"
+"                                    <table border=\"0\" cellpadding=\"0\""
+" cellspacing=\"0\" width=\"590\" style=\"min-width: 590px; background-"
+"color: white; font-size: 11px; padding: 0px 8px 0px 8px; border-"
+"collapse:separate;\">\n"
+"                                        <tr>\n"
+"                                            <td valign=\"middle\" "
+"align=\"left\">\n"
+"                                            \n"
+"                                                <t "
+"t-out=\"object.company_id.name or ''\"></t>\n"
+"                                            </td>\n"
+"                                        </tr>\n"
+"                                        <tr>\n"
+"                                            <td valign=\"middle\" "
+"align=\"left\" style=\"opacity: 0.7;\">\n"
+"                                                <t "
+"t-out=\"object.company_id.phone or ''\"></t>\n"
+"                                                <t "
+"t-out=\"object.company_id.email or ''\"></t>\n"
+"                    \n"
+"                        |                                                "
+"<a href=\"'mailto:%s'%20%20%24%7Bobject.company_id.email%7D\" style"
+"=\"text-decoration:none; color: #454748;\">\n"
+"                                                    <t "
+"t-out=\"object.company_id.email or ''\"></t>\n"
+"                                                </a>\n"
+"                   \n"
+"                        |                                                "
+"<a href=\"'%s'%20%20%24%7Bobject.company_id.website%7D\" style=\"text-"
+"decoration:none; color: #454748;\">\n"
+"                                                    <t "
+"t-out=\"object.company_id.website or ''\"></t>\n"
+"\n"
+"                                                </a>\n"
+"\n"
+"                                            </td>\n"
+"                                        </tr>\n"
+"                                    </table>\n"
+"                                </td>\n"
+"                            </tr>\n"
+"                        </tbody>\n"
+"                    </table>\n"
+"                </td>\n"
+"            </tr>\n"
+"            <!-- POWERED BY -->\n"
+"            <tr>\n"
+"                <td align=\"center\" style=\"min-width: 590px;\">\n"
+"                    <table border=\"0\" cellpadding=\"0\" "
+"cellspacing=\"0\" width=\"590\" style=\"min-width: 590px; background-"
+"color: #F1F1F1; color: #454748; padding: 8px; border-"
+"collapse:separate;\">\n"
+"                        <tr>\n"
+"                            <td style=\"text-align: center; font-size: "
+"13px;\">\n"
+"        Powered by <a target=\"_blank\" "
+"href=\"https://www.odoo.com?utm_source=db&amp;utm_medium=auth\" "
+"style=\"color: #875A7B;\">Odoo</a>\n"
+"                            </td>\n"
+"                        </tr>\n"
+"                    </table>\n"
+"                </td>\n"
+"            </tr>\n"
+"        </table>\n"
+"    "
+msgstr ""
+
+#. module: bi_payment_dynamic_approval
+#, python-format
+msgid ""
+"<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" style=\"padding-"
+"top: 16px; background-color: #F1F1F1; font-family:Verdana, Arial,sans-"
+"serif; color: #454748; width: 100%; border-collapse:separate;\">\n"
+"                <tr>\n"
+"                    <td align=\"center\">\n"
+"                        <table border=\"0\" cellpadding=\"0\" "
+"cellspacing=\"0\" width=\"590\" style=\"padding: 16px; background-color: "
+"white; color: #454748; border-collapse:separate;\">\n"
+"                            <tbody>\n"
+"                                <!-- HEADER -->\n"
+"                                <tr>\n"
+"                                    <td align=\"center\" style=\"min-"
+"width: 590px;\">\n"
+"                                        <table border=\"0\" "
+"cellpadding=\"0\" cellspacing=\"0\" width=\"590\" style=\"min-width: "
+"590px; background-color: white; padding: 0px 8px 0px 8px; border-"
+"collapse:separate;\">\n"
+"                                            <tr>\n"
+"                                                <td valign=\"middle\">\n"
+"                                                    \n"
+"                                                    <br>\n"
+"                                                    <span style=\"font-"
+"size: 20px; font-weight: bold;\">\n"
+"                                                       Payment Posted \n"
+"                                                     \n"
+"                                                    </span>\n"
+"                                                </td>\n"
+"                                                <td valign=\"middle\" "
+"align=\"right\">\n"
+"                                                    <img "
+"src=\"/logo.png?company=%24%7B%20%20object.company_id.id%7D\" "
+"style=\"padding: 0px; margin: 0px; height: auto; width: 80px;\" "
+"alt=\"${object.company_id.name}\">\n"
+"                                                </td>\n"
+"                                            </tr>\n"
+"                                            <tr>\n"
+"                                                <td colspan=\"2\" style"
+"=\"text-align:center;\">\n"
+"                                                    <hr width=\"100%\" "
+"style=\"background-color:rgb(204,204,204);border:medium "
+"none;clear:both;display:block;font-size:0px;min-height:1px;line-height:0;"
+" margin: 16px 0px 16px 0px;\">\n"
+"                                                </td>\n"
+"                                            </tr>\n"
+"                                        </table>\n"
+"                                    </td>\n"
+"                                </tr>\n"
+"                                <!-- CONTENT -->\n"
+"                                <tr>\n"
+"                                    <td align=\"center\" style=\"min-"
+"width: 590px;\">\n"
+"                                        <table border=\"0\" "
+"cellpadding=\"0\" cellspacing=\"0\" width=\"590\" style=\"min-width: "
+"590px; background-color: white; padding: 0px 8px 0px 8px; border-"
+"collapse:separate;\">\n"
+"                                            <tr>\n"
+"                                                <td valign=\"top\" style"
+"=\"font-size: 13px;\">\n"
+"                                                    <div>\n"
+"                                                        <b>Dear User,\n"
+"                                                        </b>\n"
+"                                                        <br>\n"
+"                                                        <br>\n"
+"                                                   This is inform you "
+"that your payment is posted.<br>\n"
+"                                                    <br>\n"
+"                                                    You can view your "
+"payment details.<br>\n"
+" \n"
+"                                                    Thanks,\n"
+"                                                    \n"
+"                                                   \n"
+"                                                    <br>\n"
+"                                                   \n"
+"                                                   \n"
+"                                                </div>\n"
+"                                            </td>\n"
+"                                        </tr>\n"
+"                                        <tr>\n"
+"                                            <td style=\"text-"
+"align:center;\">\n"
+"                                                <hr width=\"100%\" style"
+"=\"background-color:rgb(204,204,204);border:medium "
+"none;clear:both;display:block;font-size:0px;min-height:1px;line-height:0;"
+" margin: 16px 0px 16px 0px;\">\n"
+"                                            </td>\n"
+"                                        </tr>\n"
+"                                    </table>\n"
+"                                </td>\n"
+"                            </tr>\n"
+"                            <!-- FOOTER -->\n"
+"                            <tr>\n"
+"                                <td align=\"center\" style=\"min-width: "
+"590px;\">\n"
+"                                    <table border=\"0\" cellpadding=\"0\""
+" cellspacing=\"0\" width=\"590\" style=\"min-width: 590px; background-"
+"color: white; font-size: 11px; padding: 0px 8px 0px 8px; border-"
+"collapse:separate;\">\n"
+"                                        <tr>\n"
+"                                            <td valign=\"middle\" "
+"align=\"left\">\n"
+"                                            \n"
+"                                                <t "
+"t-out=\"object.company_id.name or ''\"></t>\n"
+"                                            </td>\n"
+"                                        </tr>\n"
+"                                        <tr>\n"
+"                                            <td valign=\"middle\" "
+"align=\"left\" style=\"opacity: 0.7;\">\n"
+"                                                <t "
+"t-out=\"object.company_id.phone or ''\"></t>\n"
+"                                                <t "
+"t-out=\"object.company_id.email or ''\"></t>\n"
+"                    \n"
+"                        |                                                "
+"<a href=\"'mailto:%s'%20%20%24%7Bobject.company_id.email%7D\" style"
+"=\"text-decoration:none; color: #454748;\">\n"
+"                                                    <t "
+"t-out=\"object.company_id.email or ''\"></t>\n"
+"                                                </a>\n"
+"                   \n"
+"                        |                                                "
+"<a href=\"'%s'%20%20%24%7Bobject.company_id.website%7D\" style=\"text-"
+"decoration:none; color: #454748;\">\n"
+"                                                    <t "
+"t-out=\"object.company_id.website or ''\"></t>\n"
+"\n"
+"                                                </a>\n"
+"\n"
+"                                            </td>\n"
+"                                        </tr>\n"
+"                                    </table>\n"
+"                                </td>\n"
+"                            </tr>\n"
+"                        </tbody>\n"
+"                    </table>\n"
+"                </td>\n"
+"            </tr>\n"
+"            <!-- POWERED BY -->\n"
+"            <tr>\n"
+"                <td align=\"center\" style=\"min-width: 590px;\">\n"
+"                    <table border=\"0\" cellpadding=\"0\" "
+"cellspacing=\"0\" width=\"590\" style=\"min-width: 590px; background-"
+"color: #F1F1F1; color: #454748; padding: 8px; border-"
+"collapse:separate;\">\n"
+"                        <tr>\n"
+"                            <td style=\"text-align: center; font-size: "
+"13px;\">\n"
+"        Powered by <a target=\"_blank\" "
+"href=\"https://www.odoo.com?utm_source=db&amp;utm_medium=auth\" "
+"style=\"color: #875A7B;\">Odoo</a>\n"
+"                            </td>\n"
+"                        </tr>\n"
+"                    </table>\n"
+"                </td>\n"
+"            </tr>\n"
+"        </table>\n"
+"    "
+msgstr ""
+
+#. module: bi_payment_dynamic_approval
+msgid "Account Payment"
+msgstr ""
+
+#. module: bi_payment_dynamic_approval
+msgid "Account Payment Approval"
+msgstr ""
+
+#. module: bi_payment_dynamic_approval
+msgid "Account Payment Line"
+msgstr ""
+
+#. module: bi_payment_dynamic_approval
+msgid "All Level Approved"
+msgstr ""
+
+#. module: bi_payment_dynamic_approval
+msgid "Approval"
+msgstr ""
+
+#. module: bi_payment_dynamic_approval
+msgid "Approval Based On"
+msgstr ""
+
+#. module: bi_payment_dynamic_approval
+msgid "Approval Details"
+msgstr ""
+
+#. module: bi_payment_dynamic_approval
+msgid "Approval Info"
+msgstr ""
+
+#. module: bi_payment_dynamic_approval
+msgid "Approval Level"
+msgstr ""
+
+#. module: bi_payment_dynamic_approval
+msgid "Approval Level "
+msgstr ""
+
+#. module: bi_payment_dynamic_approval
+#. odoo-python
+#: code:addons/bi_payment_dynamic_approval/models/account_payment_approval.py
+msgid "Approval Levels must be unique!"
+msgstr ""
+
+#. module: bi_payment_dynamic_approval
+msgid "Approval Reject button"
+msgstr ""
+
+#. module: bi_payment_dynamic_approval
+msgid "Approval level"
+msgstr ""
+
+#. module: bi_payment_dynamic_approval
+msgid "Approvals"
+msgstr ""
+
+#. module: bi_payment_dynamic_approval
+msgid "Approve By"
+msgstr ""
+
+#. module: bi_payment_dynamic_approval
+msgid "Approve Date"
+msgstr ""
+
+#. module: bi_payment_dynamic_approval
+msgid "Approve Payment"
+msgstr ""
+
+#. module: bi_payment_dynamic_approval
+msgid "Approved By"
+msgstr ""
+
+#. module: bi_payment_dynamic_approval
+msgid "Approved Date"
+msgstr ""
+
+#. module: bi_payment_dynamic_approval
+msgid "Approved Users"
+msgstr ""
+
+#. module: bi_payment_dynamic_approval
+msgid "Buyer Always In CC"
+msgstr ""
+
+#. module: bi_payment_dynamic_approval
+msgid "Cancel"
+msgstr ""
+
+#. module: bi_payment_dynamic_approval
+msgid "Cancelled"
+msgstr ""
+
+#. module: bi_payment_dynamic_approval
+msgid "Companies"
+msgstr ""
+
+#. module: bi_payment_dynamic_approval
+msgid "Config Settings"
+msgstr ""
+
+#. module: bi_payment_dynamic_approval
+msgid "Created by"
+msgstr ""
+
+#. module: bi_payment_dynamic_approval
+msgid "Created on"
+msgstr ""
+
+#. module: bi_payment_dynamic_approval
+msgid "Current approval line"
+msgstr ""
+
+#. module: bi_payment_dynamic_approval
+msgid "Current approval state"
+msgstr ""
+
+#. module: bi_payment_dynamic_approval
+msgid "Data"
+msgstr ""
+
+#. module: bi_payment_dynamic_approval
+msgid "Display Name"
+msgstr ""
+
+#. module: bi_payment_dynamic_approval
+msgid "Draft"
+msgstr ""
+
+#. module: bi_payment_dynamic_approval
+msgid "Dynamic Approval"
+msgstr ""
+
+#. module: bi_payment_dynamic_approval
+msgid "Group"
+msgstr ""
+
+#. module: bi_payment_dynamic_approval
+msgid "Groups"
+msgstr ""
+
+#. module: bi_payment_dynamic_approval
+msgid "Groups "
+msgstr ""
+
+#. module: bi_payment_dynamic_approval
+msgid "ID"
+msgstr ""
+
+#. module: bi_payment_dynamic_approval
+msgid "Invocie Payment Rejected"
+msgstr ""
+
+#. module: bi_payment_dynamic_approval
+msgid "Invoice : Payment Rejection"
+msgstr ""
+
+#. module: bi_payment_dynamic_approval
+msgid "Is Display"
+msgstr ""
+
+#. module: bi_payment_dynamic_approval
+msgid "Last Modified on"
+msgstr ""
+
+#. module: bi_payment_dynamic_approval
+msgid "Last Updated by"
+msgstr ""
+
+#. module: bi_payment_dynamic_approval
+msgid "Last Updated on"
+msgstr ""
+
+#. module: bi_payment_dynamic_approval
+msgid "Leave"
+msgstr ""
+
+#. module: bi_payment_dynamic_approval
+msgid "Level"
+msgstr ""
+
+#. module: bi_payment_dynamic_approval
+msgid "Manager"
+msgstr ""
+
+#. module: bi_payment_dynamic_approval
+msgid "Minimum Amount"
+msgstr ""
+
+#. module: bi_payment_dynamic_approval
+msgid "My Approval"
+msgstr ""
+
+#. module: bi_payment_dynamic_approval
+msgid "My Approval Payments"
+msgstr ""
+
+#. module: bi_payment_dynamic_approval
+msgid "Name"
+msgstr ""
+
+#. module: bi_payment_dynamic_approval
+msgid "Name "
+msgstr ""
+
+#. module: bi_payment_dynamic_approval
+#. odoo-python
+#: code:addons/bi_payment_dynamic_approval/models/account_payment.py
+msgid "No any approval level found!"
+msgstr ""
+
+#. module: bi_payment_dynamic_approval
+msgid "Order"
+msgstr ""
+
+#. module: bi_payment_dynamic_approval
+msgid "PO Approval Details"
+msgstr ""
+
+#. module: bi_payment_dynamic_approval
+msgid "Payment Approval"
+msgstr ""
+
+#. module: bi_payment_dynamic_approval
+msgid "Payment Approval Configuration"
+msgstr ""
+
+#. module: bi_payment_dynamic_approval
+msgid "Payment Approval Level"
+msgstr ""
+
+#. module: bi_payment_dynamic_approval
+msgid "Payment Line"
+msgstr ""
+
+#. module: bi_payment_dynamic_approval
+msgid "Payment Posted"
+msgstr ""
+
+#. module: bi_payment_dynamic_approval
+#. odoo-python
+#: code:addons/bi_payment_dynamic_approval/models/account_payment.py
+msgid "Payment Reject"
+msgstr ""
+
+#. module: bi_payment_dynamic_approval
+msgid "Payment Reject Wizard"
+msgstr ""
+
+#. module: bi_payment_dynamic_approval
+msgid "Payment: Payment Posted"
+msgstr ""
+
+#. module: bi_payment_dynamic_approval
+msgid "Payment: Submit For Approval"
+msgstr ""
+
+#. module: bi_payment_dynamic_approval
+msgid "Posted"
+msgstr ""
+
+#. module: bi_payment_dynamic_approval
+msgid "Purchase Approval Level"
+msgstr ""
+
+#. module: bi_payment_dynamic_approval
+msgid "Purchase Approval Line"
+msgstr ""
+
+#. module: bi_payment_dynamic_approval
+msgid "Purchase Order"
+msgstr ""
+
+#. module: bi_payment_dynamic_approval
+msgid "Reajection Reason"
+msgstr ""
+
+#. module: bi_payment_dynamic_approval
+msgid "Reject"
+msgstr ""
+
+#. module: bi_payment_dynamic_approval
+msgid "Reject By"
+msgstr ""
+
+#. module: bi_payment_dynamic_approval
+msgid "Reject Date"
+msgstr ""
+
+#. module: bi_payment_dynamic_approval
+msgid "Reject Order"
+msgstr ""
+
+#. module: bi_payment_dynamic_approval
+msgid "Reject Payment"
+msgstr ""
+
+#. module: bi_payment_dynamic_approval
+msgid "Reject Reason"
+msgstr ""
+
+#. module: bi_payment_dynamic_approval
+msgid "Rejection"
+msgstr ""
+
+#. module: bi_payment_dynamic_approval
+msgid "State"
+msgstr ""
+
+#. module: bi_payment_dynamic_approval
+msgid "Status"
+msgstr ""
+
+#. module: bi_payment_dynamic_approval
+msgid "Submit For Approval"
+msgstr ""
+
+#. module: bi_payment_dynamic_approval
+msgid "Test Wizard"
+msgstr ""
+
+#. module: bi_payment_dynamic_approval
+msgid "Total Amount"
+msgstr ""
+
+#. module: bi_payment_dynamic_approval
+msgid "Untaxed Amounts"
+msgstr ""
+
+#. module: bi_payment_dynamic_approval
+msgid "User"
+msgstr ""
+
+#. module: bi_payment_dynamic_approval
+msgid "Users"
+msgstr ""
+
+#. module: bi_payment_dynamic_approval
+msgid "Waiting Approval Payments"
+msgstr ""
+
+#. module: bi_payment_dynamic_approval
+msgid "Waiting For Approval"
+msgstr ""
+

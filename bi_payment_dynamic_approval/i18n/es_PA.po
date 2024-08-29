@@ -1,0 +1,980 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* bi_payment_dynamic_approval
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 16.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-08-28 02:14+0000\n"
+"PO-Revision-Date: 2024-08-28 21:14-0500\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: es_PA\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Poedit 3.0.1\n"
+
+#. module: bi_payment_dynamic_approval
+#: model:mail.template,body_html:bi_payment_dynamic_approval.payment_reject_email_notification
+msgid ""
+"<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" style=\"padding-top: "
+"16px; background-color: #F1F1F1; font-family:Verdana, Arial,sans-serif; "
+"color: #454748; width: 100%; border-collapse:separate;\">\n"
+"                <tr>\n"
+"                    <td align=\"center\">\n"
+"                        <table border=\"0\" cellpadding=\"0\" "
+"cellspacing=\"0\" width=\"590\" style=\"padding: 16px; background-color: "
+"white; color: #454748; border-collapse:separate;\">\n"
+"                            <tbody>\n"
+"                                <!-- HEADER -->\n"
+"                                <tr>\n"
+"                                    <td align=\"center\" style=\"min-width: "
+"590px;\">\n"
+"                                        <table border=\"0\" "
+"cellpadding=\"0\" cellspacing=\"0\" width=\"590\" style=\"min-width: 590px; "
+"background-color: white; padding: 0px 8px 0px 8px; border-collapse:separate;"
+"\">\n"
+"                                            <tr>\n"
+"                                                <td valign=\"middle\">\n"
+"                                                  \n"
+"                                                    <br>\n"
+"                                                    <span style=\"font-size: "
+"20px; font-weight: bold;\">\n"
+"                                                        Payment Rejected\n"
+"                                                       \n"
+"                                                    </span>\n"
+"                                                </td>\n"
+"                                                <td valign=\"middle\" "
+"align=\"right\">\n"
+"                                                    <img src=\"/logo.png?"
+"company=%24%7Bobject.company_id.id%7D\" style=\"padding: 0px; margin: 0px; "
+"height: auto; width: 80px;\" alt=\"${object.company_id.name}\">\n"
+"                                                </td>\n"
+"                                            </tr>\n"
+"                                            <tr>\n"
+"                                                <td colspan=\"2\" "
+"style=\"text-align:center;\">\n"
+"                                                    <hr width=\"100%\" "
+"style=\"background-color:rgb(204,204,204);border:medium none;clear:both;"
+"display:block;font-size:0px;min-height:1px;line-height:0; margin: 16px 0px "
+"16px 0px;\">\n"
+"                                                </td>\n"
+"                                            </tr>\n"
+"                                        </table>\n"
+"                                    </td>\n"
+"                                </tr>\n"
+"                                <!-- CONTENT -->\n"
+"                                <tr>\n"
+"                                    <td align=\"center\" style=\"min-width: "
+"590px;\">\n"
+"                                        <table border=\"0\" "
+"cellpadding=\"0\" cellspacing=\"0\" width=\"590\" style=\"min-width: 590px; "
+"background-color: white; padding: 0px 8px 0px 8px; border-collapse:separate;"
+"\">\n"
+"                                            <tr>\n"
+"                                                <td valign=\"top\" "
+"style=\"font-size: 13px;\">\n"
+"                                                    <div>\n"
+"                                                        <b>Dear User,\n"
+"                                                        </b>\n"
+"                                                        <br>\n"
+"                                                        <br>\n"
+"                                                        This is inform you "
+"that your payment is rejected.<br>\n"
+"                                                    <br>\n"
+"                                                    You can view your "
+"payment details.<br>\n"
+"                                                    Thanks,\n"
+"                                                   \n"
+"                                                    <br>\n"
+"\n"
+"                                                   \n"
+"                                                </div>\n"
+"                                            </td>\n"
+"                                        </tr>\n"
+"                                        <tr>\n"
+"                                            <td style=\"text-align:center;"
+"\">\n"
+"                                                <hr width=\"100%\" "
+"style=\"background-color:rgb(204,204,204);border:medium none;clear:both;"
+"display:block;font-size:0px;min-height:1px;line-height:0; margin: 16px 0px "
+"16px 0px;\">\n"
+"                                            </td>\n"
+"                                        </tr>\n"
+"                                    </table>\n"
+"                                </td>\n"
+"                            </tr>\n"
+"                            <!-- FOOTER -->\n"
+"                            <tr>\n"
+"                                <td align=\"center\" style=\"min-width: "
+"590px;\">\n"
+"                                    <table border=\"0\" cellpadding=\"0\" "
+"cellspacing=\"0\" width=\"590\" style=\"min-width: 590px; background-color: "
+"white; font-size: 11px; padding: 0px 8px 0px 8px; border-collapse:separate;"
+"\">\n"
+"                                        <tr>\n"
+"                                            <td valign=\"middle\" "
+"align=\"left\">\n"
+"                                            \n"
+"                                                <t t-out=\"object.company_id."
+"name or ''\"></t>\n"
+"                                            </td>\n"
+"                                        </tr>\n"
+"                                        <tr>\n"
+"                                            <td valign=\"middle\" "
+"align=\"left\" style=\"opacity: 0.7;\">\n"
+"                                                <t t-out=\"object.company_id."
+"phone or ''\"></t>\n"
+"                                                <t t-out=\"object.company_id."
+"email or ''\"></t>\n"
+"                    \n"
+"                        |                                                <a "
+"href=\"'mailto:%s'%20%20%24%7Bobject.company_id.email%7D\" style=\"text-"
+"decoration:none; color: #454748;\">\n"
+"                                                    <t t-out=\"object."
+"company_id.email or ''\"></t>\n"
+"                                                </a>\n"
+"                   \n"
+"                        |                                                <a "
+"href=\"'%s'%20%20%24%7Bobject.company_id.website%7D\" style=\"text-"
+"decoration:none; color: #454748;\">\n"
+"                                                    <t t-out=\"object."
+"company_id.website or ''\"></t>\n"
+"\n"
+"                                                </a>\n"
+"\n"
+"                                            </td>\n"
+"                                        </tr>\n"
+"                                    </table>\n"
+"                                </td>\n"
+"                            </tr>\n"
+"                        </tbody>\n"
+"                    </table>\n"
+"                </td>\n"
+"            </tr>\n"
+"            <!-- POWERED BY -->\n"
+"            <tr>\n"
+"                <td align=\"center\" style=\"min-width: 590px;\">\n"
+"                    <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" "
+"width=\"590\" style=\"min-width: 590px; background-color: #F1F1F1; color: "
+"#454748; padding: 8px; border-collapse:separate;\">\n"
+"                        <tr>\n"
+"                            <td style=\"text-align: center; font-size: 13px;"
+"\">\n"
+"        Powered by <a target=\"_blank\" href=\"https://www.odoo.com?"
+"utm_source=db&amp;utm_medium=auth\" style=\"color: #875A7B;\">Odoo</a>\n"
+"                            </td>\n"
+"                        </tr>\n"
+"                    </table>\n"
+"                </td>\n"
+"            </tr>\n"
+"        </table>\n"
+"    "
+msgstr ""
+
+#. module: bi_payment_dynamic_approval
+#: model:mail.template,body_html:bi_payment_dynamic_approval.payment_approval_email_notification
+msgid ""
+"<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" style=\"padding-top: "
+"16px; background-color: #F1F1F1; font-family:Verdana, Arial,sans-serif; "
+"color: #454748; width: 100%; border-collapse:separate;\">\n"
+"                <tr>\n"
+"                    <td align=\"center\">\n"
+"                        <table border=\"0\" cellpadding=\"0\" "
+"cellspacing=\"0\" width=\"590\" style=\"padding: 16px; background-color: "
+"white; color: #454748; border-collapse:separate;\">\n"
+"                            <tbody>\n"
+"                                <!-- HEADER -->\n"
+"                                <tr>\n"
+"                                    <td align=\"center\" style=\"min-width: "
+"590px;\">\n"
+"                                        <table border=\"0\" "
+"cellpadding=\"0\" cellspacing=\"0\" width=\"590\" style=\"min-width: 590px; "
+"background-color: white; padding: 0px 8px 0px 8px; border-collapse:separate;"
+"\">\n"
+"                                            <tr>\n"
+"                                                <td valign=\"middle\">\n"
+"                                                   \n"
+"                                                    <br>\n"
+"                                                    <span style=\"font-size: "
+"20px; font-weight: bold;\">\n"
+"                                                      Submit For Approval\n"
+"                                                      \n"
+"                                                    </span>\n"
+"                                                </td>\n"
+"                                                <td valign=\"middle\" "
+"align=\"right\">\n"
+"                                                    <img src=\"/logo.png?"
+"company=%24%7Bobject.company_id.id%7D\" style=\"padding: 0px; margin: 0px; "
+"height: auto; width: 80px;\" alt=\"${object.company_id.name}\">\n"
+"                                                </td>\n"
+"                                            </tr>\n"
+"                                            <tr>\n"
+"                                                <td colspan=\"2\" "
+"style=\"text-align:center;\">\n"
+"                                                    <hr width=\"100%\" "
+"style=\"background-color:rgb(204,204,204);border:medium none;clear:both;"
+"display:block;font-size:0px;min-height:1px;line-height:0; margin: 16px 0px "
+"16px 0px;\">\n"
+"                                                </td>\n"
+"                                            </tr>\n"
+"                                        </table>\n"
+"                                    </td>\n"
+"                                </tr>\n"
+"                                <!-- CONTENT -->\n"
+"                                <tr>\n"
+"                                    <td align=\"center\" style=\"min-width: "
+"590px;\">\n"
+"                                        <table border=\"0\" "
+"cellpadding=\"0\" cellspacing=\"0\" width=\"590\" style=\"min-width: 590px; "
+"background-color: white; padding: 0px 8px 0px 8px; border-collapse:separate;"
+"\">\n"
+"                                            <tr>\n"
+"                                                <td valign=\"top\" "
+"style=\"font-size: 13px;\">\n"
+"                                                    <div>\n"
+"                                                        <b>Dear Approver,\n"
+"                                                        </b>\n"
+"                                                        <br>\n"
+"                                                        <br>\n"
+"                                                   This is inform you that "
+"payment is submit for the approval.<br>\n"
+"                                                    <br>\n"
+"                                                     You can view your "
+"payment details.<br>\n"
+"                                                    Thanks,\n"
+"                                                    \n"
+"                                                   \n"
+"                                                    <br>\n"
+"                                                   \n"
+"                                                   \n"
+"                                                </div>\n"
+"                                            </td>\n"
+"                                        </tr>\n"
+"                                        <tr>\n"
+"                                            <td style=\"text-align:center;"
+"\">\n"
+"                                                <hr width=\"100%\" "
+"style=\"background-color:rgb(204,204,204);border:medium none;clear:both;"
+"display:block;font-size:0px;min-height:1px;line-height:0; margin: 16px 0px "
+"16px 0px;\">\n"
+"                                            </td>\n"
+"                                        </tr>\n"
+"                                    </table>\n"
+"                                </td>\n"
+"                            </tr>\n"
+"                            <!-- FOOTER -->\n"
+"                            <tr>\n"
+"                                <td align=\"center\" style=\"min-width: "
+"590px;\">\n"
+"                                    <table border=\"0\" cellpadding=\"0\" "
+"cellspacing=\"0\" width=\"590\" style=\"min-width: 590px; background-color: "
+"white; font-size: 11px; padding: 0px 8px 0px 8px; border-collapse:separate;"
+"\">\n"
+"                                        <tr>\n"
+"                                            <td valign=\"middle\" "
+"align=\"left\">\n"
+"                                            \n"
+"                                                <t t-out=\"object.company_id."
+"name or ''\"></t>\n"
+"                                            </td>\n"
+"                                        </tr>\n"
+"                                        <tr>\n"
+"                                            <td valign=\"middle\" "
+"align=\"left\" style=\"opacity: 0.7;\">\n"
+"                                                <t t-out=\"object.company_id."
+"phone or ''\"></t>\n"
+"                                                <t t-out=\"object.company_id."
+"email or ''\"></t>\n"
+"                    \n"
+"                        |                                                <a "
+"href=\"'mailto:%s'%20%20%24%7Bobject.company_id.email%7D\" style=\"text-"
+"decoration:none; color: #454748;\">\n"
+"                                                    <t t-out=\"object."
+"company_id.email or ''\"></t>\n"
+"                                                </a>\n"
+"                   \n"
+"                        |                                                <a "
+"href=\"'%s'%20%20%24%7Bobject.company_id.website%7D\" style=\"text-"
+"decoration:none; color: #454748;\">\n"
+"                                                    <t t-out=\"object."
+"company_id.website or ''\"></t>\n"
+"\n"
+"                                                </a>\n"
+"\n"
+"                                            </td>\n"
+"                                        </tr>\n"
+"                                    </table>\n"
+"                                </td>\n"
+"                            </tr>\n"
+"                        </tbody>\n"
+"                    </table>\n"
+"                </td>\n"
+"            </tr>\n"
+"            <!-- POWERED BY -->\n"
+"            <tr>\n"
+"                <td align=\"center\" style=\"min-width: 590px;\">\n"
+"                    <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" "
+"width=\"590\" style=\"min-width: 590px; background-color: #F1F1F1; color: "
+"#454748; padding: 8px; border-collapse:separate;\">\n"
+"                        <tr>\n"
+"                            <td style=\"text-align: center; font-size: 13px;"
+"\">\n"
+"        Powered by <a target=\"_blank\" href=\"https://www.odoo.com?"
+"utm_source=db&amp;utm_medium=auth\" style=\"color: #875A7B;\">Odoo</a>\n"
+"                            </td>\n"
+"                        </tr>\n"
+"                    </table>\n"
+"                </td>\n"
+"            </tr>\n"
+"        </table>\n"
+"    "
+msgstr ""
+
+#. module: bi_payment_dynamic_approval
+#: model:mail.template,body_html:bi_payment_dynamic_approval.payment_confirm_email_notification
+msgid ""
+"<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" style=\"padding-top: "
+"16px; background-color: #F1F1F1; font-family:Verdana, Arial,sans-serif; "
+"color: #454748; width: 100%; border-collapse:separate;\">\n"
+"                <tr>\n"
+"                    <td align=\"center\">\n"
+"                        <table border=\"0\" cellpadding=\"0\" "
+"cellspacing=\"0\" width=\"590\" style=\"padding: 16px; background-color: "
+"white; color: #454748; border-collapse:separate;\">\n"
+"                            <tbody>\n"
+"                                <!-- HEADER -->\n"
+"                                <tr>\n"
+"                                    <td align=\"center\" style=\"min-width: "
+"590px;\">\n"
+"                                        <table border=\"0\" "
+"cellpadding=\"0\" cellspacing=\"0\" width=\"590\" style=\"min-width: 590px; "
+"background-color: white; padding: 0px 8px 0px 8px; border-collapse:separate;"
+"\">\n"
+"                                            <tr>\n"
+"                                                <td valign=\"middle\">\n"
+"                                                    \n"
+"                                                    <br>\n"
+"                                                    <span style=\"font-size: "
+"20px; font-weight: bold;\">\n"
+"                                                       Payment Posted \n"
+"                                                     \n"
+"                                                    </span>\n"
+"                                                </td>\n"
+"                                                <td valign=\"middle\" "
+"align=\"right\">\n"
+"                                                    <img src=\"/logo.png?"
+"company=%24%7B%20%20object.company_id.id%7D\" style=\"padding: 0px; margin: "
+"0px; height: auto; width: 80px;\" alt=\"${object.company_id.name}\">\n"
+"                                                </td>\n"
+"                                            </tr>\n"
+"                                            <tr>\n"
+"                                                <td colspan=\"2\" "
+"style=\"text-align:center;\">\n"
+"                                                    <hr width=\"100%\" "
+"style=\"background-color:rgb(204,204,204);border:medium none;clear:both;"
+"display:block;font-size:0px;min-height:1px;line-height:0; margin: 16px 0px "
+"16px 0px;\">\n"
+"                                                </td>\n"
+"                                            </tr>\n"
+"                                        </table>\n"
+"                                    </td>\n"
+"                                </tr>\n"
+"                                <!-- CONTENT -->\n"
+"                                <tr>\n"
+"                                    <td align=\"center\" style=\"min-width: "
+"590px;\">\n"
+"                                        <table border=\"0\" "
+"cellpadding=\"0\" cellspacing=\"0\" width=\"590\" style=\"min-width: 590px; "
+"background-color: white; padding: 0px 8px 0px 8px; border-collapse:separate;"
+"\">\n"
+"                                            <tr>\n"
+"                                                <td valign=\"top\" "
+"style=\"font-size: 13px;\">\n"
+"                                                    <div>\n"
+"                                                        <b>Dear User,\n"
+"                                                        </b>\n"
+"                                                        <br>\n"
+"                                                        <br>\n"
+"                                                   This is inform you that "
+"your payment is posted.<br>\n"
+"                                                    <br>\n"
+"                                                    You can view your "
+"payment details.<br>\n"
+" \n"
+"                                                    Thanks,\n"
+"                                                    \n"
+"                                                   \n"
+"                                                    <br>\n"
+"                                                   \n"
+"                                                   \n"
+"                                                </div>\n"
+"                                            </td>\n"
+"                                        </tr>\n"
+"                                        <tr>\n"
+"                                            <td style=\"text-align:center;"
+"\">\n"
+"                                                <hr width=\"100%\" "
+"style=\"background-color:rgb(204,204,204);border:medium none;clear:both;"
+"display:block;font-size:0px;min-height:1px;line-height:0; margin: 16px 0px "
+"16px 0px;\">\n"
+"                                            </td>\n"
+"                                        </tr>\n"
+"                                    </table>\n"
+"                                </td>\n"
+"                            </tr>\n"
+"                            <!-- FOOTER -->\n"
+"                            <tr>\n"
+"                                <td align=\"center\" style=\"min-width: "
+"590px;\">\n"
+"                                    <table border=\"0\" cellpadding=\"0\" "
+"cellspacing=\"0\" width=\"590\" style=\"min-width: 590px; background-color: "
+"white; font-size: 11px; padding: 0px 8px 0px 8px; border-collapse:separate;"
+"\">\n"
+"                                        <tr>\n"
+"                                            <td valign=\"middle\" "
+"align=\"left\">\n"
+"                                            \n"
+"                                                <t t-out=\"object.company_id."
+"name or ''\"></t>\n"
+"                                            </td>\n"
+"                                        </tr>\n"
+"                                        <tr>\n"
+"                                            <td valign=\"middle\" "
+"align=\"left\" style=\"opacity: 0.7;\">\n"
+"                                                <t t-out=\"object.company_id."
+"phone or ''\"></t>\n"
+"                                                <t t-out=\"object.company_id."
+"email or ''\"></t>\n"
+"                    \n"
+"                        |                                                <a "
+"href=\"'mailto:%s'%20%20%24%7Bobject.company_id.email%7D\" style=\"text-"
+"decoration:none; color: #454748;\">\n"
+"                                                    <t t-out=\"object."
+"company_id.email or ''\"></t>\n"
+"                                                </a>\n"
+"                   \n"
+"                        |                                                <a "
+"href=\"'%s'%20%20%24%7Bobject.company_id.website%7D\" style=\"text-"
+"decoration:none; color: #454748;\">\n"
+"                                                    <t t-out=\"object."
+"company_id.website or ''\"></t>\n"
+"\n"
+"                                                </a>\n"
+"\n"
+"                                            </td>\n"
+"                                        </tr>\n"
+"                                    </table>\n"
+"                                </td>\n"
+"                            </tr>\n"
+"                        </tbody>\n"
+"                    </table>\n"
+"                </td>\n"
+"            </tr>\n"
+"            <!-- POWERED BY -->\n"
+"            <tr>\n"
+"                <td align=\"center\" style=\"min-width: 590px;\">\n"
+"                    <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" "
+"width=\"590\" style=\"min-width: 590px; background-color: #F1F1F1; color: "
+"#454748; padding: 8px; border-collapse:separate;\">\n"
+"                        <tr>\n"
+"                            <td style=\"text-align: center; font-size: 13px;"
+"\">\n"
+"        Powered by <a target=\"_blank\" href=\"https://www.odoo.com?"
+"utm_source=db&amp;utm_medium=auth\" style=\"color: #875A7B;\">Odoo</a>\n"
+"                            </td>\n"
+"                        </tr>\n"
+"                    </table>\n"
+"                </td>\n"
+"            </tr>\n"
+"        </table>\n"
+"    "
+msgstr ""
+
+#. module: bi_payment_dynamic_approval
+#: model:ir.model,name:bi_payment_dynamic_approval.model_account_payment
+msgid "Account Payment"
+msgstr "Pago de Cuenta"
+
+#. module: bi_payment_dynamic_approval
+#: model:ir.model,name:bi_payment_dynamic_approval.model_account_payment_approval
+msgid "Account Payment Approval"
+msgstr "Aprobación de pago de cuenta"
+
+#. module: bi_payment_dynamic_approval
+#: model:ir.model,name:bi_payment_dynamic_approval.model_account_payment_line
+msgid "Account Payment Line"
+msgstr "Línea de pago de cuenta"
+
+#. module: bi_payment_dynamic_approval
+#: model:ir.model.fields,field_description:bi_payment_dynamic_approval.field_account_payment__all_level_approved
+msgid "All Level Approved"
+msgstr "Aprobado en todos los niveles"
+
+#. module: bi_payment_dynamic_approval
+#: model:ir.model.fields,field_description:bi_payment_dynamic_approval.field_account_payment_approval__payment_access_ids
+#: model_terms:ir.ui.view,arch_db:bi_payment_dynamic_approval.account_payment_approval_form
+#: model_terms:ir.ui.view,arch_db:bi_payment_dynamic_approval.account_payment_view_inherit_view
+#: model_terms:ir.ui.view,arch_db:bi_payment_dynamic_approval.payment_approval_view_tree
+#: model_terms:ir.ui.view,arch_db:bi_payment_dynamic_approval.po_approval_form
+#: model_terms:ir.ui.view,arch_db:bi_payment_dynamic_approval.po_approval_view_tree
+msgid "Approval"
+msgstr "Aprobación"
+
+#. module: bi_payment_dynamic_approval
+#: model:ir.model.fields,field_description:bi_payment_dynamic_approval.field_res_company__approval_type
+msgid "Approval Based On"
+msgstr "Aprobación basada en"
+
+#. module: bi_payment_dynamic_approval
+#: model_terms:ir.ui.view,arch_db:bi_payment_dynamic_approval.account_payment_approval_form
+#: model_terms:ir.ui.view,arch_db:bi_payment_dynamic_approval.po_approval_form
+msgid "Approval Details"
+msgstr "Detalles de aprobación"
+
+#. module: bi_payment_dynamic_approval
+#: model_terms:ir.ui.view,arch_db:bi_payment_dynamic_approval.account_payment_view_inherit_view
+msgid "Approval Info"
+msgstr "Información de aprobación"
+
+#. module: bi_payment_dynamic_approval
+#: model:ir.model.fields,field_description:bi_payment_dynamic_approval.field_account_payment__level_data
+#: model:ir.model.fields,field_description:bi_payment_dynamic_approval.field_account_payment_approval__approval
+#: model:ir.model.fields,field_description:bi_payment_dynamic_approval.field_account_payment_line__approval_level
+msgid "Approval Level"
+msgstr "Nivel de aprobación"
+
+#. module: bi_payment_dynamic_approval
+#: model:ir.model.fields,field_description:bi_payment_dynamic_approval.field_account_payment__approval_line_ids
+#: model:ir.model.fields,field_description:bi_payment_dynamic_approval.field_account_payment_approval__approval_id
+msgid "Approval Level "
+msgstr "Nivel de aprobación "
+
+#. module: bi_payment_dynamic_approval
+#. odoo-python
+#: code:addons/bi_payment_dynamic_approval/models/account_payment_approval.py:0
+#, python-format
+msgid "Approval Levels must be unique!"
+msgstr "¡Los niveles de aprobación deben ser únicos!"
+
+#. module: bi_payment_dynamic_approval
+#: model:ir.model.fields,field_description:bi_payment_dynamic_approval.field_account_payment__is_approval_reject_button
+msgid "Approval Reject button"
+msgstr "Botón de rechazo de aprobación"
+
+#. module: bi_payment_dynamic_approval
+#: model:ir.model.fields,field_description:bi_payment_dynamic_approval.field_account_payment_line__level_id
+#: model:ir.model.fields,field_description:bi_payment_dynamic_approval.field_payment_line__level_id
+msgid "Approval level"
+msgstr "Nivel de aprobación"
+
+#. module: bi_payment_dynamic_approval
+#: model:ir.model.fields,field_description:bi_payment_dynamic_approval.field_account_payment_line__payment_approval_id
+msgid "Approvals"
+msgstr "Aprobaciones"
+
+#. module: bi_payment_dynamic_approval
+#: model:ir.model.fields,field_description:bi_payment_dynamic_approval.field_account_payment_line__group_approve
+msgid "Approve By"
+msgstr "Aprobar por"
+
+#. module: bi_payment_dynamic_approval
+#: model:ir.model.fields,field_description:bi_payment_dynamic_approval.field_account_payment_approval__approve_date
+msgid "Approve Date"
+msgstr "Fecha de aprobación"
+
+#. module: bi_payment_dynamic_approval
+#: model_terms:ir.ui.view,arch_db:bi_payment_dynamic_approval.account_payment_view_inherit_view
+msgid "Approve Payment"
+msgstr "Aprobar pago"
+
+#. module: bi_payment_dynamic_approval
+#: model:ir.model.fields,field_description:bi_payment_dynamic_approval.field_account_payment_approval__approved_by
+#: model:ir.model.fields,field_description:bi_payment_dynamic_approval.field_payment_line__approved_id
+msgid "Approved By"
+msgstr "Aprobar por"
+
+#. module: bi_payment_dynamic_approval
+#: model:ir.model.fields,field_description:bi_payment_dynamic_approval.field_payment_line__approved_date
+msgid "Approved Date"
+msgstr "Fecha de aprobación"
+
+#. module: bi_payment_dynamic_approval
+#: model:ir.model.fields,field_description:bi_payment_dynamic_approval.field_account_payment__approved_user_ids
+msgid "Approved Users"
+msgstr "Usuarios aprobados"
+
+#. module: bi_payment_dynamic_approval
+#: model:ir.model.fields,field_description:bi_payment_dynamic_approval.field_account_payment__is_sales_person_in_cc
+#: model:ir.model.fields,field_description:bi_payment_dynamic_approval.field_account_payment_approval__sale_person_always
+msgid "Buyer Always In CC"
+msgstr "Comprador siempre en CC"
+
+#. module: bi_payment_dynamic_approval
+#: model_terms:ir.ui.view,arch_db:bi_payment_dynamic_approval.reject_wizard_view_form
+msgid "Cancel"
+msgstr "Cancelar"
+
+#. module: bi_payment_dynamic_approval
+#: model:ir.model.fields.selection,name:bi_payment_dynamic_approval.selection__account_payment__state__cancel
+msgid "Cancelled"
+msgstr "Cancelado"
+
+#. module: bi_payment_dynamic_approval
+#: model:ir.model,name:bi_payment_dynamic_approval.model_res_company
+msgid "Companies"
+msgstr "Compañías"
+
+#. module: bi_payment_dynamic_approval
+#: model:ir.model,name:bi_payment_dynamic_approval.model_res_config_settings
+msgid "Config Settings"
+msgstr "Configuración de ajustes"
+
+#. module: bi_payment_dynamic_approval
+#: model:ir.model.fields,field_description:bi_payment_dynamic_approval.field_account_payment_approval__create_uid
+#: model:ir.model.fields,field_description:bi_payment_dynamic_approval.field_account_payment_line__create_uid
+#: model:ir.model.fields,field_description:bi_payment_dynamic_approval.field_payment_line__create_uid
+#: model:ir.model.fields,field_description:bi_payment_dynamic_approval.field_reject_wizard__create_uid
+msgid "Created by"
+msgstr "Creado por"
+
+#. module: bi_payment_dynamic_approval
+#: model:ir.model.fields,field_description:bi_payment_dynamic_approval.field_account_payment_approval__create_date
+#: model:ir.model.fields,field_description:bi_payment_dynamic_approval.field_account_payment_line__create_date
+#: model:ir.model.fields,field_description:bi_payment_dynamic_approval.field_payment_line__create_date
+#: model:ir.model.fields,field_description:bi_payment_dynamic_approval.field_reject_wizard__create_date
+msgid "Created on"
+msgstr "Creado el"
+
+#. module: bi_payment_dynamic_approval
+#: model:ir.model.fields,field_description:bi_payment_dynamic_approval.field_account_payment__current_waiting_approval_line_id
+msgid "Current approval line"
+msgstr "Línea de aprobación actual"
+
+#. module: bi_payment_dynamic_approval
+#: model:ir.model.fields,field_description:bi_payment_dynamic_approval.field_account_payment__current_approval_state
+msgid "Current approval state"
+msgstr "Estado de aprobación actual"
+
+#. module: bi_payment_dynamic_approval
+#: model:ir.model.fields,field_description:bi_payment_dynamic_approval.field_account_payment_approval__data_id
+msgid "Data"
+msgstr "Datos"
+
+#. module: bi_payment_dynamic_approval
+#: model:ir.model.fields,field_description:bi_payment_dynamic_approval.field_account_payment_approval__display_name
+#: model:ir.model.fields,field_description:bi_payment_dynamic_approval.field_account_payment_line__display_name
+#: model:ir.model.fields,field_description:bi_payment_dynamic_approval.field_payment_line__display_name
+#: model:ir.model.fields,field_description:bi_payment_dynamic_approval.field_reject_wizard__display_name
+msgid "Display Name"
+msgstr "Nombre para mostrar"
+
+#. module: bi_payment_dynamic_approval
+#: model:ir.model.fields.selection,name:bi_payment_dynamic_approval.selection__account_payment__state__draft
+msgid "Draft"
+msgstr "Borrador"
+
+#. module: bi_payment_dynamic_approval
+#: model:ir.model.fields,field_description:bi_payment_dynamic_approval.field_res_company__dynamic_approval
+#: model:ir.model.fields,field_description:bi_payment_dynamic_approval.field_res_config_settings__dynamic_approval
+msgid "Dynamic Approval"
+msgstr "Aprobación dinámica"
+
+#. module: bi_payment_dynamic_approval
+#: model:ir.model.fields.selection,name:bi_payment_dynamic_approval.selection__account_payment_line__group_approve__group
+msgid "Group"
+msgstr "Grupo"
+
+#. module: bi_payment_dynamic_approval
+#: model:ir.model.fields,field_description:bi_payment_dynamic_approval.field_account_payment__group_ids
+#: model:ir.model.fields,field_description:bi_payment_dynamic_approval.field_account_payment_approval__group_id
+#: model:ir.model.fields,field_description:bi_payment_dynamic_approval.field_account_payment_line__group_ids
+#: model:ir.model.fields,field_description:bi_payment_dynamic_approval.field_payment_line__group_ids
+#: model_terms:ir.ui.view,arch_db:bi_payment_dynamic_approval.account_payment_view_inherit_view
+msgid "Groups"
+msgstr "Grupos"
+
+#. module: bi_payment_dynamic_approval
+#: model:ir.model.fields,field_description:bi_payment_dynamic_approval.field_account_payment_approval__groups_name
+msgid "Groups "
+msgstr "Grupos "
+
+#. module: bi_payment_dynamic_approval
+#: model:ir.model.fields,field_description:bi_payment_dynamic_approval.field_account_payment_approval__id
+#: model:ir.model.fields,field_description:bi_payment_dynamic_approval.field_account_payment_line__id
+#: model:ir.model.fields,field_description:bi_payment_dynamic_approval.field_payment_line__id
+#: model:ir.model.fields,field_description:bi_payment_dynamic_approval.field_reject_wizard__id
+msgid "ID"
+msgstr "Identificación"
+
+#. module: bi_payment_dynamic_approval
+#: model:mail.template,subject:bi_payment_dynamic_approval.payment_reject_email_notification
+msgid "Invocie Payment Rejected"
+msgstr "Pago de factura rechazado"
+
+#. module: bi_payment_dynamic_approval
+#: model:mail.template,name:bi_payment_dynamic_approval.payment_reject_email_notification
+msgid "Invoice : Payment Rejection"
+msgstr "Factura: Rechazo de pago"
+
+#. module: bi_payment_dynamic_approval
+#: model:ir.model.fields,field_description:bi_payment_dynamic_approval.field_account_payment__is_display
+msgid "Is Display"
+msgstr "Es visible"
+
+#. module: bi_payment_dynamic_approval
+#: model:ir.model.fields,field_description:bi_payment_dynamic_approval.field_account_payment_approval____last_update
+#: model:ir.model.fields,field_description:bi_payment_dynamic_approval.field_account_payment_line____last_update
+#: model:ir.model.fields,field_description:bi_payment_dynamic_approval.field_payment_line____last_update
+#: model:ir.model.fields,field_description:bi_payment_dynamic_approval.field_reject_wizard____last_update
+msgid "Last Modified on"
+msgstr "Última modificación el"
+
+#. module: bi_payment_dynamic_approval
+#: model:ir.model.fields,field_description:bi_payment_dynamic_approval.field_account_payment_approval__write_uid
+#: model:ir.model.fields,field_description:bi_payment_dynamic_approval.field_account_payment_line__write_uid
+#: model:ir.model.fields,field_description:bi_payment_dynamic_approval.field_payment_line__write_uid
+#: model:ir.model.fields,field_description:bi_payment_dynamic_approval.field_reject_wizard__write_uid
+msgid "Last Updated by"
+msgstr "Última actualización por"
+
+#. module: bi_payment_dynamic_approval
+#: model:ir.model.fields,field_description:bi_payment_dynamic_approval.field_account_payment_approval__write_date
+#: model:ir.model.fields,field_description:bi_payment_dynamic_approval.field_account_payment_line__write_date
+#: model:ir.model.fields,field_description:bi_payment_dynamic_approval.field_payment_line__write_date
+#: model:ir.model.fields,field_description:bi_payment_dynamic_approval.field_reject_wizard__write_date
+msgid "Last Updated on"
+msgstr "Última actualización el"
+
+#. module: bi_payment_dynamic_approval
+#: model_terms:ir.ui.view,arch_db:bi_payment_dynamic_approval.reject_wizard_view_form
+msgid "Leave"
+msgstr "Salir"
+
+#. module: bi_payment_dynamic_approval
+#: model:ir.model.fields,field_description:bi_payment_dynamic_approval.field_account_payment_line__level
+#: model:ir.model.fields,field_description:bi_payment_dynamic_approval.field_payment_line__level
+msgid "Level"
+msgstr "Nivel"
+
+#. module: bi_payment_dynamic_approval
+#: model:res.groups,name:bi_payment_dynamic_approval.group_payment_manager_view
+msgid "Manager"
+msgstr "Gerente"
+
+#. module: bi_payment_dynamic_approval
+#: model:ir.model.fields,field_description:bi_payment_dynamic_approval.field_account_payment_approval__minimun_amount
+msgid "Minimum Amount"
+msgstr "Cantidad Mínima"
+
+#. module: bi_payment_dynamic_approval
+#: model:ir.ui.menu,name:bi_payment_dynamic_approval.payment_menu_my_approval
+msgid "My Approval"
+msgstr "Mis aprobaciones"
+
+#. module: bi_payment_dynamic_approval
+#: model:ir.actions.act_window,name:bi_payment_dynamic_approval.action_payment_my_approval
+msgid "My Approval Payments"
+msgstr "Mis pagos aprobados"
+
+#. module: bi_payment_dynamic_approval
+#: model:ir.model.fields,field_description:bi_payment_dynamic_approval.field_account_payment_approval__name
+#: model_terms:ir.ui.view,arch_db:bi_payment_dynamic_approval.account_payment_approval_form
+#: model_terms:ir.ui.view,arch_db:bi_payment_dynamic_approval.po_approval_form
+msgid "Name"
+msgstr "Nombre"
+
+#. module: bi_payment_dynamic_approval
+#: model:ir.model.fields,field_description:bi_payment_dynamic_approval.field_account_payment_approval__user_name
+msgid "Name "
+msgstr "Nombre "
+
+#. module: bi_payment_dynamic_approval
+#. odoo-python
+#: code:addons/bi_payment_dynamic_approval/models/account_payment.py:0
+#, python-format
+msgid "No any approval level found!"
+msgstr "No se encontró ningún nivel de aprobación!"
+
+#. module: bi_payment_dynamic_approval
+#: model:ir.model.fields,field_description:bi_payment_dynamic_approval.field_account_payment_line__order_id
+#: model:ir.model.fields,field_description:bi_payment_dynamic_approval.field_reject_wizard__order_id
+msgid "Order"
+msgstr "Pedido"
+
+#. module: bi_payment_dynamic_approval
+#: model:ir.model.fields,field_description:bi_payment_dynamic_approval.field_account_payment__payment_approved_ids
+msgid "PO Approval Details"
+msgstr "Detalles de aprobación de la orden de compra (PO)"
+
+#. module: bi_payment_dynamic_approval
+#: model:ir.module.category,name:bi_payment_dynamic_approval.module_bi_payment_dynamic_approval
+msgid "Payment Approval"
+msgstr "Aprobación de pagos"
+
+#. module: bi_payment_dynamic_approval
+#: model:ir.actions.act_window,name:bi_payment_dynamic_approval.payment_approval_action_view
+#: model:ir.actions.act_window,name:bi_payment_dynamic_approval.po_approval_action_view
+#: model:ir.ui.menu,name:bi_payment_dynamic_approval.payment_approval_configuration_menu
+msgid "Payment Approval Configuration"
+msgstr "Configuración de aprobación de pago"
+
+#. module: bi_payment_dynamic_approval
+#: model:ir.model.fields,field_description:bi_payment_dynamic_approval.field_account_payment__payment_access_id
+#: model:ir.model.fields,field_description:bi_payment_dynamic_approval.field_account_payment_line__payment_access_id
+msgid "Payment Approval Level"
+msgstr "Nivel de aprobación de pago"
+
+#. module: bi_payment_dynamic_approval
+#: model:ir.model,name:bi_payment_dynamic_approval.model_payment_line
+msgid "Payment Line"
+msgstr "Línea de pago"
+
+#. module: bi_payment_dynamic_approval
+#: model:mail.template,subject:bi_payment_dynamic_approval.payment_confirm_email_notification
+msgid "Payment Posted"
+msgstr "Pago Registrado"
+
+#. module: bi_payment_dynamic_approval
+#. odoo-python
+#: code:addons/bi_payment_dynamic_approval/models/account_payment.py:0
+#, python-format
+msgid "Payment Reject"
+msgstr "Rechazo de pago"
+
+#. module: bi_payment_dynamic_approval
+#: model:ir.model,name:bi_payment_dynamic_approval.model_reject_wizard
+msgid "Payment Reject Wizard"
+msgstr "Asistente de rechazo de pago"
+
+#. module: bi_payment_dynamic_approval
+#: model:mail.template,name:bi_payment_dynamic_approval.payment_confirm_email_notification
+msgid "Payment: Payment Posted"
+msgstr "Pago: Pago registrado"
+
+#. module: bi_payment_dynamic_approval
+#: model:mail.template,name:bi_payment_dynamic_approval.payment_approval_email_notification
+msgid "Payment: Submit For Approval"
+msgstr "Pago: Enviar para aprobación"
+
+#. module: bi_payment_dynamic_approval
+#: model:ir.model.fields.selection,name:bi_payment_dynamic_approval.selection__account_payment__state__posted
+msgid "Posted"
+msgstr "Registrado o Publicado"
+
+#. module: bi_payment_dynamic_approval
+#: model:ir.model.fields,field_description:bi_payment_dynamic_approval.field_payment_line__payment_access_id
+msgid "Purchase Approval Level"
+msgstr "Nivel de aprobación de compra"
+
+#. module: bi_payment_dynamic_approval
+#: model:ir.model.fields,field_description:bi_payment_dynamic_approval.field_payment_line__approval_line_id
+msgid "Purchase Approval Line"
+msgstr "Línea de aprobación de compra"
+
+#. module: bi_payment_dynamic_approval
+#: model:ir.model.fields,field_description:bi_payment_dynamic_approval.field_payment_line__payment_id
+msgid "Purchase Order"
+msgstr "Orden de Compra"
+
+#. module: bi_payment_dynamic_approval
+#: model:ir.model.fields,field_description:bi_payment_dynamic_approval.field_reject_wizard__reason
+msgid "Reajection Reason"
+msgstr "Motivo de rechazo"
+
+#. module: bi_payment_dynamic_approval
+#: model:ir.model.fields.selection,name:bi_payment_dynamic_approval.selection__account_payment__state__reject
+#: model_terms:ir.ui.view,arch_db:bi_payment_dynamic_approval.reject_wizard_view_form
+msgid "Reject"
+msgstr "Rechazar"
+
+#. module: bi_payment_dynamic_approval
+#: model:ir.model.fields,field_description:bi_payment_dynamic_approval.field_account_payment__rejected_user_id
+msgid "Reject By"
+msgstr "Rechazado por"
+
+#. module: bi_payment_dynamic_approval
+#: model:ir.model.fields,field_description:bi_payment_dynamic_approval.field_account_payment__reject_date
+msgid "Reject Date"
+msgstr "Fecha de rechazo"
+
+#. module: bi_payment_dynamic_approval
+#: model:ir.model.fields,field_description:bi_payment_dynamic_approval.field_account_payment__is_rejected
+msgid "Reject Order"
+msgstr "Rechazar orden"
+
+#. module: bi_payment_dynamic_approval
+#: model_terms:ir.ui.view,arch_db:bi_payment_dynamic_approval.account_payment_view_inherit_view
+msgid "Reject Payment"
+msgstr "Rechazar pago"
+
+#. module: bi_payment_dynamic_approval
+#: model:ir.model.fields,field_description:bi_payment_dynamic_approval.field_account_payment__reject_reason
+msgid "Reject Reason"
+msgstr "Motivo de rechazo"
+
+#. module: bi_payment_dynamic_approval
+#: model_terms:ir.ui.view,arch_db:bi_payment_dynamic_approval.account_payment_view_inherit_view
+msgid "Rejection"
+msgstr "Rechazo"
+
+#. module: bi_payment_dynamic_approval
+#: model:ir.model.fields,field_description:bi_payment_dynamic_approval.field_account_payment__state
+#: model:ir.model.fields,field_description:bi_payment_dynamic_approval.field_account_payment_line__state
+msgid "State"
+msgstr "Estado"
+
+#. module: bi_payment_dynamic_approval
+#: model:ir.model.fields,field_description:bi_payment_dynamic_approval.field_account_payment_approval__status_approval
+#: model:ir.model.fields,field_description:bi_payment_dynamic_approval.field_payment_line__status
+msgid "Status"
+msgstr "Estatus"
+
+#. module: bi_payment_dynamic_approval
+#: model:mail.template,subject:bi_payment_dynamic_approval.payment_approval_email_notification
+msgid "Submit For Approval"
+msgstr "Enviar para aprobación"
+
+#. module: bi_payment_dynamic_approval
+#: model:ir.actions.act_window,name:bi_payment_dynamic_approval.reject_wizard_action
+msgid "Test Wizard"
+msgstr "Asistente de Prueba"
+
+#. module: bi_payment_dynamic_approval
+#: model:ir.model.fields,field_description:bi_payment_dynamic_approval.field_res_config_settings__approval_type
+#: model:ir.model.fields.selection,name:bi_payment_dynamic_approval.selection__res_company__approval_type__total
+msgid "Total Amount"
+msgstr "Monto Total"
+
+#. module: bi_payment_dynamic_approval
+#: model:ir.model.fields.selection,name:bi_payment_dynamic_approval.selection__res_company__approval_type__before_tax_amount
+msgid "Untaxed Amounts"
+msgstr "Montos sin impuestos"
+
+#. module: bi_payment_dynamic_approval
+#: model:ir.model.fields.selection,name:bi_payment_dynamic_approval.selection__account_payment_line__group_approve__user
+#: model:res.groups,name:bi_payment_dynamic_approval.group_payment_approval_user_view
+msgid "User"
+msgstr "Usuario"
+
+#. module: bi_payment_dynamic_approval
+#: model:ir.model.fields,field_description:bi_payment_dynamic_approval.field_account_payment__user_ids
+#: model:ir.model.fields,field_description:bi_payment_dynamic_approval.field_account_payment_approval__user_id
+#: model:ir.model.fields,field_description:bi_payment_dynamic_approval.field_account_payment_line__user_ids
+#: model:ir.model.fields,field_description:bi_payment_dynamic_approval.field_payment_line__user_ids
+msgid "Users"
+msgstr "Usuarios"
+
+#. module: bi_payment_dynamic_approval
+#: model:ir.actions.act_window,name:bi_payment_dynamic_approval.action_menu_waiting_for_approval
+msgid "Waiting Approval Payments"
+msgstr "Pagos en espera de aprobación"
+
+#. module: bi_payment_dynamic_approval
+#: model:ir.model.fields.selection,name:bi_payment_dynamic_approval.selection__account_payment__state__waiting
+#: model:ir.ui.menu,name:bi_payment_dynamic_approval.payment_menu_waiting_approval
+msgid "Waiting For Approval"
+msgstr "Esperando aprobación"
