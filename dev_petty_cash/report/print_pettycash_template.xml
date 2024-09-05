@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright (C) 2018 DevIntelle Consulting Service Pvt.Ltd (<http://www.devintellecs.com>).
+
+For Module Support : devintelle@gmail.com  or Skype : devintelle
+ -->
+<odoo>
+    <template id="main_pettycash_template">
+         <t t-call="web.external_layout">
+            <div class="page" style="font-size: 12px;">
+                <!-- <span style="font-size: 18px;font-weight: bold;">
+                    <center> <span t-field="o.name"/></center>
+                </span>-->
+                <span style="font-size: 18px;font-weight: bold;">
+                    <center>Petty Cash Request</center>
+                </span>
+                <table width="100%" style="font-size: 14px;margin-top: 20px;">
+                    <td>
+                        <b>Number</b>&#160;:&#160;
+                        <span t-field="o.name"/>
+                    </td>
+                    <td style="text-align:right;">
+                        <b>Status</b>&#160;:&#160;
+                        <span t-field="o.state"/>
+                    </td>
+                </table>
+                  <table width="100%" style="font-size: 14px;margin-top: 25px;">
+                  <tr style="line-height: 20px;">
+                        <td width="12%">
+                            <b>Request To</b>
+                        </td>
+                        <td width="5%">:</td>
+                        <td width="33%">
+                            <span t-field="o.request_to"/>
+                        </td>
+                        <td width="12%">
+                            <b>Date</b>
+                        </td>
+                        <td width="5%">:</td>
+                        <td width="33%">
+                            <span t-field="o.date" t-options='{"format": "dd/MM/yyyy"}'/>
+                        </td>
+                    </tr>
+                   
+                  
+                    <tr style="line-height: 22px;">
+                        <td width="20%">
+                            <b>Request By</b>
+                        </td>
+                        <td width="5%">:</td>
+                        <td width="30%">
+                            <span t-field="o.request_by"/>
+                        </td>
+                        <td width="15%">
+                            <b>Request Amount</b>
+                        </td>
+                        <td width="5%">:</td>
+                        <td width="30%">
+                            <span t-field="o.request_amount"/>
+                        </td>
+                    </tr>
+                     <tr style="line-height: 22px;">
+                        <td width="20%">
+                            <b>From(Payment Journal)</b>
+                        </td>
+                        <td width="5%">:</td>
+                        <td width="35%">
+                            <span t-field="o.payment_journal_id"/>
+                        </td>
+                        <td width="15%"></td>
+                        <td width="5%"></td>
+                        <td width="30%"></td>
+                    </tr>
+                    <tr style="line-height: 22x;">
+                        <td width="20%">
+                            <b>To (Petty Cash Journal)</b>
+                        </td>
+                        <td width="5%">:</td>
+                        <td width="30%">
+                            <span t-field="o.petty_journal_id"/>
+                        </td>
+                         <td width="15%"></td>
+                        <td width="5%"></td>
+                        <td width="30%"></td>
+                    </tr>
+                    
+                    </table>
+                    <t t-if="o.note != '&lt;p&gt;&lt;br&gt;&lt;/p&gt;'">
+                    <p style="font-weight: bold;font-size: 14px;margin-bottom: 5px;margin-top: 25px;">
+                        Description
+                    </p>
+                    <p>
+                        <span t-raw="o.note"/>
+                    </p>
+                </t>
+                    <table width="100%" style="font-size: 14px;margin-top: 30%;">
+                    <td style="margin-top: 1%;">
+                        <b>Request By 
+                         <br/>
+                         <br/>
+                         <br/>
+                          <br/>
+                         <br/>
+                         <br/>
+                         <br/> ( <span t-field="o.request_by" /> )
+                            <br/>____________________________</b><br/>
+                    </td>
+                    <td style="text-align:right;">
+                        <b>Approved By 
+                        <br/>
+                         <br/>
+                         <br/>
+                         <br/>
+                          <br/>
+                         <br/>
+                         <br/> ( <span t-field="o.request_to"  /> )
+                          <br/>____________________________</b><br/>
+                    </td>
+                </table>
+                </div>
+                </t>
+    </template>
+
+    <template id="petty_cash_template">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-call="dev_petty_cash.main_pettycash_template"/>
+            </t>
+        </t>
+    </template>
+</odoo>

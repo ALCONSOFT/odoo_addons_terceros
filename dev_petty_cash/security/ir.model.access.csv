@@ -1,0 +1,11 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_petty_cash_request_user,petty.cash.request.user,model_petty_cash_request,dev_petty_cash.group_petty_user,1,1,1,1
+access_petty_cash_request_manager,petty.cash.request.manager,model_petty_cash_request,dev_petty_cash.group_petty_manager,1,1,1,1
+access_petty_cash_expense_user,petty.cash.expense.user,model_petty_cash_expense,dev_petty_cash.group_petty_user,1,1,1,1
+access_petty_cash_expense_manager,petty.cash.expense.manager,model_petty_cash_expense,dev_petty_cash.group_petty_manager,1,1,1,1
+access_petty_expense_lines_user,petty.expense.lines.user,model_petty_expense_lines,dev_petty_cash.group_petty_user,1,1,1,1
+access_petty_expense_lines_manager,petty.expense.lines.manager,model_petty_expense_lines,dev_petty_cash.group_petty_manager,1,1,1,1
+
+
+
+

@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+   
+         
+    <!--form-->
+    <record id="view_res_journal_petty_cash_form" model="ir.ui.view">
+        <field name="name">view.account.journal.petty.cash.form</field>
+        <field name="model">account.journal</field>
+        <field name="inherit_id" ref="account.view_account_journal_form"/>
+        <field name="arch" type="xml">
+            
+            <xpath expr="//field[@name='payment_sequence']" position="after">
+                <field name="is_petty_cash"/>
+            </xpath>
+            
+        </field>
+    </record>
+
+ 
+   
+     <!--Kanban-->
+    <record id="view_pettycash_dashboard" model="ir.ui.view">
+        <field name="name">pettycash.dashboard</field>
+        <field name="model">account.journal</field>
+        <field name="priority">50</field>
+        <field name="arch" type="xml">
+             <kanban class="o_kanban_dashboard o_account_kanban" sample="1"  create="false">
+                  <field name="total_request_amount"/>
+                   <field name="total_expense_amount"/>
+                <field name="currency_id"/>
+                <field name="color"/>
+                <templates>
+                     <!--<t t-name="kanban-menu">
+                            <div role="menuitem" aria-haspopup="true" class="o_no_padding_kanban_colorpicker">
+                                <ul class="oe_kanban_colorpicker" data-field="color" role="popup"/>
+                            </div>
+                            <div class="o_kanban_slides_card_manage_pane">
+                                <t t-if="widget.deletable">
+                                    <a role="menuitem" type="delete" class="dropdown-item">Delete</a>
+                                </t>
+                            </div>
+                        </t>-->
+                    <t t-name="kanban-box">
+                      <div t-attf-class="#{kanban_color(record.color.raw_value)} oe_kanban_global_click o_has_icon oe_kanban_content oe_kanban_card oe_kanban_global_click_edit">
+                            <div class="o_dropdown_kanban dropdown">
+                                    <a class="dropdown-toggle o-no-caret btn" role="button" data-toggle="dropdown"
+                                       data-display="static" href="#" aria-label="Dropdown menu" title="Dropdown menu">
+                                        <span class="fa fa-ellipsis-v"/>
+                                    </a>
+                                    <div class="dropdown-menu" role="menu">
+                                        <ul class="oe_kanban_colorpicker" data-field="color"/>
+                                    </div>
+                                </div>
+                      
+                             <div class="o_kanban_card_header" >
+                                    <div class="o_kanban_card_header_title mb16">
+                                        <div class="o_primary">
+                                            <a type="edit" class="me-auto">
+                                                <span><field name="name" class="o_primary"/></span>
+                                            </a>
+                                        </div>
+                                     </div>
+                                </div>
+                             <div class="container o_kanban_card_content mt1" >
+                                    <div class="row mb16">
+                                        <div class="col-6 o_kanban_primary_left">
+                                        	 <button class="btn btn-primary" name="action_create_new_request" type="object">
+		                                    Create Request
+		                                </button>
+		                                <div style="margin-top:20px;" class="d-flex" name="info__slides">
+		                                    <a name="action_get_all_request" type="object">
+		                                        <span class="me-auto">
+		                                            <label for="total_request" class="mb0">Total Request</label>
+		                                        </span>
+		                                        <field style="margin-left:39px;" name="total_request"/>
+		                                    </a>
+		                                </div>
+		                                <div class="d-flex" name="info__slides">
+		                                    <a name="action_get_approve" type="object">
+		                                        <span class="me-auto">
+		                                            <label for="approve_state" class="mb0">Approve</label>
+		                                        </span>
+		                                        <field style="margin-left:70px;" name="approve_state"/>
+		                                    </a>
+		                                </div>
+		                                <div class="d-flex" name="info__slides">
+		                                    <a name="action_get_pending" type="object">
+		                                        <span class="me-auto">
+		                                            <label for="request_state" class="mb0">Pending</label>
+		                                        </span>
+		                                        <field style="margin-left:72px;" name="request_state"/>
+		                                    </a>
+		                                </div>
+		                               <div class="d-flex" name="info__slides">
+		                                    <a name="action_get_approve_request_amount" type="object">
+		                                        <span class="me-auto">
+		                                            <label for="total_request_amount" class="mb0">Request Amount</label>
+		                                        </span>
+		                                        <field style="margin-left:20px;" name="total_request_amount" 
+		                                        widget="monetary" options="{'currency_field': 'currency_id'}"/>
+		                                    </a>
+		                                </div>
+		                            </div>
+                                         
+                                           <div class="col-6 o_kanban_primary_right" style="margin-bottom:5%;">
+                                               <button class="btn btn-primary" name="action_create_new_expense" type="object">
+		                                    Create Expense
+		                                </button>
+		                                 <div style="margin-top:20px;" class="d-flex" name="info__slides">
+		                                    <a name="action_get_all_expense" type="object">
+		                                        <span class="me-auto">
+		                                            <label for="total_expense" class="mb0">Total Expense</label>
+		                                        </span>
+		                                        <field style="margin-left:39px;" name="total_expense"/>
+		                                    </a>
+		                                </div>   
+		                                <div class="d-flex" name="info__slides">
+		                                    <a name="action_get_done_state" type="object">
+		                                        <span class="me-auto">
+		                                            <label for="total_done_state" class="mb0">Done</label>
+		                                        </span>
+		                                        <field style="margin-left:91px;" name="total_done_state"/>
+		                                    </a>
+		                                </div> 
+		                                <div class="d-flex" name="info__slides">
+		                                    <a name="action_get_expense_state" type="object">
+		                                        <span class="me-auto">
+		                                            <label for="total_expense_state" class="mb0">Pending</label>
+		                                        </span>
+		                                        <field style="margin-left:74px;" name="total_expense_state"/>
+		                                    </a>
+		                                </div>  
+		                                <div class="d-flex" name="info__slides">
+		                                    <a name="action_get_done_expense_amount" type="object">
+		                                        <span class="me-auto">
+		                                            <label for="total_expense_amount" class="mb0">Expense Amount</label>
+		                                        </span>
+		                                        <field name="total_expense_amount" style="margin-left:22px;"
+		                                         widget="monetary" options="{'currency_field': 'currency_id'}"/>
+		                                    </a>
+		                                </div> 
+		                            </div>
+		                         </div>
+                                   </div>
+                             </div>
+                         </t>
+                         
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <record id="action_petty_cash_dashboard" model="ir.actions.act_window">
+        <field name="name">Petty Cash Dashboard</field>
+        <field name="res_model">account.journal</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="domain">[('is_petty_cash', '=', True)]</field>
+        <field name="context">{'default_is_petty_cash' : 1}</field>
+        <field name="view_mode">kanban</field>
+        <field name="view_id" ref="view_pettycash_dashboard"/>
+    </record>
+
+    <!--Menus-->
+
+    <menuitem name="Petty Cash Dashboard" id="dev_petty_cash_dashboard_menu"
+              parent='dev_petty_cash_menu'
+              action="action_petty_cash_dashboard" sequence="1"/>
+
+</odoo>

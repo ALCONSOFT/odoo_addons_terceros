@@ -1,0 +1,14 @@
+
+8 May 2024   :   KPO
+---------------------------
+v 16.0.1.0
+	* Make report object(petty.cash.request)
+	* Make report object(petty.cash.expense)
+	* Add note field Object(petty.cash.request) because add description description 
+	
+9 May 2024   :   KPO
+---------------------------
+v 16.0.1.1
+
+	* Make petty cash Dashboard and add in index
+	* Add is_petty_cash boolean field in account.journal because it flag true that journal show in dashboard

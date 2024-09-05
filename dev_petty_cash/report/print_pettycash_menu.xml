@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright (C) 2015 DevIntelle Consulting Service Pvt.Ltd (<http://www.devintellecs.com>).
+
+For Module Support : devintelle@gmail.com  or Skype : devintelle 
+ -->
+<odoo>
+    
+   <record id="action_petty_cash_pdf_template" model="ir.actions.report">
+        <field name="name">Petty Cash Request</field>
+        <field name="model">petty.cash.request</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">dev_petty_cash.petty_cash_template</field>
+        <field name="report_file">dev_petty_cash.petty_cash_template</field>
+        <field name="binding_model_id" ref="model_petty_cash_request"/>
+        <field name="binding_type">report</field>
+       <!-- <field name="print_report_name">'%s - Petty Cash' % (object.name)</field>-->
+    </record>
+
+    <record id="action_petty_cash_exp_pdf_template" model="ir.actions.report">
+        <field name="name">Petty Cash Expense</field>
+        <field name="model">petty.cash.request</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">dev_petty_cash.petty_cash_exp_template</field>
+        <field name="report_file">dev_petty_cash.petty_cash_exp_template</field>
+        <field name="binding_model_id" ref="model_petty_cash_expense"/>
+        <field name="binding_type">report</field>
+       <!-- <field name="print_report_name">'%s - Petty Cash Expense' % (object.name)</field>-->
+    </record>
+</odoo>
