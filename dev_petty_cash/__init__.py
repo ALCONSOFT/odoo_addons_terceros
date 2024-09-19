@@ -10,6 +10,7 @@
 
 from . import models
 from . import report
+#from . import controllers
 
 
 def pre_init_check(cr):

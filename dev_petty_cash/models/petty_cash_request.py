@@ -26,7 +26,8 @@ class petty_cash_request(models.Model):
     note = fields.Text('Notes')
     request_to = fields.Many2one('hr.employee', string='Request To')
     request_by = fields.Many2one('hr.employee', string='Request By', default=_get_request_by)
-    payment_journal_id = fields.Many2one('account.journal', string='Payment Journal', domain="[('is_petty_cash', '=', True)]")
+    # Quitando dominio para cajas menudas: domain="[('is_petty_cash', '=', True)]"
+    payment_journal_id = fields.Many2one('account.journal', string='Payment Journal', domain="[('is_petty_cash', '!=', True)]")
     petty_journal_id=  fields.Many2one('account.journal', string='Petty Cash Journal', domain="[('is_petty_cash', '=', True)]", tracking=2)
     date = fields.Date('Date', copy=False, default=fields.Datetime.now)
     request_amount = fields.Monetary('Request Amount', tracking=2)
@@ -40,7 +41,27 @@ class petty_cash_request(models.Model):
                                                         ('reject','Reject')], default='draft', tracking=4)
     payment_id = fields.Many2one('account.payment', string='Payment', copy=False)
     balance = fields.Monetary('Balance', compute='_get_balance')
-    
+    account_move_ids_send = fields.One2many(
+        'account.move',
+        'petty_cash_request_id_send',
+        string='Asientos de Envío',
+        readonly=True,
+        copy=False
+    )
+    account_move_ids_receive = fields.One2many(
+        'account.move',
+        'petty_cash_request_id_receive',
+        string='Asientos de Recepción',
+        readonly=True,
+        copy=False
+    )
+    request_type = fields.Selection([
+        ('apertura', 'Apertura'),
+        ('reembolso', 'Reembolso')
+    ], string="Tipo de Solicitud", default='reembolso', required=True
+    )
+    expense_id = fields.Many2one('petty.cash.expense', string='Petty Cash Expense')
+
     @api.onchange('payment_id')
     def _get_balance(self):
         for request in self:
@@ -50,8 +71,6 @@ class petty_cash_request(models.Model):
                 account_id = request.petty_journal_id.default_account_id
                 line_id = move_id.line_ids.filtered(lambda t: t.account_id.id == account_id.id)
                 request.balance = abs(line_id.amount_residual_currency)
-                    
-        
     
     
     def create_payment(self):
@@ -67,19 +86,160 @@ class petty_cash_request(models.Model):
             'amount':self.request_amount or 0.0,
             'currency_id':self.currency_id and self.currency_id.id or False,
             'journal_id':self.payment_journal_id and self.payment_journal_id.id or False,
-#            'payment_method_id':payment_method_id and payment_method_id.id or False,
+            'account_id_cr': self.payment_journal_id and self.payment_journal_id.default_account_id.id or False,
+            'payment_method_id':payment_method_id and payment_method_id.id or False,
             'destination_journal_id':self.petty_journal_id.id or False,
+            'account_id_dr':self.petty_journal_id.default_account_id.id,
+            'date':self.date,
+            'description': self.note,
+            'name': self.name,
+            'transfer_account_id':self.payment_journal_id.company_id.transfer_account_id.id or False
         }
-        payment_id = self.env['account.payment'].sudo().create(vals)
-        payment_id.action_post()
-        self.payment_id= payment_id and payment_id.id or False
-    
+        return vals
+
+        # Aquí podrías realizar acciones adicionales si es necesario, como confirmar el pago, etc.
+        ##########################################################################################
+        # payment_id = self.env['account.payment'].sudo().create(vals)
+        # payment_id.action_post()
+        # self.payment_id= payment_id and payment_id.id or False
+
+        #######################################################################################
+    def action_confirm_send(self):
+        # CREACION DEL ENCABEZADO DEL REGISTRO DEL PAGO POR TRSANSGFERENCIA INTERNO
+        # ASIENTO DEL DIARIO ORIGEN - PAYMENT
+        #######################################################################################
+        vals = self.create_payment()
+        payment_cash_data = self.get_datos_factura(vals, 'payment_cash', 'origin')
+        print(payment_cash_data)
+        if payment_cash_data:
+            # Transferencia de Efectivo o Liquidez
+            # Asiento de Diario Origen de la Transferencia
+            invoice_id = self.env['account.move'].create(payment_cash_data)
+            invoice_id.action_post()
+        else:
+            raise UserError("Los datos del pago en efectivo están vacíos o no son válidos.")
+        print(f"Transferencia Interna de Caja Chica creada con ID: {invoice_id}")
+        self.account_move_ids_send = invoice_id
+                            
+    def action_confirm_receive(self):
+        # REGISTRO EN MODELO: ACCOUNT.PAYMENT DE LA TRANSACCION
+        # ASIENTO DEL DIARIO DESTINO - PETTY CASH (CAJA CHICA)
+        vals = self.create_payment()        
+        payment_cash_data = self.get_datos_factura(vals, 'payment_cash', 'destination')
+        print(payment_cash_data)
+        if payment_cash_data:
+            # Transferencia de Efectivo o Liquidez
+            # Asiento de Diario Destino de la Transferencia
+            invoice_id = self.env['account.move'].create(payment_cash_data)
+            invoice_id.action_post()
+        else:
+            raise UserError("Los datos del pago en efectivo están vacíos o no son válidos.")
+        print(f"Transferencia Interna de Caja Chica creada con ID: {invoice_id}")
+        self.account_move_ids_receive = invoice_id
+
+    ##############################
+    def get_datos_factura(self, vals, erp_origen=None, category=None):
+        # Datos de la factura de partner (proveedor)
+        if erp_origen =='payment_cash':
+            if category == 'origin':
+                invoice_data = self.get_datos_payment_cash_origin(vals)
+            else:
+                invoice_data = self.get_datos_payment_cash_destination(vals)
+        else:
+            invoice_data = None
+        return invoice_data
+
+    def get_datos_payment_cash_origin(self, vals):
+        # ASIENTO DE DIARIO ORIGEN  DEBITO A LA CUENTA INTERNA DE TRANSFERENCIAS
+        #                           CREDITO A LA CUENTA POR DEFAULT DEL DIARIO DE PAGO
+        supplier_id = vals['partner_id']  # ID del proveedor
+        # Datos del encabezado
+        invoice_lines = [
+            {
+                'name': 'Crédito del Asiento de Solicitud de Caja Chica: ' + vals['name'],
+                'quantity': 1,
+                'price_unit': vals['amount'],
+                'price_subtotal': vals['amount'],
+                'price_total': vals['amount'],
+                'account_id': vals['account_id_cr'],  # ID de la cuenta contable
+                'debit':0.00,
+                'credit':vals['amount'],
+                'balance':-1*vals['amount'],
+                'amount_currency': -1*vals['amount']
+            },
+            {
+                'name': 'Débito del Asiento de Solicitud de Caja Chica: ' + vals['name'],
+                'account_id': vals['transfer_account_id'],  # ID de la cuenta contable
+                'debit': vals['amount'],
+                'credit':0.00,
+                'balance':vals['amount'],
+                'amount_currency': vals['amount'],
+                'amount_residual':vals['amount'],
+                'amount_residual_currency':vals['amount'],
+            }
+
+        ]
+        invoice_data = {
+            'move_type': 'entry',
+            'journal_id': vals['destination_journal_id'],
+            'partner_id': supplier_id,
+            'invoice_date': vals['date'],
+            'date': vals['date'],
+            'invoice_line_ids': [(0, 0, line) for line in invoice_lines],
+            'currency_id': vals['currency_id'],  # ID de la moneda, normalmente 1 para EUR o USD
+            'ref': vals['name'] + ' - ' + vals['description']
+        }
+        return invoice_data
+
+    def get_datos_payment_cash_destination(self, vals):
+        supplier_id = vals['partner_id']  # ID del proveedor
+        # Datos del encabezado
+        invoice_lines = [
+            {
+                #'product_id': None,  # ID del producto
+                'name': 'Crédito del Asiento de Solicitud de Caja Chica:' + vals['name'],
+                'quantity': 1,
+                'price_unit': vals['amount'],
+                'price_subtotal': vals['amount'],
+                'price_total': vals['amount'],
+                'account_id': vals['transfer_account_id'],  # ID de la cuenta contable
+                'debit':0.00,
+                'credit':vals['amount'],
+                'balance':-1*vals['amount'],
+                'amount_currency': -1*vals['amount']
+            },
+            {
+                'name': 'Debito del Asiento de Solicitud Caja Chica:' + vals['name'],
+                'account_id': vals['account_id_dr'],  # ID de la cuenta contable
+                'debit': vals['amount'],
+                'credit':0.00,
+                'balance':vals['amount'],
+                'amount_currency': vals['amount'],
+                'amount_residual':vals['amount'],
+                'amount_residual_currency':vals['amount'],
+            }
+
+        ]
+        invoice_data = {
+            'move_type': 'entry',
+            'journal_id': vals['destination_journal_id'],
+            'partner_id': supplier_id,
+            'invoice_date': vals['date'],
+            'date': vals['date'],
+            'invoice_line_ids': [(0, 0, line) for line in invoice_lines],
+            'currency_id': vals['currency_id'],  # ID de la moneda, normalmente 1 para EUR o USD
+            'ref': vals['name'] + ' - ' + vals['description']
+        }
+        return invoice_data
+    ##############################
     def action_request(self):
         if self.request_amount <= 0:
             raise ValidationError(_('Request Amount must be positive.'))
         self.state='request'
     
     def action_approve(self):
+        if not self.note:
+            raise ValidationError(_("You cannot approve a request without a description."))
         self.create_payment()
         self.state='approve'
     
@@ -116,3 +276,18 @@ class petty_cash_request(models.Model):
 #        return res        
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
+
+class AccountMove(models.Model):
+    _inherit = 'account.move'
+
+    petty_cash_request_id_send = fields.Many2one(
+        'petty.cash.request',
+        string='Petty Cash Request (Send)',
+        ondelete='cascade'
+    )
+
+    petty_cash_request_id_receive = fields.Many2one(
+        'petty.cash.request',
+        string='Petty Cash Request (Receive)',
+        ondelete='cascade'
+    )

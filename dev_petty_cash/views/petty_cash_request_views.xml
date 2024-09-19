@@ -1,89 +1,121 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <record id="view_petty_cash_request_tree" model="ir.ui.view">
-        <field name="name">view.petty.cash.request.tree</field>
-        <field name="model">petty.cash.request</field>
-        <field name="arch" type="xml">
-            <tree string="Petty Cash">
-                <field name="name"/>
-                <field name="request_to" optional="show"/>
-                <field name="request_by" optional="show"/>
-                <field name="date"/>
-                <field name="payment_journal_id" optional="hide"/>
-                <field name="petty_journal_id" optional="show"/>
-                <field name="request_amount"/>
-                <field name="currency_id" invisible="1"/>
-                <field name="company_id" optional="hide"/>
-                <field name="user_id" optional="hide"/>
-                <field name="state"/>
-            </tree>
-        </field>
-    </record>
+<record id="view_petty_cash_request_tree" model="ir.ui.view">
+    <field name="name">view.petty.cash.request.tree</field>
+    <field name="model">petty.cash.request</field>
+    <field name="arch" type="xml">
+        <tree string="Petty Cash Requests" decoration-info="state=='approve'" decoration-warning="state=='draft'" decoration-danger="state=='cancel'">
+            <field name="name" string="Request Ref" widget="char" />
+            <field name="request_to" string="Request To" optional="show"/>
+            <field name="request_by" string="Requested By" optional="show"/>
+            <field name="date" string="Date"/>
+            <field name="payment_journal_id" string="Payment Journal" optional="hide"/>
+            <field name="petty_journal_id" string="Petty Cash Journal" optional="show"/>
+            <field name="request_amount" string="Requested Amount" widget="monetary"/>
+            <field name="currency_id" invisible="1"/>
+            <field name="company_id" string="Company" optional="hide"/>
+            <field name="user_id" string="User" optional="hide"/>
+            <field name="state" string="Status"/>
+            <field name="expense_id" string="Petty Cash Expense" domain="[('state', '=', 'approve')]" context="{'default_petty_cash_request_id': active_id}"/>
+        </tree>
+    </field>
+</record>
 
-    <record id="view_petty_cash_request_form" model="ir.ui.view">
-        <field name="name">view.petty.cash.request.form</field>
-        <field name="model">petty.cash.request</field>
-        <field name="arch" type="xml">
-            <form string="Petty Cash">
-                <header>
-                    <button name="action_request" string='Request Cash'
-                            type='object' class="oe_highlight"
-                            states="draft"/>
-                    <button name="action_approve" string='Approve Request'
-                            type='object' class="oe_highlight"
-                            states="request"/>
+<record id="view_petty_cash_request_form" model="ir.ui.view">
+    <field name="name">view.petty.cash.request.form</field>
+    <field name="model">petty.cash.request</field>
+    <field name="arch" type="xml">
+        <form string="Solicitud de Caja Chica">
+            <header>
+                <!-- Botones del encabezado existentes -->
+                <button name="action_request" string="Solicitar Efectivo"
+                        type="object" class="oe_highlight"
+                        states="draft"/>
+                <button name="action_approve" string="Aprobar Solicitud"
+                        type="object" class="oe_highlight"
+                        states="request"/>
+                
+                <button name="action_draft" string="Volver a Borrador"
+                        type="object"
+                        states="cancel"/>
+                        
+                <button name="action_reject" string="Rechazar"
+                        type="object"
+                        states="request"/>
+                        
+                <button name="action_cancel" string="Cancelar"
+                        type="object"
+                        states="request"/>
+                
+                <field name="state" widget="statusbar" statusbar_visible="draft,request,approve,cancel"/>
+            </header>
+            <sheet>
+                <h1>
+                    <field name="name" readonly="1"/>
+                </h1>
+                <group>
+                    <!-- Campos organizados en una sola columna -->
+                    <field name="request_to" required="1" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                    <field name="request_by" required="1" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                    <field name="date" required="1" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                    <field name="request_amount" required="1" widget="monetary" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                    <field name="user_id" readonly="1"/>
+                    <field name="company_id" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                    <field name="request_type" string="Tipo de Solicitud" required="1"/>
+                    <field name="expense_id" string="Petty Cash Expense" domain="[('state', '=', 'approve')]" context="{'default_petty_cash_request_id': active_id}"/>
                     
-                    <button name="action_draft" string='Set To Draft'
-                            type='object'
-                            states="cancel"/>
-                            
-                    <button name="action_reject" string='Reject'
-                            type='object'
-                            states="request"/>
-                            
-                    <button name="action_cancel" string='Cancel'
-                            type='object'
-                            states="request"/>
+                    <!-- Separador para agrupar visualmente -->
+                    <separator string="Diario de Pago" colspan="4"/>
                     
+                    <field name="payment_journal_id" required="1" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                    <button name="action_confirm_send" string="Confirmar Envío" type="object"
+                            attrs="{'invisible': [('state', '!=', 'approve')]}"
+                            class="btn-primary" icon="fa-paper-plane"/>
+
+                    <span> Este botón confirma el envío de la solicitud de la Caja Chica.</span>
+
+                    <field name="account_move_ids_send" readonly="1">
+                        <tree string="Asientos de Envío">
+                            <field name="name"/>
+                            <field name="date"/>
+                            <field name="journal_id"/>
+                            <field name="state"/>
+                        </tree>
+                    </field>
+                    <separator string="Diario de Caja Chica" colspan="4"/>                    
+                    <field name="petty_journal_id" required="1" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                    <button name="action_confirm_receive" string="Confirmar Recepción" type="object"
+                            attrs="{'invisible': [('state', '!=', 'approve')]}"
+                            class="btn-success" icon="fa-check"/>
+                    <span> Este botón confirma el Recepción de la solicitud de Caja Chica.</span>                            
+  
+                    <field name="account_move_ids_receive" readonly="1">
+                        <tree string="Asientos de Recepción">
+                            <field name="name"/>
+                            <field name="date"/>
+                            <field name="journal_id"/>
+                            <field name="state"/>
+                        </tree>
+                    </field>
                     
-                    
-                    <field name="state" widget="statusbar" statusbar_visible="draft,request,approve"/>
-                </header>
-                <sheet>
-                    <h3>
-                        <field name="name" readonly="1"/>
-                    </h3>
-                    <group>
-                        <group>
-                            <field name="request_to" required='1' attrs="{'readonly':[('state','!=','draft')]}"/>
-                            <field name="request_by" required='1' attrs="{'readonly':[('state','!=','draft')]}"/>
-                            <field name="payment_journal_id" required='1' attrs="{'readonly':[('state','!=','draft')]}"/>
-                            <field name="petty_journal_id" required='1' attrs="{'readonly':[('state','!=','draft')]}"/>
-                        </group>
-                        <group>
-                            <field name="date" required='1' attrs="{'readonly':[('state','!=','draft')]}"/>
-                            <field name="request_amount" required='1' widget="monetary" attrs="{'readonly':[('state','!=','draft')]}"/>
-                            <field name="user_id" required='1' readonly="1"/>
-                            <field name="company_id" required='1' attrs="{'readonly':[('state','!=','draft')]}"/>
-                            <field name="payment_id" readonly="1" attrs="{'invisible':[('payment_id','=',False)]}"/>
-                            <field name="balance" invisible="1" widget="monetary" attrs="{'invisible':[('payment_id','=',False)]}"/>
-                            <field name="currency_id" invisible="1"/>
-                        </group>
-                    </group>
-                    <notebook>
-                        <page string="Description">
-                            <field name="note" placeholder="Description......" attrs="{'readonly':[('state','!=','draft')]}"/>
-                        </page>
-                    </notebook>
-                </sheet>
-                <div class="oe_chatter">
-                    <field name="message_follower_ids"/>
-                    <field name="activity_ids"/>
-                    <field name="message_ids"/>
-                </div>
-            </form>
-        </field>
-    </record>
+                    <!-- Información adicional -->
+                    <field name="payment_id" readonly="1" attrs="{'invisible': [('payment_id', '=', False)]}"/>
+                    <field name="balance" widget="monetary" attrs="{'invisible': [('payment_id', '=', False)]}"/>
+                </group>
+                <notebook>
+                    <page string="Descripción">
+                        <field name="note" placeholder="Ingrese una descripción..." attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                    </page>
+                </notebook>
+            </sheet>
+            <div class="oe_chatter">
+                <field name="message_follower_ids" widget="mail_followers"/>
+                <field name="activity_ids" widget="mail_activity"/>
+                <field name="message_ids" widget="mail_thread"/>
+            </div>
+        </form>
+    </field>
+</record>
 
 
     <record id="dev_petty_cash_request_filter" model="ir.ui.view">

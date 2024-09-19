@@ -10,7 +10,7 @@
 
 {
     'name': 'Petty Cash Management, Petty Cash Request, Petty Cash Expense',
-    'version': '16.0.1.2',
+    'version': '16.0.1.2-2024.09.19',
     'sequence': 1,
     'category': 'Accouting',
     'description':
@@ -61,7 +61,7 @@ odoo app allow Petty Cash Management, Petty Cash Request, Petty cash expense, Pe
     'auto_install': False,
     
     # author and support Details =============#
-    'author': 'DevIntelle Consulting Service Pvt.Ltd',
+    'author': 'DevIntelle Consulting Service Pvt.Ltd - Alconsoft',
     'website': 'http://www.devintellecs.com',    
     'maintainer': 'DevIntelle Consulting Service Pvt.Ltd', 
     'support': 'devintelle@gmail.com',

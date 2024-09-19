@@ -8,191 +8,114 @@ For Module Support : devintelle@gmail.com  or Skype : devintelle
     <template id="main_pettycash_exp_template">
          <t t-call="web.external_layout">
             <div class="page" style="font-size: 12px;">
-                <!-- <span style="font-size: 18px;font-weight: bold;">
-                    <center> <span t-field="o.name"/></center>
-                </span>-->
                 <span style="font-size: 18px;font-weight: bold;">
-                    <center>Petty Cash Expense</center>
+                    <center>Petty Cash Expense v11</center>
                 </span>
-                  <!--<table width="100%" style="font-size: 14px;margin-top: 20px;">
-                  <td>
-                        <b>Number</b>&#160;:&#160;
-                        <span t-field="o.name"/>
-                    </td>
-                    <td style="text-align:center;margin-right: 20px;">
-                        <b>Status</b>&#160;:&#160;
-                        <span t-field="o.state"/>
-                    </td>
-                </table>-->
-                  <table width="100%" style="font-size: 14px;margin-top: 25px;">
-                  <!--<tr style="line-height: 20px;">
-                        <td width="12%">
-                            <b>Employee</b>
-                        </td>
-                        <td width="5%">:</td>
-                        <td width="33%">
-                            <span t-field="o.employee_id.name"/>
-                        </td>
-                        <td width="12%">
-                            <b>Date</b>
-                        </td>
-                        <td width="5%">:</td>
-                        <td width="33%">
-                            <span t-field="o.date" t-options='{"format": "dd/MM/yyyy"}'/>
-                        </td>
-                    </tr>-->
-                   
-                    <tr style="line-height: 22x;">
-                        <td width="8%"> </td>
-                        <td width="5%"></td>
-                        <td width="33%"> </td>
-                        <td >
-                        <b>Status</b>&#160;:&#160;
-                        <span t-field="o.state"/>
-                        </td>
-                        
+
+                <table width="100%" style="font-size: 14px;margin-top: 25px;border-collapse: collapse;">
+                    <tr style="line-height: 22px;">
+                        <td width="15%"><b>Status</b></td>
+                        <td width="2%">:</td>
+                        <td width="33%"><span t-field="o.state"/></td>
+                        <td width="20%"><b>From (Petty Cash Journal)</b></td>
+                        <td width="2%">:</td>
+                        <td width="28%"><span t-field="o.petty_journal_id"/></td>
                     </tr>
-                     <tr style="line-height: 22px;">
-                     <td width="12%">
-                            <b>Employee</b>
-                        </td>
-                        <td width="5%">:</td>
-                        <td width="25%">
-                            <span t-field="o.employee_id.name"/>
-                        </td>
-                        
-                        <td width="20%">
-                            <b>From (Petty Cash Journal)</b>
-                        </td>
-                        <td width="5%">:</td>
-                        <td width="40%">
-                            <span t-field="o.petty_journal_id"/>
-                        </td>
-                        
+                    <tr>
+                        <td colspan="6"><hr style="border-top: 1px solid #000000;"/></td>
                     </tr>
-                    <tr style="line-height: 22x;">
-                        <td width="12%">
-                            <b>Date</b>
-                        </td>
-                        <td width="5%">:</td>
-                        <td width="25%">
-                            <span t-field="o.date" t-options='{"format": "dd/MM/yyyy"}'/>
-                        </td>
-                        <td width="20%">
-                            <b>To (Payment Journal)</b>
-                        </td>
-                        <td width="5%">:</td>
-                        <td width="40%">
-                            <span t-field="o.payment_journal_id"/>
-                        </td>
-                        
+                    <tr style="line-height: 22px;">
+                        <td width="15%"><b>Employee</b></td>
+                        <td width="2%">:</td>
+                        <td width="33%"><span t-field="o.employee_id.name"/></td>
+                        <td width="20%"><b>Date</b></td>
+                        <td width="2%">:</td>
+                        <td width="28%"><span t-field="o.date" t-options='{"format": "dd/MM/yyyy"}'/></td>
                     </tr>
-                    
-                    </table>
-                 <h2 style="text-align:left;margin-top: 20px;">
-                    <span >Expense # </span>
-                    <span t-field="o.name"></span>
-                </h2>
-                 <t t-if="o.expense_lines">
-                    <p style="font-weight: bold;font-size: 14px;margin-bottom: 5px;margin-top: 20px;">
-                        Expense
-                    </p>
-                    <table width="100%" style="table-layout: fixed;" class="table table-condensed">
-                        <tr style="word-wrap: break-word;line-height: 12px;">
-                            <td width="25%" style="border-bottom: 2px solid black;border-top: 1px solid white;">
-                                <b>Particulars</b>
-                            </td>
-                            <td width="25%" style="border-bottom: 2px solid black;border-top: 1px solid white;">
-                                <b>Account</b>
-                            </td>
-                            <td width="25%"
-                                style="border-bottom: 2px solid black;border-top: 1px solid white;">
-                                <b>Analytic Account</b>
-                            </td>
-                            <td width="20%"
-                                style="text-align: right;border-bottom: 2px solid black;border-top: 1px solid white;">
-                                <b>Amount</b>
-                            </td>
-                        </tr>
-                        <tr t-foreach="o.expense_lines" t-as="line"
-                            style="word-wrap: break-word;line-height: 12px;">
-                            <td>
-                                <span t-field="line.product_id"/>
-                            </td>
-                            <td>
-                                <span t-field="line.account_id"/>
-                            </td>
-                            <td >
-                                <span t-field="line.analytic_account_id"/>
-                            </td>
-                            <td style="text-align: right;">
-                                <span t-field="line.amount"/>
-                            </td>
-                        </tr>
-                    </table>
-                </t>
-                 <table width="100%" style="table-layout: fixed;margin-top: 20px;">
-                    <!--<tr style="word-wrap: break-word;line-height: 24px;">
-                        <td width="80%" style="text-align: right;">
-                            Balance :
-                        </td>
-                        <td width="20%" style="text-align: right;">
-                            <span t-field="o.balance"/>
-                        </td>
-                    </tr>-->
-                    <tr style="word-wrap: break-word;line-height: 24px;">
-                        <td width="100%" style="text-align: right;font-weight: bold;">
-                            Expense Amount :
-                        </td>
-                        <td width="15%" style="text-align: right;font-weight: bold;">
-                            <span t-field="o.expense_amount"/>
-                        </td>
+                    <tr>
+                        <td colspan="6"><hr style="border-top: 1px solid #000000;"/></td>
                     </tr>
-                   
-                    <!--<tr style="word-wrap: break-word;line-height: 24px;">
-                        <td width="80%" style="text-align: right;font-weight: bold;">
-                            Reaming Amount :
-                        </td>
-                        <td width="20%" style="text-align: right;font-weight: bold;">
-                            <span t-field="o.remaining_balace"/>
-                        </td>
-                    </tr>-->
+                    <tr style="line-height: 22px;">
+                        <td width="15%"><b>To (Payment Journal)</b></td>
+                        <td width="2%">:</td>
+                        <td width="33%"><span t-field="o.payment_journal_id"/></td>
+                        <td width="20%"><b>Saldo Inicial</b></td>
+                        <td width="2%">:</td>
+                        <td width="28%"><span t-field="o.balance"/></td>
+                    </tr>
+                    <tr>
+                        <td colspan="6"><hr style="border-top: 1px solid #000000;"/></td>
+                    </tr>
                 </table>
-                <t t-if="o.note != '&lt;p&gt;&lt;br&gt;&lt;/p&gt;'">
-                    <p style="font-weight: bold;font-size: 14px;margin-bottom: 5px;margin-top: 20px;">
-                        Description
-                    </p>
-                    <p>
-                        <span t-field="o.note"/>
-                    </p>
+
+                <h2 style="text-align:left;margin-top: 20px;">
+                    <span>Expense #</span> <span t-field="o.name"></span>
+                </h2>
+
+                <t t-if="o.expense_lines">
+                    <p style="font-weight: bold;font-size: 14px;margin-bottom: 5px;margin-top: 20px;">Expense</p>
+                    <table width="100%" class="table table-condensed" style="table-layout: fixed;border-collapse: collapse;">
+                        <thead>
+                            <tr style="line-height: 12px; border-bottom: 2px solid black;">
+                                <th style="border-bottom: 1px solid black;text-align:left;">Date</th>
+                                <th style="border-bottom: 1px solid black;text-align:left;">Description</th>
+                                <th style="border-bottom: 1px solid black;text-align:left;">Particulars</th>
+                                <th style="border-bottom: 1px solid black;text-align:left;">Proveedor</th>
+                                <th style="border-bottom: 1px solid black;text-align:left;">No. Factura</th>
+                                <th style="border-bottom: 1px solid black;text-align:left;">Analytic Account</th>
+                                <th style="border-bottom: 1px solid black;text-align:right;">Invoice Amount</th>
+                                <th style="border-bottom: 1px solid black;text-align:right;">Tax Amount</th>
+                                <th style="border-bottom: 1px solid black;text-align:right;">Total Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr t-foreach="o.expense_lines" t-as="line" style="line-height: 12px;">
+                                <td><span t-field="line.date_expense"/></td>
+                                <td><span t-field="line.note_expense"/></td>
+                                <td><span t-field="line.product_id"/></td>
+                                <td><span t-field="line.supplier_id"/></td>
+                                <td><span t-field="line.invoice_number"/></td>
+                                <td><span t-field="line.analytic_account_id"/></td>
+                                <td style="text-align:right;"><span t-esc="'{:.2f}'.format(line.amount - line.tax_amount)"/></td>
+                                <td style="text-align:right;"><span t-field="line.tax_amount"/></td>
+                                <td style="text-align:right;"><span t-field="line.amount"/></td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </t>
+
+                <table width="100%" style="table-layout: fixed;margin-top: 20px;">
+                    <tr style="line-height: 24px;">
+                        <td width="85%" style="text-align: right;font-weight: bold;">Expense Amount :</td>
+                        <td width="15%" style="text-align: right;font-weight: bold;"><span t-field="o.expense_amount"/></td>
+                    </tr>
+                    <tr style="line-height: 24px;">
+                        <td width="85%" style="text-align: right;font-weight: bold;">Tax Amount :</td>
+                        <t t-set="quantity_number_tax" t-value="float(o.total_tax_amount or 0.0)"/>
+                        <td width="15%" style="text-align: right;font-weight: bold;"><span t-esc="'{:.2f}'.format(quantity_number_tax)"/></td>
+                    </tr>
+                </table>
+
+                <t t-if="o.note != '&lt;p&gt;&lt;br&gt;&lt;/p&gt;'">
+                    <p style="font-weight: bold;font-size: 14px;margin-bottom: 5px;margin-top: 20px;">Description</p>
+                    <p><span t-field="o.note"/></p>
+                </t>
+
                 <table width="100%" style="font-size: 14px;margin-top: 20%;">
                     <td style="margin-top: 1%;">
-                        <b>Employee Sign
-                         <br/>
-                         <br/>
-                         <br/>
-                          <br/>
-                         <br/>
-                          <br/>
-                         <br/> ( <span t-field="o.employee_id.name" /> )
-                            <br/>____________________________</b><br/>
+                        <b>Employee Sign</b>
+                        <br/><br/><br/><br/><br/><br/><br/>
+                        <b>( <span t-field="o.employee_id.name"/> )</b>
+                        <br/>____________________________<br/>
                     </td>
                     <td style="text-align:right;">
-                        <b>Approved By
-                        <br/>
-                         <br/>
-                         <br/>
-                         <br/>
-                         <br/>
-                         <br/>
-                          <br/>
-                        <!-- <br/> ( <span t-field="o.request_to"  /> )-->
-                          <br/>____________________________</b><br/>
+                        <b>Approved By</b>
+                        <br/><br/><br/><br/><br/><br/><br/>
+                        <br/>____________________________<br/>
                     </td>
                 </table>
-             </div>
-           </t>
+            </div>
+         </t>
     </template>
 
     <template id="petty_cash_exp_template">

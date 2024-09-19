@@ -10,6 +10,8 @@
 
 from odoo import models, fields, api, _
 from odoo.exceptions import ValidationError, UserError
+from odoo.tools import float_round
+
 
 class petty_cash_expense(models.Model):
     _name = 'petty.cash.expense'
@@ -25,24 +27,77 @@ class petty_cash_expense(models.Model):
     name = fields.Char('Name', default='/', tracking=1)
     employee_id = fields.Many2one('hr.employee', string='Employee', default=_get_request_by, tracking=2)
     petty_journal_id = fields.Many2one('account.journal', string='Petty Cash Journal', tracking=2, domain="[('is_petty_cash', '=', True)]")
-    payment_journal_id = fields.Many2one('account.journal', string='Payment Journal', domain="[('is_petty_cash', '=', True)]")
+    payment_journal_id = fields.Many2one('account.journal', string='Payment Journal', domain="[('is_petty_cash', '=', False)]")
     date = fields.Date('Date', copy=False, default=fields.Datetime.now)
     currency_id = fields.Many2one('res.currency', string='Currency', default=lambda self:self.env.company.currency_id)
     user_id = fields.Many2one('res.users', string='User', default=lambda self:self.env.user)
     company_id = fields.Many2one('res.company', default=lambda self:self.env.company)
     state = fields.Selection(string='State', selection=[('draft', 'Draft'),
                                                         ('confirm', 'Confirm'),
-                                                        ('payment', 'Process Payment'),
+                                                        ('validate', 'Validate'),
                                                         ('done', 'Done'),
                                                         ('cancel','Cancel')], default='draft', tracking=4)
     expense_lines = fields.One2many('petty.expense.lines','expense_id', string='Expense Lines')
     payment_ids = fields.Many2many('account.payment', string='Payments', copy=False)
-    balance = fields.Monetary('Balance', compute='_get_balance', store=True)
+    balance = fields.Monetary('Balance', compute='saldo_caja_chica', store=True)    # se desarrollo nuestro propio calculador de saldo y se quito: '_get_balance'
     expense_amount = fields.Monetary('Expense Amount', compute='_get_expense_amount', tracking=3)
     request_ids = fields.Many2many('petty.cash.request', string='Requests')
-    remaining_balace = fields.Monetary('Reaming Amount', compute='_get_expense_amount')
+    remaining_balance = fields.Monetary('Remaining Balance', compute='_get_expense_amount', store=True)
     note = fields.Text('Notes')
     payment_count = fields.Integer('Payment Count', compute='_count_payment')
+    account_move_ids_expense = fields.One2many(
+        'account.move',
+        'petty_cash_expense_id',
+        string='Asientos de Gastos de Caja Chica',
+        readonly=True,
+        copy=False
+    )
+    account_move_name = fields.Char(string="Account Move Name", compute="_compute_account_move_name")
+    # Campo que totaliza todos los impuestos
+    total_tax_amount = fields.Text(string='Total Tax Amount', compute='_compute_total_tax_amount_only')
+
+    # Campo que almacena el desglose de impuestos en formato JSON (opcional)
+    tax_breakdown_json = fields.Text(string='Tax Breakdown', compute='_compute_total_tax_amount', default='{}') 
+
+    @api.depends('expense_lines.tax_amount')
+    def _compute_total_tax_amount_only(self):
+        for expense in self:
+            # Usamos el método que devuelve un diccionario con los impuestos
+            tax_totals = expense.expense_lines.get_total_tax_amount_by_tax()
+            
+            # Si el diccionario está vacío, asignamos 0 como valor predeterminado
+            if tax_totals:
+                total_tax = sum(tax_totals.values())
+            else:
+                total_tax = 0.0
+            
+            # Asignamos el valor calculado al campo computado
+            expense.total_tax_amount = total_tax
+            
+            # Para asegurar que el breakdown se inicializa
+            expense.tax_breakdown_json = str(tax_totals) if tax_totals else '{}'
+    
+    @api.depends('expense_lines.tax_amount')
+    def _compute_total_tax_amount(self):
+        for expense in self:
+            tax_totals = expense.expense_lines.get_total_tax_amount_by_tax()
+            # Suma de los valores del diccionario
+            total_tax = sum(tax_totals.values()) if tax_totals else 0.0
+            # Almacenar el total de impuestos
+            expense.total_tax_amount = total_tax
+
+            # Convertir el diccionario en un formato JSON para mostrar o almacenar (opcional)
+            expense.tax_breakdown_json = str(tax_totals) if tax_totals else '{}'
+
+    @api.depends('account_move_ids_expense')
+    def _compute_account_move_name(self):
+        for record in self:
+            if record.account_move_ids_expense:
+                # Assuming it's One2many, we'll take the first name
+                record.account_move_name = record.account_move_ids_expense[0].name
+            else:
+                record.account_move_name = 'Asiento de Diario'
+
     
     def action_view_payment(self):
         action = self.env["ir.actions.actions"]._for_xml_id("account.action_account_payments")
@@ -55,17 +110,13 @@ class petty_cash_expense(models.Model):
         for expense in self:
             expense.payment_count = len(expense.payment_ids)
             
-    @api.depends('expense_lines')
+    @api.depends('expense_lines.amount', 'balance')
     def _get_expense_amount(self):
         for expense in self:
-            amount = 0
-            for line in expense.expense_lines:
-                amount += line.amount
+            amount = sum(line.amount for line in expense.expense_lines)
             expense.expense_amount = amount
-            expense.remaining_balace = expense.balance - expense.expense_amount 
-            
-                    
-    
+            expense.remaining_balance = expense.balance - expense.expense_amount
+
     @api.depends('employee_id','petty_journal_id','currency_id')
     def _get_balance(self):
         for expense in self:
@@ -138,16 +189,176 @@ class petty_cash_expense(models.Model):
         if debit_move_lines and credit_move_lines:
             (credit_move_lines + debit_move_lines).reconcile()
         return True
-                
-            
-                                                                 
-        
+
+    @api.depends('employee_id', 'petty_journal_id', 'expense_lines', 'expense_lines.amount', 'state')
+    def saldo_caja_chica(self):
+        for expense in self:
+            expense.balance = expense.solicitudes_caja_chica_aprobadas() - expense.gastos_confirmados2()
+        return expense.balance
+
+    def solicitudes_caja_chica_aprobadas(self):
+        sumatoria = 0
+        for expense in self:
+            # Se quito los dineros pedidos para los colaboradores('request_by','=',expense.employee_id.id),
+            request_ids = expense.env['petty.cash.request'].search([('petty_journal_id','=',expense.petty_journal_id.id),
+                                                                 ('state','=','approve'),
+                                                                 ('balance','>',0)])
+            for request in request_ids:
+                sumatoria += request.request_amount
+        return sumatoria
     
-    def action_cofirm(self):
-        if self.balance <= self.expense_amount:
+    def gastos_confirmados(self):
+        sumatoria = 0
+        for expense in self:
+            if self.state == 'confirm':
+                sumatoria += self.expense_amount
+            else:
+                sumatoria = sumatoria
+        return sumatoria
+
+    def gastos_confirmados2(self):
+        max_expense_id = self.id
+        petty_cash_id = self.petty_journal_id.id
+        total = 0.0
+
+        # Verifica que max_expense_id y petty_cash_id tengan valores válidos
+        if max_expense_id and petty_cash_id:
+            # Si ambos valores existen, buscar registros con id menor que max_expense_id
+            expense_lines = self.search([('id', '<', max_expense_id), ('petty_journal_id', '=', petty_cash_id)])
+            total = sum(line.expense_amount for line in expense_lines)
+        else:
+            # Si max_expense_id es un objeto y tiene un atributo 'origin', verifica su tipo
+            if hasattr(max_expense_id, 'origin'):
+                if isinstance(max_expense_id.origin, bool):
+                    # Si el tipo es bool, buscar líneas con petty_journal_id
+                    expense_lines = self.search([('petty_journal_id', '=', petty_cash_id)])
+                    total = sum(line.expense_amount for line in expense_lines)
+                elif isinstance(max_expense_id.origin, int):
+                    # Si el tipo es int, buscar líneas con id menor que max_expense_id
+                    expense_lines = self.search([('id', '<', max_expense_id.origin), ('petty_journal_id', '=', petty_cash_id)])
+                    total = sum(line.expense_amount for line in expense_lines)
+
+        return total
+
+
+    def action_confirm(self):
+        # Calculo del saldo de la caja chica
+        # saldo_caja_chica = solicitudes_caja_chica_aprobadas - gastos_confirmados
+        if self.saldo_caja_chica() <= self.expense_amount:
             raise ValidationError(_("In Petty Cash have only %s balance")%(self.balance))
         self.state = 'confirm'
         
+    def action_validate(self):
+        account_ids = []
+        for line in self.expense_lines:
+            if line.account_id.id not in account_ids:
+                account_ids.append(line.account_id.id)
+                
+        for account in account_ids:
+            amount = 0
+            for line in self.expense_lines:
+                if line.account_id.id == account:
+                    amount += line.amount
+        vals={
+            'payment_type':'outbound',
+            'partner_id':self.company_id.partner_id.id or False,
+            'destination_account_id':self.petty_journal_id.default_account_id.id or False,
+            'is_internal_transfer':True,
+            'company_id':self.company_id and self.company_id.id or False,
+            'amount':amount or 0.0,
+            'currency_id':self.currency_id and self.currency_id.id or False,
+            'journal_id':self.payment_journal_id and self.payment_journal_id.id or False,
+            'destination_journal_id':self.petty_journal_id.id or False,
+            'name':self.name,
+            'account_id_cr':self.petty_journal_id.default_account_id.id or False,
+            'date':self.date,
+
+        }
+        expense_data = self.create_journals_entry(vals)
+        print(expense_data)
+        if expense_data:
+            # Asiento de Diario GAstos de la Caja Chica
+            invoice_id = self.env['account.move'].create(expense_data)
+            invoice_id.action_post()
+        else:
+            raise UserError("Los datos del gasto de caja chica están vacios.")
+        print(f"Asiento de Gastos de Caja Chica creada con ID: {invoice_id}")
+        self.account_move_ids_expense = invoice_id
+
+        self.state = 'done'
+
+    def create_journals_entry(self, vals):
+        # ASIENTO DE DIARIO ORIGEN  DEBITO A LA CUENTA INTERNA DE TRANSFERENCIAS
+        #                           CREDITO A LA CUENTA POR DEFAULT DEL DIARIO DE PAGO
+        supplier_id = vals['partner_id']  # ID del proveedor
+        
+        # Línea de crédito (para el gasto total)
+        invoice_lines = [
+            {
+                'name': 'Crédito del Asiento de Compras de Gastos en Caja Chica: ' + vals['name'],
+                'quantity': 1,
+                'price_unit': vals['amount'],
+                'price_subtotal': vals['amount'],
+                'price_total': vals['amount'],
+                'account_id': vals['account_id_cr'],  # ID de la cuenta contable de crédito
+                'debit': 0.00,
+                'credit': vals['amount'],  # Crédito al total del gasto
+                'balance': -1 * vals['amount'],
+                'amount_currency': -1 * vals['amount'],
+            }
+        ]
+        
+        # Líneas de débito (para cada línea de gasto)
+        for line in self.expense_lines:
+            account_dr = line.account_id.id
+            product_id = line.product_id.id
+            name_product = line.product_id.name
+            partner_id_expense = line.supplier_id.id
+            tax_amount = line.tax_amount
+            amount_dr = line.amount - tax_amount
+            invoice_lines.append({
+                'name': 'Débito por la compra de: ' + name_product,
+                'partner_id': partner_id_expense,
+                'account_id': account_dr,  # ID de la cuenta contable de débito
+                'debit': amount_dr,
+                'credit': 0.00,
+                'quantity': 1,
+                'price_unit': amount_dr,
+                'price_subtotal': amount_dr,
+                'price_total': amount_dr,
+                'product_id': product_id,
+                'balance': amount_dr,
+                'amount_currency': amount_dr,
+                'amount_residual': amount_dr,
+                'amount_residual_currency': amount_dr,
+            })
+            tax = line.invoice_tax_id.invoice_repartition_line_ids.account_id
+            
+            invoice_lines.append({
+                'name': 'Débito por Impuesto: ' + tax.display_name,
+                'account_id': tax.id,  # ID de la cuenta contable de débito
+                'debit': tax_amount,
+                'credit': 0.00,
+                'balance': tax_amount,
+                'amount_currency': tax_amount,
+                'amount_residual': tax_amount,
+                'amount_residual_currency': tax_amount,
+            })
+
+        # Datos del asiento contable (encabezado)
+        invoice_data = {
+            'move_type': 'entry',
+            'journal_id': vals['destination_journal_id'],  # Diario contable
+            'partner_id': supplier_id,
+            'invoice_date': vals['date'],
+            'date': vals['date'],
+            'invoice_line_ids': [(0, 0, line) for line in invoice_lines],  # Las líneas creadas
+            'currency_id': vals['currency_id'],  # Moneda
+            'ref': vals['name'],   # Referencia del asiento
+        }
+        
+        return invoice_data
+   
     def action_create_payment(self):
         self.create_payment()
         self.state = 'payment'
@@ -187,7 +398,15 @@ class petty_expense_lines(models.Model):
     amount = fields.Monetary('Amount')
     currency_id = fields.Many2one('res.currency', string='Currency')
     expense_id = fields.Many2one('petty.cash.expense', string='Expense', ondelete='cascade')
-    
+    # Campo relacionado que trae el estado desde el modelo padre
+    expense_state = fields.Selection(related='expense_id.state', string='Expense State', store=True)
+    # 
+    date_expense = fields.Date('Date Expense', copy=False, default=fields.Datetime.now)
+    invoice_number = fields.Char('Invoice No.', default='', tracking=1)
+    supplier_id = fields.Many2one('res.partner', string='Supplier', domain="[('supplier_rank', '>', 0)]", help="Select the supplier for this expense line")
+    tax_amount = fields.Monetary('Tax Amount')
+    invoice_tax_id = fields.Many2one(comodel_name='account.tax.template', help="The tax set to apply this distribution on invoices. Mutually exclusive with refund_tax_id")
+    note_expense = fields.Char('Note Expense', default='Gasto para: ', tracking=1)
     
     @api.onchange('product_id')
     def onchange_product(self):
@@ -199,5 +418,24 @@ class petty_expense_lines(models.Model):
             self.account_id = account_id and account_id.id or False
             self.amount = self.product_id.standard_price or 0.0
     
+    def get_total_tax_amount_by_tax(self):
+        tax_totals = {}
+        for line in self:
+            tax = line.invoice_tax_id
+            if tax:
+                if tax not in tax_totals:
+                    tax_totals[tax] = 0.0
+                tax_totals[tax] += line.tax_amount
+
+        # Ahora tenemos un diccionario con el total de tax_amount para cada tax
+        return tax_totals
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
+class AccountMove(models.Model):
+    _inherit = 'account.move'
+
+    petty_cash_expense_id = fields.Many2one(
+        'petty.cash.expense',
+        string='Petty Cash Expense',
+        ondelete='cascade'
+    )
