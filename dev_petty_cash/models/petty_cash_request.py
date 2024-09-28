@@ -37,6 +37,7 @@ class petty_cash_request(models.Model):
     state = fields.Selection(string='State', selection=[('draft', 'Draft'),
                                                         ('request', 'Requested'),
                                                         ('approve', 'Approved'),
+                                                        ('paid', 'Paid'),
                                                         ('cancel','Cancel'),
                                                         ('reject','Reject')], default='draft', tracking=4)
     payment_id = fields.Many2one('account.payment', string='Payment', copy=False)
@@ -60,7 +61,167 @@ class petty_cash_request(models.Model):
         ('reembolso', 'Reembolso')
     ], string="Tipo de Solicitud", default='reembolso', required=True
     )
+    pay_method = fields.Selection(
+        selection=[
+            ('cash', 'Cash'),
+            ('cheque', 'Cheque'),
+            ('ach', 'ACH')
+        ],
+        string="Payment Method",
+        required=True,  # Campo obligatorio
+        track_visibility='onchange'  # Habilita trazabilidad en cambios
+    ) # Este parametro indica el sistema su comportamiento:
+    # 1. Efectivo: Proceso de 2 Pasos
+    #   a. Envio de Efectivo
+    #   b. recibo de Efectivo
+    # 2. Cheque: PRoceso de un solo paso; cuando la solicitud es aprobada, entonces:
+    #   a. Se elabora el cheque
+    #   b. Se entrega el ck para ser cambiarlo por efectivo en el banco    
+    # 3. ACH: significa Automated Clearing House (Cámara de Compensación Automatizada).
+    #    Es un sistema de pagos electrónicos que permite transferencias entre cuentas bancarias en los Estados Unidos.
+    #    Es comúnmente utilizado para pagos como depósitos directos, transferencias de nómina, pagos de facturas,
+    #    y otras transacciones electrónicas.
+
     expense_id = fields.Many2one('petty.cash.expense', string='Petty Cash Expense')
+
+    def action_open_payment_form_opcion1(self):
+        """Abrir el formulario de pagos con contexto personalizado"""
+        self.ensure_one()
+
+        # IDs de los diarios (ajusta estos valores según tu configuración)
+        journal_payment_id = self.payment_journal_id.id  # Diario de pago (origen)
+        petty_cash_journal_id = self.petty_journal_id.id  # Diario de caja chica (destino)
+        amount = self.request_amount
+        payment_type = 'outbound'
+        # Preparar el contexto para pasar los diarios
+        context = {
+            'default_journal_id': journal_payment_id,  # Diario de pago (origen)
+            'default_destination_journal_id': petty_cash_journal_id,  # Diario de caja chica (destino)
+            'default_is_internal_transfer': True,  # Marcar como transferencia interna
+            'default_amount': amount,
+            'default_payment_type': payment_type
+        }
+
+        # Abrir el formulario account.payment.form con el contexto
+        return {
+            'name': 'Registrar Pago',
+            'type': 'ir.actions.act_window',
+            'res_model': 'account.payment',
+            'view_mode': 'form',
+            'view_id': self.env.ref('account.view_account_payment_form').id,
+            'target': 'new',
+            'context': context,
+        }
+
+    def action_state_petty_cash_payment(self):
+        # Cambiar la cuenta contable de la segunda linea del asiento de diario
+        # Cambiar el parametro: is_iinternal_tranfer a True; para que se pueda cambiar la cuenta contable de la segunda linea
+        self.env['account.payment'].set_internal_transfer(self.payment_id.id)
+        # Suponiendo que move_id y new_account_id son válidos
+        move_id = self.payment_id.move_id.id  # ID del asiento de diario
+        new_account_id = self.petty_journal_id.default_account_id.id  # ID de la nueva cuenta contable
+        # Llamar al método para cambiar la cuenta de la segunda línea
+        self.env['account.move'].change_second_line_account_sql(move_id, new_account_id)
+        # Cambiar el estado de la Solicitud de Caja Chica - Pagado
+        self.state = 'paid'
+        #self.save()
+
+    def action_open_payment_form(self):
+        """Abrir el formulario de pagos con contexto personalizado y guardar el ID del pago"""
+        self.ensure_one()
+
+        # IDs de los diarios (ajusta estos valores según tu configuración)
+        journal_payment_id = self.payment_journal_id.id  # Diario de pago (origen)
+        petty_cash_journal_id = self.petty_journal_id.id  # Diario de caja chica (destino)
+        amount = self.request_amount
+        payment_type = 'outbound'
+        if self.pay_method == 'cash':
+            name_payment_method_id = 'manual'
+        elif self.pay_method == 'cheque':
+            name_payment_method_id = 'check_printing'
+        elif self.pay_method == 'ach':
+            name_payment_method_id = 'ach'
+        else:
+            name_payment_method_id = ''
+            _message = "Método de Pago no definido en Caja Chica"
+            raise UserError(_message)
+        payment_method_id= self.env['account.payment.method'].search([('code','=',name_payment_method_id)],limit=1)
+        payment_method_line_id = self.env['account.payment.method.line'].search([('journal_id','=',journal_payment_id),('payment_method_id','=',payment_method_id.id)],limit=1)
+        # Crear el registro del Journal Primero
+        # La tecnica de registrar el registro de diario primero NO FUNCIONA
+        # Crear el pago y obtener su ID
+        vals = {
+            'journal_id': journal_payment_id,  # Diario de pago (origen)
+            'destination_journal_id': petty_cash_journal_id,  # Diario de caja chica (destino)
+            'is_internal_transfer': False,  # Marcar como transferencia interna
+            'amount': amount,
+            'payment_type': payment_type,
+            'payment_method_id':payment_method_id and payment_method_id.id or False,
+            'payment_method_line_id': payment_method_line_id and payment_method_line_id.id or False,
+            'outstanding_account_id': self.payment_journal_id and self.payment_journal_id.default_account_id.id or False,
+            'date':self.date,
+            'payment_reference': self.note,
+            'ref': self.note,
+            #'name': self.name,
+            'currency_id':self.currency_id and self.currency_id.id or False,
+            'company_id':self.company_id and self.company_id.id or False,
+            'partner_id':self.company_id.partner_id.id or False,
+            'partner_type': 'supplier', #'customer'
+        }
+        payment = self.env['account.payment'].create(vals)
+
+        # Guardar el ID del pago en el campo payment_id
+        self.payment_id = payment.id
+        # Postea la payment y genera contabilidad
+        self.payment_id.action_post()
+        # Abrir el formulario account.payment.form con el contexto
+        return {
+            'name': 'Registrar Pago',
+            'type': 'ir.actions.act_window',
+            'res_model': 'account.payment',
+            'res_id': payment.id,  # Abrir el registro recién creado
+            'view_mode': 'form',
+            'view_id': self.env.ref('account.view_account_payment_form').id,
+            'target': 'new',
+            'context': dict(self.env.context, create=False),  # Evitar crear un nuevo pago
+        }
+
+    
+    def action_register_payment(self):
+        ''' Open the account.payment.register wizard to pay the selected journal entries.
+        :return: An action opening the account.payment.register wizard.
+        '''
+        return {
+            'name': _('Register Payment'),
+            'res_model': 'account.payment.register',
+            'view_mode': 'form',
+            'context': {
+                'active_model': 'account.move',
+                'active_ids': self.ids,
+            },
+            'target': 'new',
+            'type': 'ir.actions.act_window',
+        }
+
+    def action_register_payment_opcion2(self):
+        """
+        Set net to pay how default amount to pay
+        """
+        res = super().action_register_payment()
+        amount_net_pay_residual = 0
+        currency_id = self.currency_id
+        if len(currency_id) > 1:
+            raise UserError(_("Petty Cash Request must have the same currency"))
+        for am in self:
+            if am.request_amount:
+                amount_net_pay_residual += am.request_amount
+        if not currency_id.is_zero(amount_net_pay_residual):
+            ctx = res.get("context", {})
+            if ctx:
+                ctx.update({"default_amount": amount_net_pay_residual})
+            res.update({"context": ctx})
+        return res
+
 
     @api.onchange('payment_id')
     def _get_balance(self):
@@ -277,6 +438,24 @@ class petty_cash_request(models.Model):
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
 
+class AccountPayment(models.Model):
+    _inherit = 'account.payment'
+
+    @api.model
+    def set_internal_transfer(self, payment_id):
+        # Buscamos el registro del pago
+        payment = self.browse(payment_id)
+        
+        # Validamos que exista el registro
+        if not payment:
+            return {'status': 'error', 'message': f'No se encontró el payment_id: {payment_id}'}
+        
+        # Actualizamos el campo is_internal_transfer
+        payment.is_internal_transfer = True
+
+        # Devolvemos una respuesta de éxito
+        return {'status': 'success', 'message': f'Se actualizó el payment_id: {payment_id} a internal_transfer'}
+
 class AccountMove(models.Model):
     _inherit = 'account.move'
 
@@ -291,3 +470,56 @@ class AccountMove(models.Model):
         string='Petty Cash Request (Receive)',
         ondelete='cascade'
     )
+
+    def change_second_line_account(self, move_id, new_account_id):
+        """
+        Cambia la cuenta contable de la segunda línea de un asiento de diario dado.
+        
+        :param move_id: ID del asiento de diario (`account.move`) al que se le cambiará la cuenta.
+        :param new_account_id: ID de la nueva cuenta contable (`account.account`) para la segunda línea.
+        """
+        # Buscar el asiento de diario con el ID proporcionado
+        move = self.browse(move_id)
+
+        # Verificar si el asiento tiene al menos dos líneas
+        if len(move.line_ids) < 2:
+            raise ValueError("El asiento de diario no tiene al menos dos líneas.")
+
+        # Obtener la segunda línea y cambiar su cuenta
+        second_line = move.line_ids[1]  # Las líneas son 0-indexadas, así que [1] es la segunda línea
+        second_line.account_id = new_account_id
+
+    @api.model
+    def change_second_line_account_sql(self, move_id, new_account_id):
+        """
+        Cambia la cuenta contable de la segunda línea de un asiento de diario dado usando una consulta SQL.
+
+        :param move_id: ID del asiento de diario (`account.move`) al que se le cambiará la cuenta.
+        :param new_account_id: ID de la nueva cuenta contable (`account.account`) para la segunda línea.
+        """
+        # Obtener la segunda línea de 'account.move.line' usando SQL
+        self.env.cr.execute("""
+            SELECT id 
+            FROM account_move_line 
+            WHERE move_id = %s 
+            ORDER BY id 
+            LIMIT 1 OFFSET 1
+        """, (move_id,))
+        
+        # Obtener el ID de la segunda línea
+        result = self.env.cr.fetchone()
+        
+        if not result:
+            raise ValueError("El asiento de diario no tiene al menos dos líneas.")
+        
+        second_line_id = result[0]
+
+        # Actualizar la cuenta de la segunda línea
+        self.env.cr.execute("""
+            UPDATE account_move_line
+            SET account_id = %s
+            WHERE id = %s
+        """, (new_account_id, second_line_id))
+
+        # Forzar la invalidación de la caché para que otros métodos vean los cambios inmediatamente
+        self.invalidate_cache()

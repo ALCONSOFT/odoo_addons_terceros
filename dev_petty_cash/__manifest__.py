@@ -10,7 +10,7 @@
 
 {
     'name': 'Petty Cash Management, Petty Cash Request, Petty Cash Expense',
-    'version': '16.0.1.2-2024.09.19',
+    'version': '16.0.1.2-2024.09.20',
     'sequence': 1,
     'category': 'Accouting',
     'description':

@@ -34,80 +34,101 @@
                 <button name="action_approve" string="Aprobar Solicitud"
                         type="object" class="oe_highlight"
                         states="request"/>
-                
                 <button name="action_draft" string="Volver a Borrador"
                         type="object"
                         states="cancel"/>
-                        
                 <button name="action_reject" string="Rechazar"
                         type="object"
                         states="request"/>
-                        
                 <button name="action_cancel" string="Cancelar"
                         type="object"
                         states="request"/>
-                
-                <field name="state" widget="statusbar" statusbar_visible="draft,request,approve,cancel"/>
+                <button name="action_state_petty_cash_payment" string="Marcar Pagado"
+                        type="object"
+                        states="approve"/>
+
+                <field name="state" widget="statusbar" statusbar_visible="draft,request,approve,cancel,paid"/>
             </header>
             <sheet>
                 <h1>
                     <field name="name" readonly="1"/>
                 </h1>
                 <group>
-                    <!-- Campos organizados en una sola columna -->
-                    <field name="request_to" required="1" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
-                    <field name="request_by" required="1" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
-                    <field name="date" required="1" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
-                    <field name="request_amount" required="1" widget="monetary" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
-                    <field name="user_id" readonly="1"/>
-                    <field name="company_id" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
-                    <field name="request_type" string="Tipo de Solicitud" required="1"/>
-                    <field name="expense_id" string="Petty Cash Expense" domain="[('state', '=', 'approve')]" context="{'default_petty_cash_request_id': active_id}"/>
-                    
-                    <!-- Separador para agrupar visualmente -->
-                    <separator string="Diario de Pago" colspan="4"/>
-                    
-                    <field name="payment_journal_id" required="1" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
-                    <button name="action_confirm_send" string="Confirmar Envío" type="object"
-                            attrs="{'invisible': [('state', '!=', 'approve')]}"
-                            class="btn-primary" icon="fa-paper-plane"/>
+                    <group colspan="2">
+                        <!-- Primera columna -->
+                        <group>
+                            <field name="request_to" required="1" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                            <field name="request_by" required="1" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                            <field name="date" required="1" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                            <field name="request_amount" required="1" widget="monetary" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                            <field name="payment_id" readonly="1" attrs="{'invisible': [('payment_id', '=', False)]}"/>                            
+                        </group>
 
-                    <span> Este botón confirma el envío de la solicitud de la Caja Chica.</span>
-
-                    <field name="account_move_ids_send" readonly="1">
-                        <tree string="Asientos de Envío">
-                            <field name="name"/>
-                            <field name="date"/>
-                            <field name="journal_id"/>
-                            <field name="state"/>
-                        </tree>
-                    </field>
-                    <separator string="Diario de Caja Chica" colspan="4"/>                    
-                    <field name="petty_journal_id" required="1" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
-                    <button name="action_confirm_receive" string="Confirmar Recepción" type="object"
-                            attrs="{'invisible': [('state', '!=', 'approve')]}"
-                            class="btn-success" icon="fa-check"/>
-                    <span> Este botón confirma el Recepción de la solicitud de Caja Chica.</span>                            
-  
-                    <field name="account_move_ids_receive" readonly="1">
-                        <tree string="Asientos de Recepción">
-                            <field name="name"/>
-                            <field name="date"/>
-                            <field name="journal_id"/>
-                            <field name="state"/>
-                        </tree>
-                    </field>
-                    
-                    <!-- Información adicional -->
-                    <field name="payment_id" readonly="1" attrs="{'invisible': [('payment_id', '=', False)]}"/>
-                    <field name="balance" widget="monetary" attrs="{'invisible': [('payment_id', '=', False)]}"/>
+                        <!-- Segunda columna -->
+                        <group>
+                            <field name="user_id" readonly="1"/>
+                            <field name="company_id" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                            <field name="request_type" string="Tipo de Solicitud" required="1"/>
+                            <field name="pay_method" />
+                            <field name="expense_id" string="Petty Cash Expense" domain="[('state', '=', 'approve')]" context="{'default_petty_cash_request_id': active_id}"/>
+                        </group>
+                    </group>
                 </group>
                 <notebook>
                     <page string="Descripción">
                         <field name="note" placeholder="Ingrese una descripción..." attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                        <separator string="Diario de Pago" colspan="4"/>                        
+                        <field name="payment_journal_id" required="1" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                        <separator string="Diario de Caja Chica" colspan="4"/>                    
+                        <field name="petty_journal_id" required="1" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                    </page>
+                    <page name="cash" string="Cash">
+                        <!-- Separador para agrupar visualmente -->
+                        <separator string="- - - -" colspan="4"/>
+
+                        <!-- Botón Confirmar Envío -->
+                        <button name="action_confirm_send" string="Confirmar Envío" type="object"
+                                attrs="{'invisible': [ ('state', '=', 'approve'), ('pay_method', '!=', 'cash')]}"
+                                class="btn-primary" icon="fa-paper-plane"/>
+                        <span> Este botón confirma el envío de la solicitud de la Caja Chica.</span>
+                        
+                        <!-- Campos solo editables si el método de pago es "cash" y el estado no es "approve" -->
+                        <field name="account_move_ids_send" attrs="{'readonly': [('state', '=', 'approve'), ('pay_method', '!=', 'cash')]}" readonly="1">
+                            <tree string="Asientos de Envío">
+                                <field name="name"/>
+                                <field name="date"/>
+                                <field name="journal_id"/>
+                                <field name="state"/>
+                            </tree>
+                        </field>
+
+                        <!-- Botón Confirmar Recepción -->
+                        <button name="action_confirm_receive" string="Confirmar Recepción" type="object"
+                                attrs="{'invisible': [('state', '=', 'approve'), ('pay_method', '!=', 'cash')]}"
+                                class="btn-success" icon="fa-check"/>
+                        <span> Este botón confirma el Recepción de la solicitud de Caja Chica.</span>                            
+
+                        <!-- Campos solo editables si el método de pago es "cash" y el estado no es "approve" -->
+                        <field name="account_move_ids_receive" attrs="{'readonly': [ ('state', '=', 'approve'), ('pay_method', '!=', 'cash')]}" readonly="1">
+                            <tree string="Asientos de Recepción">
+                                <field name="name"/>
+                                <field name="date"/>
+                                <field name="journal_id"/>
+                                <field name="state"/>
+                            </tree>
+                        </field>
+                    </page>
+                    <page name="chequeandach" string="Cheque o ACH">
+                        <button name="action_open_payment_form" type="object" string="Registrar Pago"
+                                groups="account.group_account_user"
+                                attrs="{'invisible': [ ('state', '=', 'approve'),('pay_method', 'not in', ['cheque', 'ach'])]}"/>
                     </page>
                 </notebook>
             </sheet>
+            <footer>
+                <!-- Información adicional -->
+                <field name="balance" widget="monetary" attrs="{'invisible': [('payment_id', '=', False)]}"/>
+            </footer>
             <div class="oe_chatter">
                 <field name="message_follower_ids" widget="mail_followers"/>
                 <field name="activity_ids" widget="mail_activity"/>
@@ -116,6 +137,7 @@
         </form>
     </field>
 </record>
+
 
 
     <record id="dev_petty_cash_request_filter" model="ir.ui.view">

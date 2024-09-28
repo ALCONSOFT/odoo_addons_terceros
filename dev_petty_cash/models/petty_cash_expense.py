@@ -284,7 +284,8 @@ class petty_cash_expense(models.Model):
             raise UserError("Los datos del gasto de caja chica están vacios.")
         print(f"Asiento de Gastos de Caja Chica creada con ID: {invoice_id}")
         self.account_move_ids_expense = invoice_id
-
+        # Agregar el nuevo asiento contable a la relación One2many
+        self.account_move_ids_expense = [(4, invoice_id.id)]
         self.state = 'done'
 
     def create_journals_entry(self, vals):
