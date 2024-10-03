@@ -17,7 +17,7 @@
             </tree>
         </field>
     </record>
-
+<!--
     <record id="view_petty_cash_expense_form" model="ir.ui.view">
         <field name="name">view.petty.cash.expense.form</field>
         <field name="model">petty.cash.expense</field>
@@ -147,7 +147,8 @@
             </form>
         </field>
     </record>
-<!---->
+-->    
+<!--FORMULARIO VERSION 2-->
 <record id="view_petty_cash_expense_form2" model="ir.ui.view">
     <field name="name">view.petty.cash.expense.form2</field>
     <field name="model">petty.cash.expense</field>
@@ -161,6 +162,7 @@
                         
                 <button name="action_validate" string="Validate"
                         type="object" class="btn-primary"
+                        groups="dev_petty_cash.group_petty_manager"
                         attrs="{'invisible': [('state', '!=', 'confirm')]}"/>
                 
                 <button name="action_reconcile" string="Reconcile Payment"
@@ -213,11 +215,13 @@
                                 <field name="date_expense" required="1"/>
                                 <field name="note_expense"/>
                                 <field name="supplier_id" required="1"/>
-                                <field name="product_id" required="1"/>
-                                <field name="account_id" required="1"/>
+                                <field name="product_id" required="0"/>
+                                <field name="account_id" groups="dev_petty_cash.group_petty_manager" required="1"/>
                                 <field name="analytic_account_id"/>
                                 <field name="invoice_number" required="1"/>
-                                <field name="invoice_tax_id"/>
+                                <field name="invoice_amount" widget="monetary" required="1"/>
+                                <!---->
+                                <field name="invoice_tax_id" domain="[('type_tax_use', 'in', ['purchase', 'none'])]"/>
                                 <field name="tax_amount" widget="monetary"/>
                                 <field name="amount" widget="monetary" required="1"/>
                                 <field name="currency_id" invisible="1"/>
@@ -246,7 +250,7 @@
                                 <field name="balance" widget="monetary" options="{'currency_field': 'currency_id'}"/>
                                 <field name="expense_amount" widget="monetary" options="{'currency_field': 'currency_id'}"/>
                                 <!--***-->
-                                <field name="total_tax_amount" />
+                                <field name="total_tax_amount"/>
                                 
                                 <div class="o_subtotal_footer_separator o_inline o_td_label">
                                     <label for="remaining_balance"/>
@@ -313,14 +317,14 @@
         </field>
     </record>
 
-
+<!--
 <record id="action_petty_cash_expense_form1" model="ir.actions.act_window">
     <field name="name">Petty Cash Expense Form 1</field>
     <field name="res_model">petty.cash.expense</field>
     <field name="view_mode">form</field>
     <field name="view_id" ref="view_petty_cash_expense_form"/>
 </record>
-
+-->
 <record id="action_petty_cash_expense_form2" model="ir.actions.act_window">
     <field name="name">Petty Cash Expense Form 2</field>
     <field name="res_model">petty.cash.expense</field>

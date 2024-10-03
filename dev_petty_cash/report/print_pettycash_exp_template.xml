@@ -83,18 +83,29 @@ For Module Support : devintelle@gmail.com  or Skype : devintelle
                         </tbody>
                     </table>
                 </t>
+<table width="100%" style="table-layout: fixed; margin-top: 20px;">
+    <tr style="line-height: 24px;">
+        <td width="85%" style="text-align: right; font-weight: bold;">Expense Amount :</td>
+        <td width="15%" style="text-align: right; font-weight: bold;">
+            <span t-esc="o.company_id.currency_id.symbol + ' ' + '{:,.2f}'.format(float(o.expense_amount or 0.0))"/>
+        </td>
+    </tr>
+    <tr style="line-height: 24px;">
+        <td width="85%" style="text-align: right; font-weight: bold;">Tax Amount :</td>
+        <t t-set="quantity_number_tax" t-value="float(o.total_tax_amount or 0.0)"/>
+        <td width="15%" style="text-align: right; font-weight: bold;">
+            <span t-esc="o.company_id.currency_id.symbol + ' ' + '{:,.2f}'.format(quantity_number_tax)"/>
+        </td>
+    </tr>
+    <tr style="line-height: 24px;">
+        <td width="85%" style="text-align: right; font-weight: bold;">Saldo Final :</td>
+        <t t-set="new_balance" t-value="float(o.balance or 0.0) - float(o.expense_amount or 0.0) - float(o.total_tax_amount or 0.0)"/>
+        <td width="15%" style="text-align: right; font-weight: bold;">
+            <span t-esc="o.company_id.currency_id.symbol + ' ' + '{:,.2f}'.format(new_balance)"/>
+        </td>
+    </tr>
+</table>
 
-                <table width="100%" style="table-layout: fixed;margin-top: 20px;">
-                    <tr style="line-height: 24px;">
-                        <td width="85%" style="text-align: right;font-weight: bold;">Expense Amount :</td>
-                        <td width="15%" style="text-align: right;font-weight: bold;"><span t-field="o.expense_amount"/></td>
-                    </tr>
-                    <tr style="line-height: 24px;">
-                        <td width="85%" style="text-align: right;font-weight: bold;">Tax Amount :</td>
-                        <t t-set="quantity_number_tax" t-value="float(o.total_tax_amount or 0.0)"/>
-                        <td width="15%" style="text-align: right;font-weight: bold;"><span t-esc="'{:.2f}'.format(quantity_number_tax)"/></td>
-                    </tr>
-                </table>
 
                 <t t-if="o.note != '&lt;p&gt;&lt;br&gt;&lt;/p&gt;'">
                     <p style="font-weight: bold;font-size: 14px;margin-bottom: 5px;margin-top: 20px;">Description</p>

@@ -67,7 +67,9 @@ class petty_cash_expense(models.Model):
             
             # Si el diccionario está vacío, asignamos 0 como valor predeterminado
             if tax_totals:
-                total_tax = sum(tax_totals.values())
+                # Redondeamos cada valor de impuesto a 2 decimales
+                tax_totals = {tax: round(amount, 2) for tax, amount in tax_totals.items()}
+                total_tax = round(sum(tax_totals.values()), 2)
             else:
                 total_tax = 0.0
             
@@ -257,8 +259,7 @@ class petty_cash_expense(models.Model):
         for account in account_ids:
             amount = 0
             for line in self.expense_lines:
-                if line.account_id.id == account:
-                    amount += line.amount
+                amount += line.amount
         vals={
             'payment_type':'outbound',
             'partner_id':self.company_id.partner_id.id or False,
@@ -292,7 +293,7 @@ class petty_cash_expense(models.Model):
         # ASIENTO DE DIARIO ORIGEN  DEBITO A LA CUENTA INTERNA DE TRANSFERENCIAS
         #                           CREDITO A LA CUENTA POR DEFAULT DEL DIARIO DE PAGO
         supplier_id = vals['partner_id']  # ID del proveedor
-        
+
         # Línea de crédito (para el gasto total)
         invoice_lines = [
             {
@@ -308,17 +309,21 @@ class petty_cash_expense(models.Model):
                 'amount_currency': -1 * vals['amount'],
             }
         ]
-        
+
         # Líneas de débito (para cada línea de gasto)
         for line in self.expense_lines:
+            invoice_number = line.invoice_number
             account_dr = line.account_id.id
             product_id = line.product_id.id
-            name_product = line.product_id.name
+            name_product = line.product_id.name or line.note_expense
             partner_id_expense = line.supplier_id.id
+            partner_name = line.supplier_id.name or ''
             tax_amount = line.tax_amount
             amount_dr = line.amount - tax_amount
+            
+            # Agregar línea de débito para el gasto
             invoice_lines.append({
-                'name': 'Débito por la compra de: ' + name_product,
+                'name': 'Débito por: ' + name_product + ' # Fact.: ' + invoice_number + ' Prov.: ' + partner_name,
                 'partner_id': partner_id_expense,
                 'account_id': account_dr,  # ID de la cuenta contable de débito
                 'debit': amount_dr,
@@ -333,18 +338,27 @@ class petty_cash_expense(models.Model):
                 'amount_residual': amount_dr,
                 'amount_residual_currency': amount_dr,
             })
-            tax = line.invoice_tax_id.invoice_repartition_line_ids.account_id
-            
-            invoice_lines.append({
-                'name': 'Débito por Impuesto: ' + tax.display_name,
-                'account_id': tax.id,  # ID de la cuenta contable de débito
-                'debit': tax_amount,
-                'credit': 0.00,
-                'balance': tax_amount,
-                'amount_currency': tax_amount,
-                'amount_residual': tax_amount,
-                'amount_residual_currency': tax_amount,
-            })
+
+            # Agregar líneas de débito para cada impuesto relacionado, solo si tiene cuenta válida
+            for tax_line in line.invoice_tax_id.invoice_repartition_line_ids:
+                tax = tax_line.account_id
+
+                # Verificar que la línea de impuesto tenga una cuenta válida
+                if not tax:
+                    continue  # Saltar si no hay una cuenta asociada
+
+                tax_name = tax.display_name if tax.display_name else 'N/A'
+                
+                invoice_lines.append({
+                    'name': 'Débito Impuesto: ' + tax_name + ' # Fact.: ' + invoice_number + ' Prov.: ' + partner_name,
+                    'account_id': tax.id,  # ID de la cuenta contable de débito
+                    'debit': tax_amount,
+                    'credit': 0.00,
+                    'balance': tax_amount,
+                    'amount_currency': tax_amount,
+                    'amount_residual': tax_amount,
+                    'amount_residual_currency': tax_amount,
+                })
 
         # Datos del asiento contable (encabezado)
         invoice_data = {
@@ -357,7 +371,7 @@ class petty_cash_expense(models.Model):
             'currency_id': vals['currency_id'],  # Moneda
             'ref': vals['name'],   # Referencia del asiento
         }
-        
+
         return invoice_data
    
     def action_create_payment(self):
@@ -396,6 +410,7 @@ class petty_expense_lines(models.Model):
     product_id = fields.Many2one('product.product', string='Particulars')
     account_id = fields.Many2one('account.account', string='Account')
     analytic_account_id = fields.Many2one('account.analytic.account', string='Analytic Account')
+    invoice_amount = fields.Monetary('Invoice Amount')
     amount = fields.Monetary('Amount')
     currency_id = fields.Many2one('res.currency', string='Currency')
     expense_id = fields.Many2one('petty.cash.expense', string='Expense', ondelete='cascade')
@@ -417,8 +432,18 @@ class petty_expense_lines(models.Model):
             accounts = self.product_id.product_tmpl_id.get_product_accounts(fiscal_pos=False)
             account_id = accounts['expense'] or False
             self.account_id = account_id and account_id.id or False
-            self.amount = self.product_id.standard_price or 0.0
+            self.invoice_amount = self.product_id.standard_price or 0.0
     
+    @api.onchange('tax_amount')
+    def _onchange_tax_amount(self):
+        if self.tax_amount:
+            self.amount = self.invoice_amount + self.tax_amount
+
+    @api.onchange('invoice_amount')
+    def _onchange_invoice_amount(self):
+        if self.invoice_amount:
+            self.amount = self.invoice_amount + self.tax_amount
+
     def get_total_tax_amount_by_tax(self):
         tax_totals = {}
         for line in self:
