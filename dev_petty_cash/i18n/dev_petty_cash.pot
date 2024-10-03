@@ -2,23 +2,20 @@
 # This file contains the translation of the following modules:
 # 	* dev_petty_cash
 #
-#, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 16.0\n"
+"Project-Id-Version: Odoo Server 16.0-20240126\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-09-05 11:54-0500\n"
-"PO-Revision-Date: 2024-09-05 16:52+0000\n"
+"POT-Creation-Date: 2024-10-03 14:14+0000\n"
+"PO-Revision-Date: 2024-10-03 14:14+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
-"Content-Transfer-Encoding: 8bit\n"
+"Content-Transfer-Encoding: \n"
 "Plural-Forms: \n"
-"X-Generator: Poedit 3.0.1\n"
 
 #. module: dev_petty_cash
-#: model_terms:ir.ui.view,arch_db:dev_petty_cash.main_pettycash_exp_template
 #: model_terms:ir.ui.view,arch_db:dev_petty_cash.main_pettycash_template
 msgid ""
 ")\n"
@@ -34,23 +31,23 @@ msgstr ""
 
 #. module: dev_petty_cash
 #: model_terms:ir.ui.view,arch_db:dev_petty_cash.main_pettycash_exp_template
-msgid "<b>Account</b>"
-msgstr ""
-
-#. module: dev_petty_cash
-#: model_terms:ir.ui.view,arch_db:dev_petty_cash.main_pettycash_exp_template
-msgid "<b>Amount</b>"
-msgstr ""
-
-#. module: dev_petty_cash
-#: model_terms:ir.ui.view,arch_db:dev_petty_cash.main_pettycash_exp_template
-msgid "<b>Analytic Account</b>"
+msgid ""
+"<b>Approved By</b>\n"
+"                        <br/><br/><br/><br/><br/><br/><br/>\n"
+"                        <br/>____________________________<br/>"
 msgstr ""
 
 #. module: dev_petty_cash
 #: model_terms:ir.ui.view,arch_db:dev_petty_cash.main_pettycash_exp_template
 #: model_terms:ir.ui.view,arch_db:dev_petty_cash.main_pettycash_template
 msgid "<b>Date</b>"
+msgstr ""
+
+#. module: dev_petty_cash
+#: model_terms:ir.ui.view,arch_db:dev_petty_cash.main_pettycash_exp_template
+msgid ""
+"<b>Employee Sign</b>\n"
+"                        <br/><br/><br/><br/><br/><br/><br/>"
 msgstr ""
 
 #. module: dev_petty_cash
@@ -74,11 +71,6 @@ msgid "<b>Number</b> :"
 msgstr ""
 
 #. module: dev_petty_cash
-#: model_terms:ir.ui.view,arch_db:dev_petty_cash.main_pettycash_exp_template
-msgid "<b>Particulars</b>"
-msgstr ""
-
-#. module: dev_petty_cash
 #: model_terms:ir.ui.view,arch_db:dev_petty_cash.main_pettycash_template
 msgid "<b>Request Amount</b>"
 msgstr ""
@@ -95,6 +87,15 @@ msgstr ""
 
 #. module: dev_petty_cash
 #: model_terms:ir.ui.view,arch_db:dev_petty_cash.main_pettycash_exp_template
+msgid "<b>Saldo Inicial</b>"
+msgstr ""
+
+#. module: dev_petty_cash
+#: model_terms:ir.ui.view,arch_db:dev_petty_cash.main_pettycash_exp_template
+msgid "<b>Status</b>"
+msgstr ""
+
+#. module: dev_petty_cash
 #: model_terms:ir.ui.view,arch_db:dev_petty_cash.main_pettycash_template
 msgid "<b>Status</b> :"
 msgstr ""
@@ -111,17 +112,40 @@ msgstr ""
 
 #. module: dev_petty_cash
 #: model_terms:ir.ui.view,arch_db:dev_petty_cash.main_pettycash_exp_template
-msgid "<br/>____________________________"
+msgid "<br/>____________________________<br/>"
+msgstr ""
+
+#. module: dev_petty_cash
+#: model_terms:ir.ui.view,arch_db:dev_petty_cash.view_petty_cash_request_form
+msgid ""
+"<span> Este botón confirma el Recepción de la solicitud de Caja "
+"Chica.</span>"
+msgstr ""
+
+#. module: dev_petty_cash
+#: model_terms:ir.ui.view,arch_db:dev_petty_cash.view_petty_cash_request_form
+msgid ""
+"<span> Este botón confirma el envío de la solicitud de la Caja Chica.</span>"
 msgstr ""
 
 #. module: dev_petty_cash
 #: model_terms:ir.ui.view,arch_db:dev_petty_cash.main_pettycash_exp_template
-msgid "<span>Expense # </span>"
+msgid "<span>Expense #</span>"
+msgstr ""
+
+#. module: dev_petty_cash
+#: model:ir.model.fields.selection,name:dev_petty_cash.selection__petty_cash_request__pay_method__ach
+msgid "ACH"
 msgstr ""
 
 #. module: dev_petty_cash
 #: model:ir.model.fields,field_description:dev_petty_cash.field_petty_expense_lines__account_id
 msgid "Account"
+msgstr ""
+
+#. module: dev_petty_cash
+#: model:ir.model.fields,field_description:dev_petty_cash.field_petty_cash_expense__account_move_name
+msgid "Account Move Name"
 msgstr ""
 
 #. module: dev_petty_cash
@@ -155,11 +179,6 @@ msgid "Activity Type Icon"
 msgstr ""
 
 #. module: dev_petty_cash
-#: model_terms:ir.actions.act_window,help:dev_petty_cash.action_petty_cash_expense
-msgid "Add Petty Cash Expense"
-msgstr ""
-
-#. module: dev_petty_cash
 #: model_terms:ir.actions.act_window,help:dev_petty_cash.action_petty_cash_request
 msgid "Add Petty Cash Request"
 msgstr ""
@@ -171,7 +190,13 @@ msgstr ""
 
 #. module: dev_petty_cash
 #: model:ir.model.fields,field_description:dev_petty_cash.field_petty_expense_lines__analytic_account_id
+#: model_terms:ir.ui.view,arch_db:dev_petty_cash.main_pettycash_exp_template
 msgid "Analytic Account"
+msgstr ""
+
+#. module: dev_petty_cash
+#: model:ir.model.fields.selection,name:dev_petty_cash.selection__petty_cash_request__request_type__apertura
+msgid "Apertura"
 msgstr ""
 
 #. module: dev_petty_cash
@@ -181,28 +206,10 @@ msgid "Approve"
 msgstr ""
 
 #. module: dev_petty_cash
-#: model_terms:ir.ui.view,arch_db:dev_petty_cash.view_petty_cash_request_form
-msgid "Approve Request"
-msgstr ""
-
-#. module: dev_petty_cash
 #: model:ir.model.fields.selection,name:dev_petty_cash.selection__petty_cash_request__state__approve
 #: model_terms:ir.ui.view,arch_db:dev_petty_cash.dev_petty_cash_expense_filter
 #: model_terms:ir.ui.view,arch_db:dev_petty_cash.dev_petty_cash_request_filter
 msgid "Approved"
-msgstr ""
-
-#. module: dev_petty_cash
-#: model_terms:ir.ui.view,arch_db:dev_petty_cash.main_pettycash_exp_template
-msgid ""
-"Approved By\n"
-"                        <br/>\n"
-"                         <br/>\n"
-"                         <br/>\n"
-"                         <br/>\n"
-"                         <br/>\n"
-"                         <br/>\n"
-"                          <br/>"
 msgstr ""
 
 #. module: dev_petty_cash
@@ -216,6 +223,38 @@ msgid ""
 "                          <br/>\n"
 "                         <br/>\n"
 "                         <br/> ("
+msgstr ""
+
+#. module: dev_petty_cash
+#: model_terms:ir.ui.view,arch_db:dev_petty_cash.view_petty_cash_request_form
+msgid "Aprobar Solicitud"
+msgstr ""
+
+#. module: dev_petty_cash
+#: model_terms:ir.ui.view,arch_db:dev_petty_cash.view_petty_cash_expense_form2
+msgid "Asiento de Diario"
+msgstr ""
+
+#. module: dev_petty_cash
+#: model:ir.model.fields,field_description:dev_petty_cash.field_petty_cash_request__account_move_ids_send
+#: model_terms:ir.ui.view,arch_db:dev_petty_cash.view_petty_cash_request_form
+msgid "Asientos de Envío"
+msgstr ""
+
+#. module: dev_petty_cash
+#: model_terms:ir.ui.view,arch_db:dev_petty_cash.view_petty_cash_expense_form2
+msgid "Asientos de Gastos"
+msgstr ""
+
+#. module: dev_petty_cash
+#: model:ir.model.fields,field_description:dev_petty_cash.field_petty_cash_expense__account_move_ids_expense
+msgid "Asientos de Gastos de Caja Chica"
+msgstr ""
+
+#. module: dev_petty_cash
+#: model:ir.model.fields,field_description:dev_petty_cash.field_petty_cash_request__account_move_ids_receive
+#: model_terms:ir.ui.view,arch_db:dev_petty_cash.view_petty_cash_request_form
+msgid "Asientos de Recepción"
 msgstr ""
 
 #. module: dev_petty_cash
@@ -235,9 +274,29 @@ msgstr ""
 #: model:ir.model.fields.selection,name:dev_petty_cash.selection__petty_cash_request__state__cancel
 #: model_terms:ir.ui.view,arch_db:dev_petty_cash.dev_petty_cash_expense_filter
 #: model_terms:ir.ui.view,arch_db:dev_petty_cash.dev_petty_cash_request_filter
-#: model_terms:ir.ui.view,arch_db:dev_petty_cash.view_petty_cash_expense_form
-#: model_terms:ir.ui.view,arch_db:dev_petty_cash.view_petty_cash_request_form
+#: model_terms:ir.ui.view,arch_db:dev_petty_cash.view_petty_cash_expense_form2
 msgid "Cancel"
+msgstr ""
+
+#. module: dev_petty_cash
+#: model_terms:ir.ui.view,arch_db:dev_petty_cash.view_petty_cash_request_form
+msgid "Cancelar"
+msgstr ""
+
+#. module: dev_petty_cash
+#: model:ir.model.fields.selection,name:dev_petty_cash.selection__petty_cash_request__pay_method__cash
+#: model_terms:ir.ui.view,arch_db:dev_petty_cash.view_petty_cash_request_form
+msgid "Cash"
+msgstr ""
+
+#. module: dev_petty_cash
+#: model:ir.model.fields.selection,name:dev_petty_cash.selection__petty_cash_request__pay_method__cheque
+msgid "Cheque"
+msgstr ""
+
+#. module: dev_petty_cash
+#: model_terms:ir.ui.view,arch_db:dev_petty_cash.view_petty_cash_request_form
+msgid "Cheque o ACH"
 msgstr ""
 
 #. module: dev_petty_cash
@@ -245,13 +304,24 @@ msgstr ""
 #: model:ir.model.fields,field_description:dev_petty_cash.field_petty_cash_request__company_id
 #: model_terms:ir.ui.view,arch_db:dev_petty_cash.dev_petty_cash_expense_filter
 #: model_terms:ir.ui.view,arch_db:dev_petty_cash.dev_petty_cash_request_filter
+#: model_terms:ir.ui.view,arch_db:dev_petty_cash.view_petty_cash_request_tree
 msgid "Company"
 msgstr ""
 
 #. module: dev_petty_cash
 #: model:ir.model.fields.selection,name:dev_petty_cash.selection__petty_cash_expense__state__confirm
-#: model_terms:ir.ui.view,arch_db:dev_petty_cash.view_petty_cash_expense_form
+#: model_terms:ir.ui.view,arch_db:dev_petty_cash.view_petty_cash_expense_form2
 msgid "Confirm"
+msgstr ""
+
+#. module: dev_petty_cash
+#: model_terms:ir.ui.view,arch_db:dev_petty_cash.view_petty_cash_request_form
+msgid "Confirmar Envío"
+msgstr ""
+
+#. module: dev_petty_cash
+#: model_terms:ir.ui.view,arch_db:dev_petty_cash.view_petty_cash_request_form
+msgid "Confirmar Recepción"
 msgstr ""
 
 #. module: dev_petty_cash
@@ -304,19 +374,35 @@ msgstr ""
 #: model:ir.model.fields,field_description:dev_petty_cash.field_petty_cash_request__date
 #: model_terms:ir.ui.view,arch_db:dev_petty_cash.dev_petty_cash_expense_filter
 #: model_terms:ir.ui.view,arch_db:dev_petty_cash.dev_petty_cash_request_filter
+#: model_terms:ir.ui.view,arch_db:dev_petty_cash.main_pettycash_exp_template
+#: model_terms:ir.ui.view,arch_db:dev_petty_cash.view_petty_cash_request_tree
 msgid "Date"
+msgstr ""
+
+#. module: dev_petty_cash
+#: model:ir.model.fields,field_description:dev_petty_cash.field_petty_expense_lines__date_expense
+msgid "Date Expense"
+msgstr ""
+
+#. module: dev_petty_cash
+#: model_terms:ir.ui.view,arch_db:dev_petty_cash.view_petty_cash_request_form
+msgid "Descripción"
 msgstr ""
 
 #. module: dev_petty_cash
 #: model_terms:ir.ui.view,arch_db:dev_petty_cash.main_pettycash_exp_template
 #: model_terms:ir.ui.view,arch_db:dev_petty_cash.main_pettycash_template
-#: model_terms:ir.ui.view,arch_db:dev_petty_cash.view_petty_cash_request_form
 msgid "Description"
 msgstr ""
 
 #. module: dev_petty_cash
 #: model_terms:ir.ui.view,arch_db:dev_petty_cash.view_petty_cash_request_form
-msgid "Description......"
+msgid "Diario de Caja Chica"
+msgstr ""
+
+#. module: dev_petty_cash
+#: model_terms:ir.ui.view,arch_db:dev_petty_cash.view_petty_cash_request_form
+msgid "Diario de Pago"
 msgstr ""
 
 #. module: dev_petty_cash
@@ -353,19 +439,6 @@ msgid "Employee"
 msgstr ""
 
 #. module: dev_petty_cash
-#: model_terms:ir.ui.view,arch_db:dev_petty_cash.main_pettycash_exp_template
-msgid ""
-"Employee Sign\n"
-"                         <br/>\n"
-"                         <br/>\n"
-"                         <br/>\n"
-"                          <br/>\n"
-"                         <br/>\n"
-"                          <br/>\n"
-"                         <br/> ("
-msgstr ""
-
-#. module: dev_petty_cash
 #: model:ir.model.fields,field_description:dev_petty_cash.field_account_journal__total_expense
 #: model:ir.model.fields,field_description:dev_petty_cash.field_petty_expense_lines__expense_id
 #: model_terms:ir.ui.view,arch_db:dev_petty_cash.main_pettycash_exp_template
@@ -386,8 +459,13 @@ msgstr ""
 
 #. module: dev_petty_cash
 #: model:ir.model.fields,field_description:dev_petty_cash.field_petty_cash_expense__expense_lines
-#: model_terms:ir.ui.view,arch_db:dev_petty_cash.view_petty_cash_expense_form
+#: model_terms:ir.ui.view,arch_db:dev_petty_cash.view_petty_cash_expense_form2
 msgid "Expense Lines"
+msgstr ""
+
+#. module: dev_petty_cash
+#: model:ir.model.fields,field_description:dev_petty_cash.field_petty_expense_lines__expense_state
+msgid "Expense State"
 msgstr ""
 
 #. module: dev_petty_cash
@@ -466,6 +544,27 @@ msgid "In Petty Cash have only %s balance"
 msgstr ""
 
 #. module: dev_petty_cash
+#: model_terms:ir.ui.view,arch_db:dev_petty_cash.view_petty_cash_request_form
+msgid "Ingrese una descripción..."
+msgstr ""
+
+#. module: dev_petty_cash
+#: model:ir.model.fields,field_description:dev_petty_cash.field_petty_expense_lines__invoice_amount
+#: model_terms:ir.ui.view,arch_db:dev_petty_cash.main_pettycash_exp_template
+msgid "Invoice Amount"
+msgstr ""
+
+#. module: dev_petty_cash
+#: model:ir.model.fields,field_description:dev_petty_cash.field_petty_expense_lines__invoice_number
+msgid "Invoice No."
+msgstr ""
+
+#. module: dev_petty_cash
+#: model:ir.model.fields,field_description:dev_petty_cash.field_petty_expense_lines__invoice_tax_id
+msgid "Invoice Tax"
+msgstr ""
+
+#. module: dev_petty_cash
 #: model:ir.model.fields,field_description:dev_petty_cash.field_petty_cash_expense__message_is_follower
 #: model:ir.model.fields,field_description:dev_petty_cash.field_petty_cash_request__message_is_follower
 msgid "Is Follower"
@@ -479,6 +578,11 @@ msgstr ""
 #. module: dev_petty_cash
 #: model:ir.model,name:dev_petty_cash.model_account_journal
 msgid "Journal"
+msgstr ""
+
+#. module: dev_petty_cash
+#: model:ir.model,name:dev_petty_cash.model_account_move
+msgid "Journal Entry"
 msgstr ""
 
 #. module: dev_petty_cash
@@ -514,6 +618,11 @@ msgid "Manager: All Documents"
 msgstr ""
 
 #. module: dev_petty_cash
+#: model_terms:ir.ui.view,arch_db:dev_petty_cash.view_petty_cash_request_form
+msgid "Marcar Pagado"
+msgstr ""
+
+#. module: dev_petty_cash
 #: model:ir.model.fields,field_description:dev_petty_cash.field_petty_cash_expense__message_has_error
 #: model:ir.model.fields,field_description:dev_petty_cash.field_petty_cash_request__message_has_error
 msgid "Message Delivery error"
@@ -538,12 +647,6 @@ msgid "Name"
 msgstr ""
 
 #. module: dev_petty_cash
-#: model:ir.model.fields,field_description:dev_petty_cash.field_petty_cash_expense__activity_calendar_event_id
-#: model:ir.model.fields,field_description:dev_petty_cash.field_petty_cash_request__activity_calendar_event_id
-msgid "Next Activity Calendar Event"
-msgstr ""
-
-#. module: dev_petty_cash
 #: model:ir.model.fields,field_description:dev_petty_cash.field_petty_cash_expense__activity_date_deadline
 #: model:ir.model.fields,field_description:dev_petty_cash.field_petty_cash_request__activity_date_deadline
 msgid "Next Activity Deadline"
@@ -559,6 +662,16 @@ msgstr ""
 #: model:ir.model.fields,field_description:dev_petty_cash.field_petty_cash_expense__activity_type_id
 #: model:ir.model.fields,field_description:dev_petty_cash.field_petty_cash_request__activity_type_id
 msgid "Next Activity Type"
+msgstr ""
+
+#. module: dev_petty_cash
+#: model_terms:ir.ui.view,arch_db:dev_petty_cash.main_pettycash_exp_template
+msgid "No. Factura"
+msgstr ""
+
+#. module: dev_petty_cash
+#: model:ir.model.fields,field_description:dev_petty_cash.field_petty_expense_lines__note_expense
+msgid "Note Expense"
 msgstr ""
 
 #. module: dev_petty_cash
@@ -592,7 +705,13 @@ msgid "Number of messages with delivery error"
 msgstr ""
 
 #. module: dev_petty_cash
+#: model:ir.model.fields.selection,name:dev_petty_cash.selection__petty_cash_request__state__paid
+msgid "Paid"
+msgstr ""
+
+#. module: dev_petty_cash
 #: model:ir.model.fields,field_description:dev_petty_cash.field_petty_expense_lines__product_id
+#: model_terms:ir.ui.view,arch_db:dev_petty_cash.main_pettycash_exp_template
 msgid "Particulars"
 msgstr ""
 
@@ -610,12 +729,19 @@ msgstr ""
 #: model:ir.model.fields,field_description:dev_petty_cash.field_petty_cash_expense__payment_journal_id
 #: model:ir.model.fields,field_description:dev_petty_cash.field_petty_cash_request__payment_journal_id
 #: model_terms:ir.ui.view,arch_db:dev_petty_cash.dev_petty_cash_request_filter
+#: model_terms:ir.ui.view,arch_db:dev_petty_cash.view_petty_cash_request_tree
 msgid "Payment Journal"
 msgstr ""
 
 #. module: dev_petty_cash
+#: model:ir.model.fields,field_description:dev_petty_cash.field_petty_cash_request__pay_method
+msgid "Payment Method"
+msgstr ""
+
+#. module: dev_petty_cash
+#: model:ir.model,name:dev_petty_cash.model_account_payment
 #: model:ir.model.fields,field_description:dev_petty_cash.field_petty_cash_expense__payment_ids
-#: model_terms:ir.ui.view,arch_db:dev_petty_cash.view_petty_cash_expense_form
+#: model_terms:ir.ui.view,arch_db:dev_petty_cash.view_petty_cash_expense_form2
 msgid "Payments"
 msgstr ""
 
@@ -631,8 +757,6 @@ msgstr ""
 #: model:ir.ui.menu,name:dev_petty_cash.dev_petty_cash_menu
 #: model_terms:ir.ui.view,arch_db:dev_petty_cash.dev_petty_cash_expense_filter
 #: model_terms:ir.ui.view,arch_db:dev_petty_cash.dev_petty_cash_request_filter
-#: model_terms:ir.ui.view,arch_db:dev_petty_cash.view_petty_cash_request_form
-#: model_terms:ir.ui.view,arch_db:dev_petty_cash.view_petty_cash_request_tree
 msgid "Petty Cash"
 msgstr ""
 
@@ -643,13 +767,26 @@ msgid "Petty Cash Dashboard"
 msgstr ""
 
 #. module: dev_petty_cash
-#: model:ir.actions.act_window,name:dev_petty_cash.action_petty_cash_expense
 #: model:ir.actions.report,name:dev_petty_cash.action_petty_cash_exp_pdf_template
-#: model:ir.ui.menu,name:dev_petty_cash.dev_petty_cash_expense_menu
-#: model_terms:ir.ui.view,arch_db:dev_petty_cash.main_pettycash_exp_template
-#: model_terms:ir.ui.view,arch_db:dev_petty_cash.view_petty_cash_expense_form
+#: model:ir.model.fields,field_description:dev_petty_cash.field_account_bank_statement_line__petty_cash_expense_id
+#: model:ir.model.fields,field_description:dev_petty_cash.field_account_move__petty_cash_expense_id
+#: model:ir.model.fields,field_description:dev_petty_cash.field_account_payment__petty_cash_expense_id
+#: model:ir.model.fields,field_description:dev_petty_cash.field_petty_cash_request__expense_id
 #: model_terms:ir.ui.view,arch_db:dev_petty_cash.view_petty_cash_expense_tree
+#: model_terms:ir.ui.view,arch_db:dev_petty_cash.view_petty_cash_request_form
+#: model_terms:ir.ui.view,arch_db:dev_petty_cash.view_petty_cash_request_tree
 msgid "Petty Cash Expense"
+msgstr ""
+
+#. module: dev_petty_cash
+#: model_terms:ir.ui.view,arch_db:dev_petty_cash.view_petty_cash_expense_form2
+msgid "Petty Cash Expense 2"
+msgstr ""
+
+#. module: dev_petty_cash
+#: model:ir.actions.act_window,name:dev_petty_cash.action_petty_cash_expense_form2
+#: model:ir.ui.menu,name:dev_petty_cash.menu_petty_cash_expense_form2
+msgid "Petty Cash Expense Form 2"
 msgstr ""
 
 #. module: dev_petty_cash
@@ -658,10 +795,16 @@ msgid "Petty Cash Expense Report"
 msgstr ""
 
 #. module: dev_petty_cash
+#: model_terms:ir.ui.view,arch_db:dev_petty_cash.main_pettycash_exp_template
+msgid "Petty Cash Expense v11"
+msgstr ""
+
+#. module: dev_petty_cash
 #: model:ir.model.fields,field_description:dev_petty_cash.field_petty_cash_expense__petty_journal_id
 #: model:ir.model.fields,field_description:dev_petty_cash.field_petty_cash_request__petty_journal_id
 #: model_terms:ir.ui.view,arch_db:dev_petty_cash.dev_petty_cash_expense_filter
 #: model_terms:ir.ui.view,arch_db:dev_petty_cash.dev_petty_cash_request_filter
+#: model_terms:ir.ui.view,arch_db:dev_petty_cash.view_petty_cash_request_tree
 msgid "Petty Cash Journal"
 msgstr ""
 
@@ -684,6 +827,32 @@ msgid "Petty Cash Request"
 msgstr ""
 
 #. module: dev_petty_cash
+#: model:ir.model.fields,field_description:dev_petty_cash.field_account_bank_statement_line__petty_cash_request_id_receive
+#: model:ir.model.fields,field_description:dev_petty_cash.field_account_move__petty_cash_request_id_receive
+#: model:ir.model.fields,field_description:dev_petty_cash.field_account_payment__petty_cash_request_id_receive
+msgid "Petty Cash Request (Receive)"
+msgstr ""
+
+#. module: dev_petty_cash
+#: model:ir.model.fields,field_description:dev_petty_cash.field_account_bank_statement_line__petty_cash_request_id_send
+#: model:ir.model.fields,field_description:dev_petty_cash.field_account_move__petty_cash_request_id_send
+#: model:ir.model.fields,field_description:dev_petty_cash.field_account_payment__petty_cash_request_id_send
+msgid "Petty Cash Request (Send)"
+msgstr ""
+
+#. module: dev_petty_cash
+#. odoo-python
+#: code:addons/dev_petty_cash/models/petty_cash_request.py:0
+#, python-format
+msgid "Petty Cash Request must have the same currency"
+msgstr ""
+
+#. module: dev_petty_cash
+#: model_terms:ir.ui.view,arch_db:dev_petty_cash.view_petty_cash_request_tree
+msgid "Petty Cash Requests"
+msgstr ""
+
+#. module: dev_petty_cash
 #: model:ir.model,name:dev_petty_cash.model_petty_cash_expense
 msgid "Petty Cash expense"
 msgstr ""
@@ -694,29 +863,45 @@ msgid "Petty Expense Lines"
 msgstr ""
 
 #. module: dev_petty_cash
-#: model:ir.model.fields.selection,name:dev_petty_cash.selection__petty_cash_expense__state__payment
-msgid "Process Payment"
+#: model_terms:ir.ui.view,arch_db:dev_petty_cash.main_pettycash_exp_template
+msgid "Proveedor"
 msgstr ""
 
 #. module: dev_petty_cash
-#: model:ir.model.fields,field_description:dev_petty_cash.field_petty_cash_expense__remaining_balace
-msgid "Reaming Amount"
+#: model_terms:ir.ui.view,arch_db:dev_petty_cash.view_petty_cash_request_form
+msgid "Rechazar"
 msgstr ""
 
 #. module: dev_petty_cash
-#: model_terms:ir.ui.view,arch_db:dev_petty_cash.view_petty_cash_expense_form
+#: model_terms:ir.ui.view,arch_db:dev_petty_cash.view_petty_cash_expense_form2
 msgid "Reconcile Payment"
 msgstr ""
 
 #. module: dev_petty_cash
-#: model_terms:ir.ui.view,arch_db:dev_petty_cash.view_petty_cash_expense_form
+#: model:ir.model.fields.selection,name:dev_petty_cash.selection__petty_cash_request__request_type__reembolso
+msgid "Reembolso"
+msgstr ""
+
+#. module: dev_petty_cash
+#. odoo-python
+#: code:addons/dev_petty_cash/models/petty_cash_request.py:0
+#, python-format
 msgid "Register Payment"
 msgstr ""
 
 #. module: dev_petty_cash
-#: model:ir.model.fields.selection,name:dev_petty_cash.selection__petty_cash_request__state__reject
 #: model_terms:ir.ui.view,arch_db:dev_petty_cash.view_petty_cash_request_form
+msgid "Registrar Pago"
+msgstr ""
+
+#. module: dev_petty_cash
+#: model:ir.model.fields.selection,name:dev_petty_cash.selection__petty_cash_request__state__reject
 msgid "Reject"
+msgstr ""
+
+#. module: dev_petty_cash
+#: model:ir.model.fields,field_description:dev_petty_cash.field_petty_cash_expense__remaining_balance
+msgid "Remaining Balance"
 msgstr ""
 
 #. module: dev_petty_cash
@@ -758,13 +943,14 @@ msgid ""
 msgstr ""
 
 #. module: dev_petty_cash
-#: model_terms:ir.ui.view,arch_db:dev_petty_cash.view_petty_cash_request_form
-msgid "Request Cash"
+#: model_terms:ir.ui.view,arch_db:dev_petty_cash.view_petty_cash_request_tree
+msgid "Request Ref"
 msgstr ""
 
 #. module: dev_petty_cash
 #: model:ir.model.fields,field_description:dev_petty_cash.field_petty_cash_request__request_to
 #: model_terms:ir.ui.view,arch_db:dev_petty_cash.dev_petty_cash_request_filter
+#: model_terms:ir.ui.view,arch_db:dev_petty_cash.view_petty_cash_request_tree
 msgid "Request To"
 msgstr ""
 
@@ -773,6 +959,16 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:dev_petty_cash.dev_petty_cash_expense_filter
 #: model_terms:ir.ui.view,arch_db:dev_petty_cash.dev_petty_cash_request_filter
 msgid "Requested"
+msgstr ""
+
+#. module: dev_petty_cash
+#: model_terms:ir.ui.view,arch_db:dev_petty_cash.view_petty_cash_request_tree
+msgid "Requested Amount"
+msgstr ""
+
+#. module: dev_petty_cash
+#: model_terms:ir.ui.view,arch_db:dev_petty_cash.view_petty_cash_request_tree
+msgid "Requested By"
 msgstr ""
 
 #. module: dev_petty_cash
@@ -793,15 +989,39 @@ msgid "SMS Delivery error"
 msgstr ""
 
 #. module: dev_petty_cash
-#: model_terms:ir.ui.view,arch_db:dev_petty_cash.view_petty_cash_expense_form
-#: model_terms:ir.ui.view,arch_db:dev_petty_cash.view_petty_cash_request_form
+#: model_terms:ir.ui.view,arch_db:dev_petty_cash.main_pettycash_exp_template
+msgid "Saldo Final :"
+msgstr ""
+
+#. module: dev_petty_cash
+#: model:ir.model.fields,help:dev_petty_cash.field_petty_expense_lines__supplier_id
+msgid "Select the supplier for this expense line"
+msgstr ""
+
+#. module: dev_petty_cash
+#: model_terms:ir.ui.view,arch_db:dev_petty_cash.view_petty_cash_expense_form2
 msgid "Set To Draft"
+msgstr ""
+
+#. module: dev_petty_cash
+#: model_terms:ir.ui.view,arch_db:dev_petty_cash.view_petty_cash_request_form
+msgid "Solicitar Efectivo"
+msgstr ""
+
+#. module: dev_petty_cash
+#: model_terms:ir.ui.view,arch_db:dev_petty_cash.view_petty_cash_request_form
+msgid "Solicitud de Caja Chica"
 msgstr ""
 
 #. module: dev_petty_cash
 #: model:ir.model.fields,field_description:dev_petty_cash.field_petty_cash_expense__state
 #: model:ir.model.fields,field_description:dev_petty_cash.field_petty_cash_request__state
 msgid "State"
+msgstr ""
+
+#. module: dev_petty_cash
+#: model_terms:ir.ui.view,arch_db:dev_petty_cash.view_petty_cash_request_tree
+msgid "Status"
 msgstr ""
 
 #. module: dev_petty_cash
@@ -815,8 +1035,36 @@ msgid ""
 msgstr ""
 
 #. module: dev_petty_cash
-#: model_terms:ir.ui.view,arch_db:dev_petty_cash.view_petty_cash_expense_form
+#: model:ir.model.fields,field_description:dev_petty_cash.field_petty_expense_lines__supplier_id
+msgid "Supplier"
+msgstr ""
+
+#. module: dev_petty_cash
+#: model:ir.model.fields,field_description:dev_petty_cash.field_petty_expense_lines__tax_amount
+#: model_terms:ir.ui.view,arch_db:dev_petty_cash.main_pettycash_exp_template
+msgid "Tax Amount"
+msgstr ""
+
+#. module: dev_petty_cash
+#: model_terms:ir.ui.view,arch_db:dev_petty_cash.main_pettycash_exp_template
+msgid "Tax Amount :"
+msgstr ""
+
+#. module: dev_petty_cash
+#: model:ir.model.fields,field_description:dev_petty_cash.field_petty_cash_expense__tax_breakdown_json
+msgid "Tax Breakdown"
+msgstr ""
+
+#. module: dev_petty_cash
+#: model_terms:ir.ui.view,arch_db:dev_petty_cash.view_petty_cash_expense_form2
 msgid "Terms and conditions..."
+msgstr ""
+
+#. module: dev_petty_cash
+#: model:ir.model.fields,help:dev_petty_cash.field_petty_expense_lines__invoice_tax_id
+msgid ""
+"The tax set to apply this distribution on invoices. Mutually exclusive with "
+"refund_tax_id"
 msgstr ""
 
 #. module: dev_petty_cash
@@ -824,6 +1072,17 @@ msgstr ""
 #: code:addons/dev_petty_cash/__init__.py:0
 #, python-format
 msgid "This Application is only supported in 16.0 version of odoo !"
+msgstr ""
+
+#. module: dev_petty_cash
+#: model:ir.model.fields,field_description:dev_petty_cash.field_petty_cash_request__request_type
+#: model_terms:ir.ui.view,arch_db:dev_petty_cash.view_petty_cash_request_form
+msgid "Tipo de Solicitud"
+msgstr ""
+
+#. module: dev_petty_cash
+#: model_terms:ir.ui.view,arch_db:dev_petty_cash.main_pettycash_exp_template
+msgid "Total Amount"
 msgstr ""
 
 #. module: dev_petty_cash
@@ -837,6 +1096,11 @@ msgid "Total Request"
 msgstr ""
 
 #. module: dev_petty_cash
+#: model:ir.model.fields,field_description:dev_petty_cash.field_petty_cash_expense__total_tax_amount
+msgid "Total Tax Amount"
+msgstr ""
+
+#. module: dev_petty_cash
 #: model:ir.model.fields,help:dev_petty_cash.field_petty_cash_expense__activity_exception_decoration
 #: model:ir.model.fields,help:dev_petty_cash.field_petty_cash_request__activity_exception_decoration
 msgid "Type of the exception activity on record."
@@ -845,12 +1109,24 @@ msgstr ""
 #. module: dev_petty_cash
 #: model:ir.model.fields,field_description:dev_petty_cash.field_petty_cash_expense__user_id
 #: model:ir.model.fields,field_description:dev_petty_cash.field_petty_cash_request__user_id
+#: model_terms:ir.ui.view,arch_db:dev_petty_cash.view_petty_cash_request_tree
 msgid "User"
 msgstr ""
 
 #. module: dev_petty_cash
 #: model:res.groups,name:dev_petty_cash.group_petty_user
 msgid "User: Own Documents Only"
+msgstr ""
+
+#. module: dev_petty_cash
+#: model:ir.model.fields.selection,name:dev_petty_cash.selection__petty_cash_expense__state__validate
+#: model_terms:ir.ui.view,arch_db:dev_petty_cash.view_petty_cash_expense_form2
+msgid "Validate"
+msgstr ""
+
+#. module: dev_petty_cash
+#: model_terms:ir.ui.view,arch_db:dev_petty_cash.view_petty_cash_request_form
+msgid "Volver a Borrador"
 msgstr ""
 
 #. module: dev_petty_cash
@@ -877,6 +1153,13 @@ msgstr ""
 #: code:addons/dev_petty_cash/models/petty_cash_expense.py:0
 #, python-format
 msgid "You can delete expense in draft state only."
+msgstr ""
+
+#. module: dev_petty_cash
+#. odoo-python
+#: code:addons/dev_petty_cash/models/petty_cash_request.py:0
+#, python-format
+msgid "You cannot approve a request without a description."
 msgstr ""
 
 #. module: dev_petty_cash
