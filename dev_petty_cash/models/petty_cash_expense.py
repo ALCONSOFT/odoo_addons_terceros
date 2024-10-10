@@ -320,7 +320,7 @@ class petty_cash_expense(models.Model):
             partner_name = line.supplier_id.name or ''
             tax_amount = line.tax_amount
             amount_dr = line.amount - tax_amount
-            
+            analytic_distribution = self.convert_to_distribution(line.analytic_account_id)
             # Agregar línea de débito para el gasto
             invoice_lines.append({
                 'name': 'Débito por: ' + name_product + ' # Fact.: ' + invoice_number + ' Prov.: ' + partner_name,
@@ -337,6 +337,7 @@ class petty_cash_expense(models.Model):
                 'amount_currency': amount_dr,
                 'amount_residual': amount_dr,
                 'amount_residual_currency': amount_dr,
+                'analytic_distribution': analytic_distribution
             })
 
             # Agregar líneas de débito para cada impuesto relacionado, solo si tiene cuenta válida
@@ -374,6 +375,14 @@ class petty_cash_expense(models.Model):
 
         return invoice_data
    
+    @api.model
+    def convert_to_distribution(self, analytic_account_id):
+        if analytic_account_id:
+            # Retornar un diccionario con el ID de la cuenta analítica y el 100% de distribución
+            return {str(analytic_account_id.id): 100.0}
+        else:
+            return {}
+    
     def action_create_payment(self):
         self.create_payment()
         self.state = 'payment'
@@ -401,7 +410,6 @@ class petty_cash_expense(models.Model):
 			
         })
         return super(petty_cash_expense, self).create(vals)
-        
 
 class petty_expense_lines(models.Model):
     _name ='petty.expense.lines'
@@ -423,6 +431,19 @@ class petty_expense_lines(models.Model):
     tax_amount = fields.Monetary('Tax Amount')
     invoice_tax_id = fields.Many2one(comodel_name='account.tax.template', help="The tax set to apply this distribution on invoices. Mutually exclusive with refund_tax_id")
     note_expense = fields.Char('Note Expense', default='Gasto para: ', tracking=1)
+
+    def open_line_form(self):
+        """
+        Este método abrirá el formulario de la línea seleccionada en modo de edición.
+        """
+        return {
+            'type': 'ir.actions.act_window',
+            'name': 'Edit Expense Line',
+            'res_model': 'petty.expense.lines',
+            'view_mode': 'form',
+            'res_id': self.id,  # Asegúrate de pasar el id correcto de la línea.
+            'target': 'new',  # Para abrirlo como un modal
+        }
     
     @api.onchange('product_id')
     def onchange_product(self):
@@ -434,6 +455,19 @@ class petty_expense_lines(models.Model):
             self.account_id = account_id and account_id.id or False
             self.invoice_amount = self.product_id.standard_price or 0.0
     
+    @api.onchange('invoice_tax_id')
+    def _onchange_invoice_tax_id(self):
+        if self.invoice_tax_id:
+            if self.invoice_tax_id.amount_type == 'percent':  # Corregir el operador de comparación
+                # Calcular el impuesto basado en el porcentaje
+                self.tax_amount = (self.invoice_tax_id.amount / 100.0) * self.invoice_amount
+            else:
+                # Si el impuesto no es de tipo porcentaje, poner el valor en 0 (puedes ajustar según el tipo)
+                self.tax_amount = 0.0
+        else:
+            # Si no hay impuesto seleccionado, el valor del impuesto es 0
+            self.tax_amount = 0.0
+
     @api.onchange('tax_amount')
     def _onchange_tax_amount(self):
         if self.tax_amount:

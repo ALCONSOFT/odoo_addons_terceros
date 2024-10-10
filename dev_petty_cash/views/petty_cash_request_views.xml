@@ -16,7 +16,7 @@
             <field name="company_id" string="Company" optional="hide"/>
             <field name="user_id" string="User" optional="hide"/>
             <field name="state" string="Status"/>
-            <field name="expense_id" string="Petty Cash Expense" domain="[('state', '=', 'approve')]" context="{'default_petty_cash_request_id': active_id}"/>
+            <field name="expense_id" string="Petty Cash Expense"/>
         </tree>
     </field>
 </record>
@@ -36,18 +36,28 @@
                         states="request"/>
                 <button name="action_draft" string="Volver a Borrador"
                         type="object"
-                        states="cancel"/>
+                        groups="dev_petty_cash.group_petty_auditor,dev_petty_cash.group_petty_manager"
+                        states="approve,audited,cancel,reject"/>
                 <button name="action_reject" string="Rechazar"
                         type="object"
-                        states="request"/>
+                        groups="dev_petty_cash.group_petty_auditor,dev_petty_cash.group_petty_manager"
+                        states="request,approve"/>
                 <button name="action_cancel" string="Cancelar"
                         type="object"
                         states="request"/>
                 <button name="action_state_petty_cash_payment" string="Marcar Pagado"
                         type="object"
-                        states="approve"/>
+                        groups="dev_petty_cash.group_petty_manager"                        
+                        class="btn-primary"
+                        states="audited"/>
+                <button name="action_audit"
+                        string="Auditor: Pasar a auditado"
+                        type="object"
+                        class="btn-primary"
+                        groups="dev_petty_cash.group_petty_auditor"
+                        attrs="{'invisible': [('state', 'not in', ['approve'])]}"/>
 
-                <field name="state" widget="statusbar" statusbar_visible="draft,request,approve,cancel,paid"/>
+                <field name="state" widget="statusbar" statusbar_visible="draft,request,approve,audited,cancel,paid,reject"/>
             </header>
             <sheet>
                 <h1>
@@ -61,7 +71,7 @@
                             <field name="request_by" required="1" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
                             <field name="date" required="1" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
                             <field name="request_amount" required="1" widget="monetary" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
-                            <field name="payment_id" readonly="1" attrs="{'invisible': [('payment_id', '=', False)]}"/>                            
+                            <field name="reject_reason"/>
                         </group>
 
                         <!-- Segunda columna -->
@@ -70,7 +80,7 @@
                             <field name="company_id" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
                             <field name="request_type" string="Tipo de Solicitud" required="1"/>
                             <field name="pay_method" />
-                            <field name="expense_id" string="Petty Cash Expense" domain="[('state', '=', 'approve')]" context="{'default_petty_cash_request_id': active_id}"/>
+                            <field name="expense_id" string="Petty Cash Expense" />
                         </group>
                     </group>
                 </group>
@@ -78,9 +88,12 @@
                     <page string="Descripción">
                         <field name="note" placeholder="Ingrese una descripción..." attrs="{'readonly': [('state', '!=', 'draft')]}"/>
                         <separator string="Diario de Pago" colspan="4"/>                        
-                        <field name="payment_journal_id" required="1" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                        <field name="payment_journal_id" required="0"
+                            attrs="{'readonly': [('state', '=', 'paid')]}"
+                            groups="dev_petty_cash.group_petty_auditor,dev_petty_cash.group_petty_manager"/>
                         <separator string="Diario de Caja Chica" colspan="4"/>                    
                         <field name="petty_journal_id" required="1" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+
                     </page>
                     <page name="cash" string="Cash">
                         <!-- Separador para agrupar visualmente -->
@@ -88,7 +101,7 @@
 
                         <!-- Botón Confirmar Envío -->
                         <button name="action_confirm_send" string="Confirmar Envío" type="object"
-                                attrs="{'invisible': [ ('state', '=', 'approve'), ('pay_method', '!=', 'cash')]}"
+                                attrs="{'invisible': ['|', ('state', '!=', 'audited'), ('pay_method', '!=', 'cash')]}"
                                 class="btn-primary" icon="fa-paper-plane"/>
                         <span> Este botón confirma el envío de la solicitud de la Caja Chica.</span>
                         
@@ -104,7 +117,7 @@
 
                         <!-- Botón Confirmar Recepción -->
                         <button name="action_confirm_receive" string="Confirmar Recepción" type="object"
-                                attrs="{'invisible': [('state', '=', 'approve'), ('pay_method', '!=', 'cash')]}"
+                                attrs="{'invisible': ['|', ('state', '!=', 'audited'), ('pay_method', '!=', 'cash')]}"
                                 class="btn-success" icon="fa-check"/>
                         <span> Este botón confirma el Recepción de la solicitud de Caja Chica.</span>                            
 
@@ -121,7 +134,10 @@
                     <page name="chequeandach" string="Cheque o ACH">
                         <button name="action_open_payment_form" type="object" string="Registrar Pago"
                                 groups="account.group_account_user"
-                                attrs="{'invisible': [ ('state', '=', 'approve'),('pay_method', 'not in', ['cheque', 'ach'])]}"/>
+                                attrs="{'invisible': ['|', ('state', '!=', 'audited'), ('pay_method', 'not in', ['cheque', 'ach'])]}"
+                                class="btn-primary" icon="fa-paper-plane"/>                                
+                        <separator string="Registro de Pago" colspan="4"/>                            
+                        <field name="payment_id" readonly="1" attrs="{'invisible': [('payment_id', '=', False)]}"/>                            
                     </page>
                 </notebook>
             </sheet>

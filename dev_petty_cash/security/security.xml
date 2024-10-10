@@ -48,8 +48,43 @@
         <field name="domain_force">[(1,'=',1)]</field>
         <field name="groups" eval="[(4, ref('dev_petty_cash.group_petty_manager'))]"/>
     </record>
-    
-    
+    <!-- Inicia: 2024-10-05-->    
+    <!-- Grupo Auditor: Hereda reglas del Manager -->
+    <record id="group_petty_auditor" model="res.groups">
+        <field name="name">Auditor: Limited Access</field>
+        <field name="category_id" ref="dev_petty_cash.module_category_petty_cash"/>
+        <!-- Hereda los permisos del grupo de Manager -->
+        <field name="implied_ids" eval="[(4, ref('dev_petty_cash.group_petty_manager'))]"/>
+        <field name="comment">The auditor will have access to specific auditing features in the Petty Cash application.</field>
+    </record>
+
+    <!-- Ejemplo de una regla de seguridad específica para el grupo Auditor -->
+    <record id="petty_cash_auditor_view_only_rule" model="ir.rule">
+        <field name="name">Auditor View Only</field>
+        <field ref="model_petty_cash_request" name="model_id"/>
+        <!-- Esta regla limita al auditor solo a la visualización (read-only) -->
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_write" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+        <field name="groups" eval="[(4, ref('dev_petty_cash.group_petty_auditor'))]"/>
+    </record>
+
+    <!-- Otra regla para un modelo diferente, si se necesita -->
+    <record id="petty_cash_exp_auditor_view_only_rule" model="ir.rule">
+        <field name="name">Auditor View Only Expenses</field>
+        <field ref="model_petty_cash_expense" name="model_id"/>
+        <!-- Esta regla limita al auditor solo a la visualización (read-only) -->
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_write" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+        <field name="groups" eval="[(4, ref('dev_petty_cash.group_petty_auditor'))]"/>
+    </record>
+
+    <!-- Finaliza: 2024-10-05-->    
     <data noupdate="0">
         <record model="ir.rule" id="petty_cash_request_multi_company_rule">
             <field name="name">Petty Cash Request multi-company</field>

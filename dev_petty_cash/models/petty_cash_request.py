@@ -23,11 +23,11 @@ class petty_cash_request(models.Model):
         return employee_id.id or False
     
     name = fields.Char('Name', default='/', tracking=1)
-    note = fields.Text('Notes')
-    request_to = fields.Many2one('hr.employee', string='Request To')
-    request_by = fields.Many2one('hr.employee', string='Request By', default=_get_request_by)
+    note = fields.Text('Notes', tracking=1)
+    request_to = fields.Many2one('hr.employee', string='Request To', tracking=1)
+    request_by = fields.Many2one('hr.employee', string='Request By', default=_get_request_by, tracking=1)
     # Quitando dominio para cajas menudas: domain="[('is_petty_cash', '=', True)]"
-    payment_journal_id = fields.Many2one('account.journal', string='Payment Journal', domain="[('is_petty_cash', '!=', True)]")
+    payment_journal_id = fields.Many2one('account.journal', string='Payment Journal', domain="[('type', 'in', ['bank', 'cash']), ('is_petty_cash', '!=', True)]",tracking=1)
     petty_journal_id=  fields.Many2one('account.journal', string='Petty Cash Journal', domain="[('is_petty_cash', '=', True)]", tracking=2)
     date = fields.Date('Date', copy=False, default=fields.Datetime.now)
     request_amount = fields.Monetary('Request Amount', tracking=2)
@@ -37,6 +37,7 @@ class petty_cash_request(models.Model):
     state = fields.Selection(string='State', selection=[('draft', 'Draft'),
                                                         ('request', 'Requested'),
                                                         ('approve', 'Approved'),
+                                                        ('audited', 'Audited'),
                                                         ('paid', 'Paid'),
                                                         ('cancel','Cancel'),
                                                         ('reject','Reject')], default='draft', tracking=4)
@@ -47,19 +48,21 @@ class petty_cash_request(models.Model):
         'petty_cash_request_id_send',
         string='Asientos de Envío',
         readonly=True,
-        copy=False
+        copy=False,
+        tracking=1
     )
     account_move_ids_receive = fields.One2many(
         'account.move',
         'petty_cash_request_id_receive',
         string='Asientos de Recepción',
         readonly=True,
-        copy=False
+        copy=False,
+        tracking=1
     )
     request_type = fields.Selection([
         ('apertura', 'Apertura'),
         ('reembolso', 'Reembolso')
-    ], string="Tipo de Solicitud", default='reembolso', required=True
+    ], string="Tipo de Solicitud", default='reembolso', required=True, tracking=1
     )
     pay_method = fields.Selection(
         selection=[
@@ -82,8 +85,23 @@ class petty_cash_request(models.Model):
     #    Es comúnmente utilizado para pagos como depósitos directos, transferencias de nómina, pagos de facturas,
     #    y otras transacciones electrónicas.
 
-    expense_id = fields.Many2one('petty.cash.expense', string='Petty Cash Expense')
+    expense_id = fields.Many2one('petty.cash.expense', string='Petty Cash Expense', tracking=1)
+    # 2024-10-05: Nuevo campo para la razón de rechazo
+    reject_reason = fields.Text('Reject Reason', tracking=True)
+   
+    def action_audit(self):
+        """
+        Método para marcar el documento de caja chica como 'auditado'.
+        """
+        for request in self:
+            # Validar si la solicitud está en un estado que permite ser auditada
+            if request.state not in ['approve']:
+                raise ValidationError(_('Solo se pueden auditar las solicitudes aprobadas.'))
 
+            # Cambiar el estado a 'audited'
+            request.state = 'audited'
+            # Aquí puedes agregar lógica adicional, como enviar notificaciones, etc.    
+    
     def action_open_payment_form_opcion1(self):
         """Abrir el formulario de pagos con contexto personalizado"""
         self.ensure_one()
@@ -173,7 +191,7 @@ class petty_cash_request(models.Model):
         # Guardar el ID del pago en el campo payment_id
         self.payment_id = payment.id
         # Postea la payment y genera contabilidad
-        self.payment_id.action_post()
+        # self.payment_id.action_post()
         # Abrir el formulario account.payment.form con el contexto
         return {
             'name': 'Registrar Pago',
@@ -222,6 +240,12 @@ class petty_cash_request(models.Model):
             res.update({"context": ctx})
         return res
 
+    @api.onchange('expense_id')
+    def _onchange_expense_id(self):
+        if self.expense_id:
+            self.request_amount = self.expense_id.expense_amount
+        else:
+            self.request_amount = 0.0  # O cualquier valor por defecto que desees
 
     @api.onchange('payment_id')
     def _get_balance(self):
@@ -408,11 +432,19 @@ class petty_cash_request(models.Model):
         self.state='cancel'
     
     def action_reject(self):
-        self.state= 'reject'
-    
+        """
+        Método para rechazar la solicitud y especificar la razón del rechazo.
+        """
+        for request in self:
+            # Verificar si hay una razón de rechazo proporcionada
+            if not request.reject_reason:
+                raise ValidationError(_('Debe proporcionar una razón para rechazar la solicitud.'))
+            
+            # Cambiar el estado a 'reject' y registrar la razón
+            request.state = 'reject'    
+
     def action_draft(self):
         self.state = 'draft'
-        
         
     def unlink(self):
         for request in self:
@@ -441,6 +473,16 @@ class petty_cash_request(models.Model):
 class AccountPayment(models.Model):
     _inherit = 'account.payment'
 
+    petty_cash_request_id = fields.Many2one('petty.cash.request', string='Petty Cash Request', tracking=1)
+    
+    @api.constrains('petty_cash_request_id')
+    def _check_unique_petty_cash_request(self):
+        for record in self:
+            if record.petty_cash_request_id:
+                existing_payment = self.search([('petty_cash_request_id', '=', record.petty_cash_request_id.id), ('id', '!=', record.id)])
+                if existing_payment:
+                    raise ValidationError('La solicitud de caja chica ya tiene un pago asociado.')    
+    
     @api.model
     def set_internal_transfer(self, payment_id):
         # Buscamos el registro del pago
