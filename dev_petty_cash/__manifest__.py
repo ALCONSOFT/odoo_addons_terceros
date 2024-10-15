@@ -10,7 +10,7 @@
 
 {
     'name': 'Petty Cash Management, Petty Cash Request, Petty Cash Expense',
-    'version': '-2024.10.09-17:55',
+    'version': '-2024.10.15-15:55',
     'sequence': 1,
     'category': 'Accouting',
     'description':
@@ -49,7 +49,8 @@ odoo app allow Petty Cash Management, Petty Cash Request, Petty cash expense, Pe
              'report/print_pettycash_menu.xml',
              'report/print_pettycash_exp_template.xml',
              'views/petty_cash_kanban_views.xml',            
-             'views/petty_cash_expense_views.xml',],
+             'views/petty_cash_expense_views.xml',
+             'views/batch_payment_interface.xml'],
     'demo': [],
     'test': [],
     'css': [],

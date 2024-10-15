@@ -513,6 +513,14 @@ class AccountMove(models.Model):
         ondelete='cascade'
     )
 
+    payment_priority = fields.Selection([
+        ('high', 'High'),
+        ('medium', 'Medium'),
+        ('low', 'Low')
+    ], string='Payment Priority', default='medium', help="Priority of payment for this invoice.")
+
+    amount_tax_retention = fields.Float(string='Tax Retention Amount', help="Amount retained for tax purposes.")    
+
     def change_second_line_account(self, move_id, new_account_id):
         """
         Cambia la cuenta contable de la segunda línea de un asiento de diario dado.

@@ -1,0 +1,78 @@
+<!-- Vista de pago en lote para facturas pendientes -->
+<odoo>
+    <record id="view_batch_payment_list" model="ir.ui.view">
+        <field name="name">batch.payment.list</field>
+        <field name="model">account.move</field>
+        <field name="arch" type="xml">
+            <tree string="Batch Payment List" editable="bottom" class="batch-payment-tree">
+                <field name="company_id"/>
+                <field name="partner_id"/>
+                <field name="invoice_date"/>
+                <field name="invoice_date_due"/>
+                <field name="amount_total"/>
+                <field name="state"/>
+                <field name="payment_priority"/>
+                <field name="amount_tax_retention" widget="monetary"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Filtros de búsqueda para la vista de lista 
+    <record id="view_batch_payment_search" model="ir.ui.view">
+        <field name="name">batch.payment.search</field>
+        <field name="model">account.move</field>
+        <field name="arch" type="xml">
+            <search string="Batch Payment Search">
+                <filter name="filter_vendor_bills" string="Vendor Bills" domain="[('move_type', '=', 'in_invoice'), ('state', '=', 'posted')]"/>
+                <filter name="filter_due_date" string="Due Date" domain="[('invoice_date_due', '&lt;', context_today())]"/>
+                <filter name="filter_payment_priority" string="Payment Priority" domain="[('payment_priority', 'in', ['high', 'medium', 'low'])]"/>
+                <group expand="1" string="Group By">
+                    <filter string="Vendor" group_by="partner_id"/>
+                    <filter string="Due Date" group_by="invoice_date_due"/>
+                </group>
+            </search>
+        </field>
+    </record>
+    -->
+
+    <!-- Acción para mostrar la vista de pago en lote -->
+    <record id="action_batch_payment" model="ir.actions.act_window">
+        <field name="name">Batch Payment</field>
+        <field name="res_model">account.move</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_id" ref="view_batch_payment_list"/>
+        <!--
+        <field name="search_view_id" ref="view_batch_payment_search"/>
+        -->
+        <field name="domain">[('move_type', '=', 'in_invoice'), ('state', '=', 'posted')]</field>
+        <field name="context">{'default_move_type': 'in_invoice'}</field>
+    </record>
+
+    <!-- Menú para pago en lote dentro del menú de proveedores -->
+    <menuitem id="menu_batch_payment" name="Batch Payment"
+        parent="dev_petty_cash_menu"
+        action="action_batch_payment"
+        sequence="10"/>
+
+    <!-- CSS para vista de pago en lote 
+    <template id="assets_backend" inherit_id="web.assets_backend" name="Batch Payment Custom CSS">
+        <xpath expr="." position="inside">
+            <style>
+                .batch-payment-tree .o_list_view > tbody > tr:nth-child(odd) {
+                    background-color: #FFECB3; /* Color de fondo amarillo claro para filas impares */
+                }
+                .batch-payment-tree .o_list_view > tbody > tr:nth-child(even) {
+                    background-color: #FFE0B2; /* Color de fondo naranja claro para filas pares */
+                }
+                .batch-payment-tree .o_list_view > tbody > tr:hover {
+                    background-color: #FFCC80; /* Color de fondo naranja intenso al pasar el mouse */
+                }
+                .batch-payment-tree .o_list_view th {
+                    background-color: #FFB74D; /* Color de fondo para los encabezados */
+                    color: #FFFFFF; /* Color de texto blanco para encabezados */
+                }
+            </style>
+        </xpath>
+    </template>
+    -->
+</odoo>

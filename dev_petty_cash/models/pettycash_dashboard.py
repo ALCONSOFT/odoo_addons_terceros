@@ -41,7 +41,7 @@ class ProductTemplate(models.Model):
     def action_create_new_expense(self):
         ctx = self._context.copy()
         ctx.update({'default_petty_journal_id': self.id })
-        view_id = self.env.ref("dev_petty_cash.view_petty_cash_expense_form").id
+        view_id = self.env.ref("dev_petty_cash.view_petty_cash_expense_form2").id
         return {
             'name': _('Create Petty Cash Expense'),
             'type': 'ir.actions.act_window',
@@ -154,7 +154,7 @@ class ProductTemplate(models.Model):
 
     def action_get_done_expense_amount(self):
         tree_id = self.env.ref('dev_petty_cash.view_petty_cash_expense_tree').id
-        form_id = self.env.ref('dev_petty_cash.view_petty_cash_expense_form').id
+        form_id = self.env.ref('dev_petty_cash.view_petty_cash_expense_form2').id
         for data in self:
             total_done_amount_ids = self.env['petty.cash.expense'].search([('petty_journal_id', '=', data.id), ('state', '=', 'done')])
             return {
@@ -178,7 +178,7 @@ class ProductTemplate(models.Model):
 
     def action_get_all_expense(self):
         tree_id = self.env.ref('dev_petty_cash.view_petty_cash_expense_tree').id
-        form_id = self.env.ref('dev_petty_cash.view_petty_cash_expense_form').id
+        form_id = self.env.ref('dev_petty_cash.view_petty_cash_expense_form2').id
         for data in self:
             total_expense_ids = self.env['petty.cash.expense'].search([('petty_journal_id', '=', data.id)])
             return {
@@ -201,7 +201,7 @@ class ProductTemplate(models.Model):
 
     def action_get_done_state(self):
         tree_id = self.env.ref('dev_petty_cash.view_petty_cash_expense_tree').id
-        form_id = self.env.ref('dev_petty_cash.view_petty_cash_expense_form').id
+        form_id = self.env.ref('dev_petty_cash.view_petty_cash_expense_form2').id
         for data in self:
             total_done_ids = self.env['petty.cash.expense'].search([('petty_journal_id', '=', data.id), ('state', '=', 'done')])
             return {
@@ -224,7 +224,7 @@ class ProductTemplate(models.Model):
 
     def action_get_expense_state(self):
         tree_id = self.env.ref('dev_petty_cash.view_petty_cash_expense_tree').id
-        form_id = self.env.ref('dev_petty_cash.view_petty_cash_expense_form').id
+        form_id = self.env.ref('dev_petty_cash.view_petty_cash_expense_form2').id
         for data in self:
             total_paymnet_ids = self.env['petty.cash.expense'].search([('petty_journal_id', '=', data.id), ('state', 'in', ['payment','confirm','draft'])])
             return {

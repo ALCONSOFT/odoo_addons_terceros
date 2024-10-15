@@ -39,7 +39,11 @@ class petty_cash_expense(models.Model):
                                                         ('cancel','Cancel')], default='draft', tracking=4)
     expense_lines = fields.One2many('petty.expense.lines','expense_id', string='Expense Lines')
     payment_ids = fields.Many2many('account.payment', string='Payments', copy=False)
-    balance = fields.Monetary('Balance', compute='saldo_caja_chica', store=True)    # se desarrollo nuestro propio calculador de saldo y se quito: '_get_balance'
+    balance = fields.Monetary(
+    'Balance', 
+    compute='saldo_caja_chica', 
+    store=True, 
+    help="El Balance es de la caja chica seleccionada y solicitudes con estado = Pagadas")   # se desarrollo nuestro propio calculador de saldo y se quito: '_get_balance'
     expense_amount = fields.Monetary('Expense Amount', compute='_get_expense_amount', tracking=3)
     request_ids = fields.Many2many('petty.cash.request', string='Requests')
     remaining_balance = fields.Monetary('Remaining Balance', compute='_get_expense_amount', store=True)
@@ -203,7 +207,7 @@ class petty_cash_expense(models.Model):
         for expense in self:
             # Se quito los dineros pedidos para los colaboradores('request_by','=',expense.employee_id.id),
             request_ids = expense.env['petty.cash.request'].search([('petty_journal_id','=',expense.petty_journal_id.id),
-                                                                 ('state','=','approve'),
+                                                                 ('state','=','paid'),
                                                                  ('balance','>',0)])
             for request in request_ids:
                 sumatoria += request.request_amount
@@ -245,7 +249,6 @@ class petty_cash_expense(models.Model):
 
     def action_confirm(self):
         # Calculo del saldo de la caja chica
-        # saldo_caja_chica = solicitudes_caja_chica_aprobadas - gastos_confirmados
         if self.saldo_caja_chica() <= self.expense_amount:
             raise ValidationError(_("In Petty Cash have only %s balance")%(self.balance))
         self.state = 'confirm'
