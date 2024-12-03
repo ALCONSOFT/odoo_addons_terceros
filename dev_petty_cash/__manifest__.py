@@ -40,7 +40,7 @@ odoo app allow Petty Cash Management, Petty Cash Request, Petty cash expense, Pe
 
     """,
     'summary': 'odoo app allow Petty Cash Management, Petty Cash Request, Petty cash expense, Petty Cash Workflow approval process, Petty Cash Request balance, Petty Cash Expense Remaing Balance, Petty Cash due balance, Petty Cash user wise allocation, Cash flow Petty Cash management in odoo',
-    'depends': ['account','hr'],
+    'depends': ['account','hr','account_check_printing_report_base'],
     'data': ['security/security.xml',
              'security/ir.model.access.csv',
              'views/petty_cash_request_views.xml',

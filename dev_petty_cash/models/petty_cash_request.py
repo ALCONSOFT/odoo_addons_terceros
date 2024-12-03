@@ -139,7 +139,10 @@ class petty_cash_request(models.Model):
         move_id = self.payment_id.move_id.id  # ID del asiento de diario
         new_account_id = self.petty_journal_id.default_account_id.id  # ID de la nueva cuenta contable
         # Llamar al método para cambiar la cuenta de la segunda línea
-        self.env['account.move'].change_second_line_account_sql(move_id, new_account_id)
+        if not move_id:
+            pass
+        else:
+            self.env['account.move'].change_second_line_account_sql(move_id, new_account_id)
         # Cambiar el estado de la Solicitud de Caja Chica - Pagado
         self.state = 'paid'
         #self.save()
