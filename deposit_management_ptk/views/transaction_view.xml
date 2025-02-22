@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <data>
+        <!-- explicit list view definition -->
+        <record model="ir.ui.view" id="bank_transaction_list_view">
+            <field name="name">bank.transaction.list</field>
+            <field name="model">bank.transaction</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="trans_date"/>
+                    <field name="reference"/>
+                    <field name="name"/>
+                    <field name="bank_id"/>
+                    <field name="type"/>
+                    <field name="remarks"/>
+                    <field name="amount"/>
+                    <field name="balance"/>
+                    <field name="state" widget="badge" decoration-success="state == 'done'" decoration-warning="state == 'draft'"/>
+                </tree>
+            </field>
+        </record>
+
+        <!--    form view-->
+        <record model="ir.ui.view" id="bank_transaction_form_view">
+            <field name="name">bank.transaction.form</field>
+            <field name="model">bank.transaction</field>
+            <field name="arch" type="xml">
+                <form>
+                    <header>
+                        <button name="transaction_done" type="object" string="Approve Transaction"
+                                class="oe_highlight" attrs="{'invisible': [('state', '=', 'done')]}"/>
+                        <field name="state" widget="statusbar"/>
+                    </header>
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="name" attrs="{'readonly': [('state', '=', 'done')]}"/>
+                                <field name="bank_id" attrs="{'readonly': [('state', '=', 'done')]}"/>
+                                <field name="amount"  attrs="{'readonly': [('state', '=', 'done')]}" sum="amount"/>
+                                <field name="trans_date"/>
+                            </group>
+                            <group>
+                                <field name="balance" attrs="{'readonly': [('state', '=', 'done')]}"/>
+                                <field name="type" attrs="{'readonly': [('state', '=', 'done')]}"/>
+                                <field name="reference" />
+                                <field name="remarks" attrs="{'readonly': [('state', '=', 'done')]}"/>
+                            </group>
+                        </group>
+                    </sheet>
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids"/>
+                        <field name="activity_ids"/>
+                        <field name="message_ids"/>
+                     </div>
+                </form>
+            </field>
+        </record>
+
+
+        <!-- actions opening views on models -->
+        <record model="ir.actions.act_window" id="deposit_management_ptk.transaction_action_window">
+            <field name="name">Transactions</field>
+            <field name="res_model">bank.transaction</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+    </data>
+</odoo>

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="bank_transaction_email" model="mail.template">
+        <field name="name">Bank Transaction Notification</field>
+        <field name="email_from">${object.bank_id.partner_id.email}</field>
+        <field name="partner_to">${object.name.id}</field>
+        <field name="subject">Transaction Notification</field>
+        <field name="model_id" ref="deposit_management_ptk.model_bank_transaction" />
+        <field name="body_html" type="html">
+            <div style="margin:0px; padding:0px">
+                <p> Dear ${object.name.name},</p>
+                <p> Your ${object.type} transaction of amount ${object.amount} USD has been completed</p>
+                <p> Thank you for banking with us.</p>
+                <br></br>
+
+                <p>Best Regards,</p>
+                ${object.bank_id.name}
+            </div>
+        </field>
+    </record>
+</odoo>

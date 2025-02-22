@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="bank_access_category" model="ir.module.category" >
+        <field name="name">Deposit Management</field>
+    </record>
+
+    <record id="bank_staff_access_group" model="res.groups" >
+        <field name="name">Staff</field>
+        <field name="category_id" ref="bank_access_category" />
+        <field name="implied_ids" eval="[(4, ref('base.group_user'))]" />
+    </record>
+
+    <record id="bank_manager_access_group" model="res.groups" >
+        <field name="name">Manager</field>
+        <field name="category_id" ref="bank_access_category" />
+        <field name="implied_ids" eval="[(4, ref('deposit_management_ptk.bank_staff_access_group'))]" />
+    </record>
+
+<!--    record rules-->
+    <record id="staff_see_own_bank_transactions" model="ir.rule">
+        <field name="name">Bank Staff Transaction User Rule</field>
+        <field name="domain_force">['|', ('bank_id', '=', user.bank_id.id), ('create_uid', '=', user.id)]</field>
+        <field name="model_id" ref="model_bank_transaction" />
+        <field name="groups" eval="[(4, ref('deposit_management_ptk.bank_staff_access_group'))]" />
+    </record>
+
+    <record id="manager_see_own_bank_transactions" model="ir.rule">
+        <field name="name">Bank Manager Transaction User Rule</field>
+        <field name="domain_force">[('bank_id', '=', user.bank_id.id)]</field>
+        <field name="model_id" ref="model_bank_transaction" />
+        <field name="groups" eval="[(4, ref('deposit_management_ptk.bank_manager_access_group'))]" />
+    </record>
+
+    <record id="staff_see_own_bank" model="ir.rule">
+        <field name="name">Bank Staff Bank User Rule</field>
+        <field name="domain_force">['|', ('id', '=', user.bank_id.id), ('create_uid', '=', user.id)]</field>
+        <field name="model_id" ref="model_bank_bank" />
+        <field name="groups" eval="[(4, ref('deposit_management_ptk.bank_staff_access_group'))]" />
+    </record>
+
+    <record id="manager_see_own_bank" model="ir.rule">
+        <field name="name">Bank Manager Bank User Rule</field>
+        <field name="domain_force">[('id', '=', user.bank_id.id)]</field>
+        <field name="model_id" ref="model_bank_bank" />
+        <field name="groups" eval="[(4, ref('deposit_management_ptk.bank_manager_access_group'))]" />
+    </record>
+</odoo>

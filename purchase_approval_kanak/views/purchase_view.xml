@@ -67,8 +67,16 @@
             </xpath>
             <xpath expr="//button[@name='button_confirm']" position="after">
                 <button name="action_refresh_order" type="object" string="Refresh" groups="base.group_user" attrs="{'invisible': ['|', ('state','!=','draft'), ('purchase_order_approval_rule_ids', '!=', [])]}" />
-                <button name="action_button_approve" string="Approve PO" type="object" groups="base.group_user" attrs="{'invisible': ['|', ('state', 'not in', ['draft', 'sent']), ('approve_button', '!=', True)]}" />
-                <button name="reject_purchase" type="object" string="Reject PO" groups="base.group_user" attrs="{'invisible': ['|', ('state', 'not in', ['draft', 'sent']), ('approve_button', '!=', True)]}" />
+                <button name="action_button_approve"
+                    string="Approve PO"
+                    type="object"
+                    groups="base.group_user"
+                    attrs="{'invisible': ['|', ('state', 'not in', ['draft', 'sent']),
+                        ('approve_button', '!=', True)]}" />
+                <button name="reject_purchase" type="object"
+                    string="Reject PO"
+                    groups="base.group_user"
+                    attrs="{'invisible': ['|', ('state', 'not in', ['draft', 'sent']), ('approve_button', '!=', True)]}" />
                 <field name='approve_button' invisible="1" />
                 <field name='ready_for_po' invisible="1" />
                 <field name='send_for_approval' invisible="1" />
@@ -77,7 +85,17 @@
                 <field name='purchase_order_approval' invisible="1" />
             </xpath>
             <xpath expr="//button[@name='button_unlock']" position="before">
-                <button name="action_send_for_approval" type="object" string="Send For Approval" groups="base.group_user" attrs="{'invisible': ['|', '|', '|', '|', '&amp;', ('state','!=','draft'), ('send_for_approval','=',True), '&amp;', ('state','=','draft'), ('send_for_approval','=',True), '&amp;', ('state','!=','draft'), ('send_for_approval','!=',True), '|', ('purchase_order_approval', '=', False), ('purchase_order_approval_rule_id', '=', False), ('purchase_order_approval_rule_ids', '=', [])]}" />
+                <button name="action_send_for_approval" type="object" string="Send For Approval"
+                groups="base.group_user" attrs="{'invisible': ['|', '|', '|', '|', '&amp;',
+                                        ('state','!=','draft'),
+                                        ('send_for_approval','=',True), '&amp;',
+                                        ('state','=','draft'),
+                                        ('send_for_approval','=',True), '&amp;',
+                                        ('state','!=','draft'),
+                                        ('send_for_approval','!=',True),
+                                        '|', ('purchase_order_approval', '=', False),
+                                        ('purchase_order_approval_rule_id', '=', False),
+                                        ('purchase_order_approval_rule_ids', '=', [])]}" />
             </xpath>
             <xpath expr="//button[last()]" position="after">
                 <span class="label label-danger" attrs="{'invisible': ['|', ('ready_for_po', '=', True), ('send_for_approval', '=', False)]}">RFQ is not fully approved yet!</span>

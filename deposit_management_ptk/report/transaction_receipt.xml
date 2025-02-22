@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="transaction_receipt_report_action" model="ir.actions.report">
+        <field name="name">Transaction Receipt</field>
+        <field name="model">bank.transaction</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">deposit_management.bank_transaction_receipt</field>
+        <field name="report_file">deposit_management.bank_transaction_receipt</field>
+        <field name="binding_model_id" ref="model_bank_transaction"/>
+        <field name="binding_type">report</field>
+    </record>
+
+    <template id="bank_transaction_receipt">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="doc">
+                <t t-call="web.external_layout">
+                    <div class="page">
+                        <div class="row" id="trans_header">
+                            <div class="col-12">
+                                <br/>
+                                <h4>
+                                    <center>Transaction Receipt</center>
+                                </h4>
+                                <h6>
+                                    Bank -
+                                    <span t-esc="doc.bank_id.name"/>
+                                </h6>
+                                <h6>
+                                    Code -
+                                    <span t-esc="doc.bank_id.code"/>
+                                </h6>
+                            </div>
+                        </div>
+                        <br/>
+                        <div class="row">
+                            <div class="col-12">
+                                <h4>Transaction Detail</h4>
+                            </div>
+                        </div>
+                        <br/>
+                        <div class="row">
+                            <div class="col-12">
+                                <table class="table table-bordered" style="table-layout:fixed">
+                                    <thead style="display: table-row-group">
+                                        <tr>
+                                            <th class="text-center" scope="col">Customer Name</th>
+                                            <th class="text-center" scope="col">
+                                                <span t-esc="doc.name.name"/>
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td class="text-center">
+                                                Reference
+                                            </td>
+                                            <td class="text-center">
+                                                <span t-esc="doc.reference"/>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="text-center">
+                                                Transaction Date
+                                            </td>
+                                            <td class="text-center">
+                                                <span t-esc="doc['trans_date'].strftime('%d/%m/%Y %H:%M:%S')"/>
+                                            </td>
+                                        </tr>
+
+                                        <tr>
+                                            <td class="text-center">
+                                                Transaction Type
+                                            </td>
+                                            <td class="text-center">
+                                                <span t-esc="doc.type"/>
+                                            </td>
+                                        </tr>
+
+                                        <tr>
+                                            <td class="text-center">
+                                                Amount
+                                            </td>
+                                            <td class="text-center">
+                                                <span t-esc="doc.amount"/>
+                                            </td>
+                                        </tr>
+
+                                        <tr>
+                                            <td class="text-center">
+                                                Remarks
+                                            </td>
+                                            <td class="text-center">
+                                                <span t-esc="doc.remarks"/>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-12">
+                                <br/>
+                                <h6>This is a computer generated email. Signature not required.</h6>
+                            </div>
+                        </div>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+</odoo>

@@ -1,0 +1,9 @@
+purchase_supplier_discount_invoice/models/__pycache__/
+purchase_supplier_discount_invoice/__pycache__/
+bi_odoo_project_phases/__pycache__/
+bi_odoo_project_phases/models/__pycache__/
+ethics_purchase_request/__pycache__/
+ethics_purchase_request/models/__pycache__/
+ethics_purchase_request/wizard/__pycache__/
+mass_cancel_purchase_order/__pycache__/
+mass_cancel_purchase_order/wizard/__pycache__/

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+       <!-- Top menu item -->
+
+    <menuitem
+            name="Tenth Bank"
+            id="deposit_management_ptk.menu_root"
+            web_icon="static/description/icon.png"/>
+
+
+    <!-- menu categories -->
+    <menuitem
+            name="Banks"
+            id="deposit_management_ptk.menu_1"
+            parent="deposit_management_ptk.menu_root"
+    />
+
+    <menuitem
+            name="Transactions"
+            id="deposit_management_ptk.menu_2"
+            parent="deposit_management_ptk.menu_root"
+    />
+
+    <!-- actions -->
+    <menuitem
+            name="Banks"
+            id="deposit_management_ptk.banks"
+            parent="deposit_management_ptk.menu_1"
+            action="deposit_management_ptk.bank_action_window"
+    />
+
+    <menuitem
+            name="Customer Transactions"
+            id="deposit_management_ptk.transactions"
+            parent="deposit_management_ptk.menu_2"
+            action="deposit_management_ptk.transaction_action_window"
+    />
+
+<!--    <menuitem-->
+<!--            name="Server to list"-->
+<!--            id="deposit_management"-->
+<!--            parent="deposit_management.menu_2"-->
+<!--            action="deposit_management.action_server"-->
+<!--    />-->
+
+</odoo>

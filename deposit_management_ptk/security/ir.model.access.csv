@@ -1,0 +1,5 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_bank_bank,bank user,model_bank_bank,base.group_user,1,1,1,1
+
+access_bank_transaction,transaction user,model_bank_transaction,base.group_user,1,1,1,1
+
