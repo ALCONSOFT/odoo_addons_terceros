@@ -90,3 +90,4 @@ class SubscriptionContractLines(models.Model):
             total = rec.price_unit * rec.qty_ordered
             discount = total * rec.discount / 100
             rec.sub_total = total - discount
+            rec.tax_ids = rec.product_id.taxes_id
