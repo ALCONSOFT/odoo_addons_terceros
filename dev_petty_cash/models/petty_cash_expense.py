@@ -11,6 +11,7 @@
 from odoo import models, fields, api, _
 from odoo.exceptions import ValidationError, UserError
 from odoo.tools import float_round
+import logging
 
 
 class petty_cash_expense(models.Model):
@@ -254,6 +255,72 @@ class petty_cash_expense(models.Model):
         self.state = 'confirm'
         
     def action_validate(self):
+        _logger = logging.getLogger(__name__) # Optional: for logging
+
+        for expense_line in self.expense_lines:
+            for product_line in expense_line.product_lines:
+                product = product_line.product_id
+                # Check only for stockable products
+                if product.type == 'product':
+                    _logger.debug(f"Checking stockable product: {product.display_name} on invoice {expense_line.invoice_number or 'N/A'} with ref {product_line.inventory_justification_ref or 'N/A'}")
+
+                    if not product_line.inventory_justification_ref:
+                        err_msg = _("Inventory Justification Ref is required for stockable product: {product_name} (Invoice: {invoice_num}, Line Note: {line_note}).").format(
+                            product_name=product.display_name,
+                            invoice_num=expense_line.invoice_number or _('N/A'),
+                            line_note=expense_line.note_expense or _('N/A')
+                        )
+                        raise ValidationError(err_msg)
+
+                    StockMove = self.env['stock.move']
+
+                    # Base domain for stock moves
+                    base_domain = [
+                        ('product_id', '=', product.id),
+                        ('state', '=', 'done') # Only consider completed moves
+                    ]
+
+                    # Domain for matching reference (origin or picking name)
+                    # Ensure product_line.inventory_justification_ref is not empty due to the check above
+                    ref_domain_part = [
+                        '|',
+                        ('origin', '=', product_line.inventory_justification_ref),
+                        ('picking_id.name', '=', product_line.inventory_justification_ref)
+                    ]
+
+                    # Combine base domain with reference domain part
+                    domain = base_domain + ref_domain_part
+
+                    if product_line.is_credit_note_line:
+                        # Product is being returned to supplier (outgoing from our stock)
+                        domain.extend([
+                            ('location_id.usage', '=', 'internal'),
+                            ('location_dest_id.usage', '=', 'supplier')
+                        ])
+                        expected_movement = _("inventory exit to supplier")
+                    else:
+                        # Product is being purchased (incoming to our stock)
+                        domain.extend([
+                            ('location_id.usage', '=', 'supplier'),
+                            ('location_dest_id.usage', '=', 'internal')
+                        ])
+                        expected_movement = _("inventory entry from supplier")
+
+                    _logger.debug(f"Stock move search domain: {domain}")
+                    found_moves = StockMove.search(domain, limit=1)
+
+                    if not found_moves:
+                        err_msg = _("Inventory justification missing for stockable product: {product_name} (Invoice: {invoice_num}, Line Note: {line_note}). "
+                                    "A corresponding {expected_movement} record is required, matching reference '{ref}'. No such stock move found.").format(
+                                        product_name=product.display_name,
+                                        invoice_num=expense_line.invoice_number or _('N/A'),
+                                        line_note=expense_line.note_expense or _('N/A'),
+                                        expected_movement=expected_movement,
+                                        ref=product_line.inventory_justification_ref
+                                    )
+                        raise ValidationError(err_msg)
+                    _logger.debug(f"Found matching stock move: {found_moves.ids} for product {product.display_name} with ref {product_line.inventory_justification_ref}")
+
         account_ids = []
         for line in self.expense_lines:
             if line.account_id.id not in account_ids:
@@ -418,11 +485,12 @@ class petty_expense_lines(models.Model):
     _name ='petty.expense.lines'
     _description = 'Petty Expense Lines'
     
-    product_id = fields.Many2one('product.product', string='Particulars')
+    # product_id = fields.Many2one('product.product', string='Particulars')
+    product_lines = fields.One2many('petty.expense.line.product', 'expense_line_id', string='Product Lines')
     account_id = fields.Many2one('account.account', string='Account')
     analytic_account_id = fields.Many2one('account.analytic.account', string='Analytic Account')
-    invoice_amount = fields.Monetary('Invoice Amount')
-    amount = fields.Monetary('Amount')
+    invoice_amount = fields.Monetary('Invoice Amount', compute='_compute_invoice_amount', store=True)
+    amount = fields.Monetary('Amount', compute='_compute_amount', store=True)
     currency_id = fields.Many2one('res.currency', string='Currency')
     expense_id = fields.Many2one('petty.cash.expense', string='Expense', ondelete='cascade')
     # Campo relacionado que trae el estado desde el modelo padre
@@ -434,6 +502,16 @@ class petty_expense_lines(models.Model):
     tax_amount = fields.Monetary('Tax Amount')
     invoice_tax_id = fields.Many2one(comodel_name='account.tax.template', help="The tax set to apply this distribution on invoices. Mutually exclusive with refund_tax_id")
     note_expense = fields.Char('Note Expense', default='Gasto para: ', tracking=1)
+
+    @api.depends('product_lines.price_subtotal')
+    def _compute_invoice_amount(self):
+        for line in self:
+            line.invoice_amount = sum(p_line.price_subtotal for p_line in line.product_lines)
+
+    @api.depends('invoice_amount', 'tax_amount', 'product_lines.price_subtotal')
+    def _compute_amount(self):
+        for line in self:
+            line.amount = line.invoice_amount + line.tax_amount
 
     def open_line_form(self):
         """
@@ -448,17 +526,17 @@ class petty_expense_lines(models.Model):
             'target': 'new',  # Para abrirlo como un modal
         }
     
-    @api.onchange('product_id')
-    def onchange_product(self):
-        self.ensure_one()
-        self = self.with_company(self.expense_id.company_id)
-        if self.product_id:
-            accounts = self.product_id.product_tmpl_id.get_product_accounts(fiscal_pos=False)
-            account_id = accounts['expense'] or False
-            self.account_id = account_id and account_id.id or False
-            self.invoice_amount = self.product_id.standard_price or 0.0
+    # @api.onchange('product_id')
+    # def onchange_product(self):
+    #     self.ensure_one()
+    #     self = self.with_company(self.expense_id.company_id)
+    #     if self.product_id:
+    #         accounts = self.product_id.product_tmpl_id.get_product_accounts(fiscal_pos=False)
+    #         account_id = accounts['expense'] or False
+    #         self.account_id = account_id and account_id.id or False
+    #         self.invoice_amount = self.product_id.standard_price or 0.0
     
-    @api.onchange('invoice_tax_id')
+    @api.onchange('invoice_tax_id', 'invoice_amount')
     def _onchange_invoice_tax_id(self):
         if self.invoice_tax_id:
             if self.invoice_tax_id.amount_type == 'percent':  # Corregir el operador de comparación
@@ -466,20 +544,20 @@ class petty_expense_lines(models.Model):
                 self.tax_amount = (self.invoice_tax_id.amount / 100.0) * self.invoice_amount
             else:
                 # Si el impuesto no es de tipo porcentaje, poner el valor en 0 (puedes ajustar según el tipo)
-                self.tax_amount = 0.0
+                self.tax_amount = 0.0 # Or handle fixed amounts if necessary
         else:
             # Si no hay impuesto seleccionado, el valor del impuesto es 0
             self.tax_amount = 0.0
 
-    @api.onchange('tax_amount')
-    def _onchange_tax_amount(self):
-        if self.tax_amount:
-            self.amount = self.invoice_amount + self.tax_amount
+    # @api.onchange('tax_amount')
+    # def _onchange_tax_amount(self):
+    #     if self.tax_amount:
+    #         self.amount = self.invoice_amount + self.tax_amount
 
-    @api.onchange('invoice_amount')
-    def _onchange_invoice_amount(self):
-        if self.invoice_amount:
-            self.amount = self.invoice_amount + self.tax_amount
+    # @api.onchange('invoice_amount')
+    # def _onchange_invoice_amount(self):
+    #     if self.invoice_amount:
+    #         self.amount = self.invoice_amount + self.tax_amount
 
     def get_total_tax_amount_by_tax(self):
         tax_totals = {}
@@ -502,3 +580,21 @@ class AccountMove(models.Model):
         string='Petty Cash Expense',
         ondelete='cascade'
     )
+
+class petty_expense_line_product(models.Model):
+    _name = 'petty.expense.line.product'
+    _description = 'Petty Expense Line Product'
+
+    expense_line_id = fields.Many2one('petty.expense.lines', string='Expense Line', required=True, ondelete='cascade')
+    product_id = fields.Many2one('product.product', string='Product', required=True)
+    quantity = fields.Float('Quantity', default=1.0)
+    price_unit = fields.Float('Unit Price')
+    price_subtotal = fields.Monetary('Subtotal', compute='_compute_subtotal', store=True)
+    currency_id = fields.Many2one(related='expense_line_id.currency_id', store=True)
+    inventory_justification_ref = fields.Char('Inventory Justification Ref')
+    is_credit_note_line = fields.Boolean('Is Credit Note Line', default=False)
+
+    @api.depends('quantity', 'price_unit')
+    def _compute_subtotal(self):
+        for line in self:
+            line.price_subtotal = line.quantity * line.price_unit
