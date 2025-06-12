@@ -264,62 +264,16 @@ class petty_cash_expense(models.Model):
                 if product.type == 'product':
                     _logger.debug(f"Checking stockable product: {product.display_name} on invoice {expense_line.invoice_number or 'N/A'} with ref {product_line.inventory_justification_ref or 'N/A'}")
 
-                    if not product_line.inventory_justification_ref:
-                        err_msg = _("Inventory Justification Ref is required for stockable product: {product_name} (Invoice: {invoice_num}, Line Note: {line_note}).").format(
-                            product_name=product.display_name,
-                            invoice_num=expense_line.invoice_number or _('N/A'),
-                            line_note=expense_line.note_expense or _('N/A')
-                        )
-                        raise ValidationError(err_msg)
-
-                    StockMove = self.env['stock.move']
-
-                    # Base domain for stock moves
-                    base_domain = [
-                        ('product_id', '=', product.id),
-                        ('state', '=', 'done') # Only consider completed moves
-                    ]
-
-                    # Domain for matching reference (origin or picking name)
-                    # Ensure product_line.inventory_justification_ref is not empty due to the check above
-                    ref_domain_part = [
-                        '|',
-                        ('origin', '=', product_line.inventory_justification_ref),
-                        ('picking_id.name', '=', product_line.inventory_justification_ref)
-                    ]
-
-                    # Combine base domain with reference domain part
-                    domain = base_domain + ref_domain_part
-
-                    if product_line.is_credit_note_line:
-                        # Product is being returned to supplier (outgoing from our stock)
-                        domain.extend([
-                            ('location_id.usage', '=', 'internal'),
-                            ('location_dest_id.usage', '=', 'supplier')
-                        ])
-                        expected_movement = _("inventory exit to supplier")
-                    else:
-                        # Product is being purchased (incoming to our stock)
-                        domain.extend([
-                            ('location_id.usage', '=', 'supplier'),
-                            ('location_dest_id.usage', '=', 'internal')
-                        ])
-                        expected_movement = _("inventory entry from supplier")
-
-                    _logger.debug(f"Stock move search domain: {domain}")
-                    found_moves = StockMove.search(domain, limit=1)
-
-                    if not found_moves:
+                    if not product_line.stock_move_line_id:
                         err_msg = _("Inventory justification missing for stockable product: {product_name} (Invoice: {invoice_num}, Line Note: {line_note}). "
-                                    "A corresponding {expected_movement} record is required, matching reference '{ref}'. No such stock move found.").format(
+                                    "A corresponding inventory entry record is required, matching reference '{ref}'. No such stock move found.").format(
                                         product_name=product.display_name,
                                         invoice_num=expense_line.invoice_number or _('N/A'),
                                         line_note=expense_line.note_expense or _('N/A'),
-                                        expected_movement=expected_movement,
                                         ref=product_line.inventory_justification_ref
                                     )
                         raise ValidationError(err_msg)
-                    _logger.debug(f"Found matching stock move: {found_moves.ids} for product {product.display_name} with ref {product_line.inventory_justification_ref}")
+                    _logger.debug(f"Found matching stock move: {product_line.stock_move_line_id} for product {product.display_name} with ref {product_line.inventory_justification_ref}")
 
         account_ids = []
         for line in self.expense_lines:
@@ -581,6 +535,16 @@ class AccountMove(models.Model):
         ondelete='cascade'
     )
 
+# PARCHES PROPUESTOS PARA ENLAZAR LA ENTRADA DE INVENTARIO A CADA PRODUCTO ALMACENABLE
+# Archivo original: petty_cash_expense.py 
+# Inserta/actualiza las siguientes secciones en tu archivo.
+
+# -----------------------------------------------------------------------------
+# 1) NUEVO CAMPO EN petty.expense.line.product
+# -----------------------------------------------------------------------------
+# Ubica la definición de la clase `petty_expense_line_product` y agrega el campo
+# `stock_move_line_id` justo después de `inventory_justification_ref`.
+
 class petty_expense_line_product(models.Model):
     _name = 'petty.expense.line.product'
     _description = 'Petty Expense Line Product'
@@ -592,7 +556,55 @@ class petty_expense_line_product(models.Model):
     price_subtotal = fields.Monetary('Subtotal', compute='_compute_subtotal', store=True)
     currency_id = fields.Many2one(related='expense_line_id.currency_id', store=True)
     inventory_justification_ref = fields.Char('Inventory Justification Ref')
+
+    # >>> NUEVO ENLACE A LA LÍNEA DE MOVIMIENTO DE ENTRADA DE INVENTARIO
+    stock_move_line_id = fields.Many2one(
+        'stock.move.line',
+        string='Entrada de Inventario',
+        domain="[('state', '=', 'done'), ('picking_id.picking_type_id.code', '=', 'incoming'), ('product_id', '=', product_id)]",
+        help='Selecciona la línea de movimiento que evidencia la entrada en inventario. Solo requerido para productos tipo almacenable.'
+    )
+
     is_credit_note_line = fields.Boolean('Is Credit Note Line', default=False)
+
+    # ---------------------------------------------------------------------
+    # CONSTRAINT PARA OBLIGAR EL ENLACE EN PRODUCTOS ALMACENABLES
+    # ---------------------------------------------------------------------
+    @api.constrains('product_id', 'stock_move_line_id')
+    def _check_stock_move_required(self):
+        for rec in self:
+            if rec.product_id and rec.product_id.type == 'product' and not rec.stock_move_line_id:
+                raise ValidationError(_('El campo "Inventory Entry" es obligatorio para productos almacenables (%s).') % rec.product_id.display_name)
+
+    # ---------------------------------------------------------------------
+    # AJUSTE DEL DOMINIO DINÁMICO (opcional)
+    # ---------------------------------------------------------------------
+    @api.onchange('product_id')
+    def _onchange_product_id(self):
+        if self.product_id:
+            return {
+                'domain': {
+                    'stock_move_line_id': [
+                        ('product_id', '=', self.product_id.id),
+                        ('state', '=', 'done'),
+                        ('picking_id.picking_type_id.code', '=', 'incoming'),
+                    ]
+                }
+            }
+        else:
+            return {
+                'domain': {
+                    'stock_move_line_id': [
+                        ('state', '=', 'done'),
+                        ('picking_id.picking_type_id.code', '=', 'incoming'),
+                    ]
+                }
+            }
+
+    # ---------------------------------------------------------------------
+    # NO OLVIDES importar ValidationError al inicio del archivo si no existe:
+    # from odoo.exceptions import ValidationError
+    # ---------------------------------------------------------------------
 
     @api.depends('quantity', 'price_unit')
     def _compute_subtotal(self):

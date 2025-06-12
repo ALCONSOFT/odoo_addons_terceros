@@ -1,0 +1,41 @@
+{
+    "name": "Audit Log",
+    "version": "16.0.1.0.0",
+    "category": "Tools",
+    "description": """The Audit Log Module will capture user actions (CRUD operations) on selected data models,
+                      providing a comprehensive record of key operations. """,
+    "summary":     """The Audit Log Odoo App is designed to meticulously track and log user actions, including Create,
+                      Read, Update, and Delete (CRUD) operations across various data models. This module ensures transparency
+                      and accountability, providing a comprehensive record of key operations to help maintain data integrity
+                      within the Odoo system.""",
+    "author": "Zehntech Technologies Inc.",
+    "company": "Zehntech Technologies Inc.",
+    "maintainer": "Zehntech Technologies Inc.",
+    "contributor": "Zehntech Technologies Inc.",
+    "website": "https://www.zehntech.com/",
+    "support": "odoo-support@zehntech.com",
+    "depends": ["mail"],
+    "data": [
+        "security/res_groups.xml",
+        "security/ir.model.access.csv",
+        "data/demo_user.xml",
+        "data/ir_cron.xml",
+        "views/auditlog_view.xml",
+        "views/http_session_view.xml",
+        "views/http_request_view.xml",
+        "views/notification.xml",
+    ],
+    'i18n': [
+        'i18n/de.po',
+        'i18n/es.po',
+        'i18n/fr.po',
+        'i18n/ja_JP.po'
+    ],
+    'images': ['static/description/banner.png'],
+    "license": "OPL-1",
+    "installable": True,
+    "application": True,
+    "auto_install": False,
+    "price": 00.00,
+    "currency": "USD",
+}

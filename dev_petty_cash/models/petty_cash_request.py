@@ -151,6 +151,7 @@ class petty_cash_request(models.Model):
         """Abrir el formulario de pagos con contexto personalizado y guardar el ID del pago"""
         self.ensure_one()
 
+
         # IDs de los diarios (ajusta estos valores según tu configuración)
         journal_payment_id = self.payment_journal_id.id  # Diario de pago (origen)
         petty_cash_journal_id = self.petty_journal_id.id  # Diario de caja chica (destino)

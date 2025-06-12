@@ -12,5 +12,6 @@ from . import petty_cash_request
 from . import petty_cash_expense
 from . import pettycash_dashboard
 #from . import withholding_tax_move
+from . import stock_move_line_name_get_patch
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

@@ -252,8 +252,9 @@
                                         <field name="quantity"/>
                                         <field name="price_unit"/>
                                         <field name="price_subtotal" sum="Total Subtotal" widget="monetary"/>
-                                        <field name="is_credit_note_line"/>
+                                        <field name="is_credit_note_line" optional="hide"/>
                                         <field name="inventory_justification_ref" optional="show"/>
+                                        <field name="stock_move_line_id" optional="show"/>
                                         <field name="currency_id" invisible="1"/>
                                     </tree>
                                 </field>
@@ -357,7 +358,7 @@
           parent="dev_petty_cash_menu"
           action="action_petty_cash_expense_form1" sequence="4"/>
 -->
-<menuitem name="Petty Cash Expense Form 2" id="menu_petty_cash_expense_form2"
+<menuitem name="Petty Cash Expense Form" id="menu_petty_cash_expense_form2"
           parent="dev_petty_cash_menu"
           action="action_petty_cash_expense_form2" sequence="5"/>
 

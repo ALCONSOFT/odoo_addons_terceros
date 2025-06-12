@@ -10,7 +10,7 @@
 
 {
     'name': 'Petty Cash Management, Petty Cash Request, Petty Cash Expense',
-    'version': '-2024.10.15-15:55',
+    'version': '25.06.11 17:5',
     'sequence': 1,
     'category': 'Accouting',
     'description':
