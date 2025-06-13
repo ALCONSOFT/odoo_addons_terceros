@@ -17,144 +17,13 @@
             </tree>
         </field>
     </record>
-<!--
-    <record id="view_petty_cash_expense_form" model="ir.ui.view">
-        <field name="name">view.petty.cash.expense.form</field>
-        <field name="model">petty.cash.expense</field>
-        <field name="priority" eval="14"/>
-        <field name="arch" type="xml">
-            <form string="Petty Cash Expense">
-                <header>
-                    <button name="action_confirm" string='Confirm'
-                            type='object' class="oe_highlight"
-                            states="draft"/>
-                            
-                    <button name="action_validate" string='Validate'
-                            type='object' class="oe_highlight"
-                            states="confirm"/>
-                    
-                    <button name="action_reconcile" string='Reconcile Payment'
-                            type='object' class="oe_highlight"
-                            states="validate"/>
-                            
-                            
-                    <button name="action_draft" string='Set To Draft'
-                            type='object'
-                            states="cancel,confirm"/>
-                            
-                    <button name="action_cancel" string='Cancel'
-                            type='object'
-                            states="confirm,validate"/>
-                    
-                    
-                    
-                    <field name="state" widget="statusbar" statusbar_visible="draft,confirm,validate,done"/>
-                </header>
-                <sheet>
-                    <div class="oe_button_box" name="button_box">
-                        <button name="action_view_payment"
-                            type="object"
-                            class="oe_stat_button"
-                            icon="fa-pencil-square-o"
-                            attrs="{'invisible': [('payment_count', '=', 0)]}">
-                            <field name="payment_count" widget="statinfo" string="Payments"/>
-                        </button>
-                    </div>
-                    <h3>
-                        <field name="name" readonly="1"/>
-                    </h3>
-                    <group>
-                        <group>
-                            <field name="employee_id" required='1' attrs="{'readonly':[('state','!=','draft')]}"/>
-                            <field name="payment_journal_id" required='1' attrs="{'readonly':[('state','!=','draft')]}"/>
-                            <field name="petty_journal_id" required='1' attrs="{'readonly':[('state','!=','draft')]}"/>
-                        </group>
-                        <group>
-                            <field name="date" required='1' attrs="{'readonly':[('state','!=','draft')]}"/>
-                            <field name="currency_id" invisible='1'/>
-                            <field name="user_id" required='1' readonly="1"/>
-                            <field name="company_id" required='1' attrs="{'readonly':[('state','!=','draft')]}"/>
-                            <field name="payment_ids" widget="many2many_tags" invisible="1"/>
-                            <field name="account_move_ids_expense" widget="many2many_tags"/>
-                        </group>
-                    </group>
-                    <notebook>
-                        <page string='Expense Lines'>
-                            <field name="expense_lines" context="{'default_currency_id':currency_id}" options="{'no_create': True, 'no_delete': True}">
-                                <tree editable="bottom" attrs="{'readonly': [('parent.state', '=', 'done')]}">
-                                    <field name="date_expense" required="1"/>
-                                    <field name="note_expense" />
-                                    <field name="supplier_id" required="1"/>
-                                    <field name="product_id" required="1"/>
-                                    <field name='account_id' required="1"/>
-                                    <field name="analytic_account_id"/>
-                                    <field name="invoice_number" required="1"/>
-                                    <field name="invoice_tax_id" />
-                                    <field name="tax_amount" widget="monetary" required="0"/>
-                                    <field name="amount" widget="monetary" required="1"/>
-                                    <field name="currency_id" invisible="1"/>
-                                    <field name="expense_state" invisible="0"/>
-                                </tree>
-                                <form attrs="{'readonly': [('parent.state', '=', 'done')]}">
-                                    <group>
-                                        <group>
-                                            <field name="product_id"/>
-                                            <field name='account_id'/>
-                                            <field name="expense_state" invisible="1"/>
-                                        </group>
-                                        <group>
-                                            <field name="currency_id" invisible="1"/>
-                                            <field name="analytic_account_id"/>
-                                            <field name='amount' widget="monetary"/>
-                                        </group>
-                                    </group>
-                                </form>
-                            </field>
-                            <group name="note_group" col="6" class="mt-2 mt-md-0">
-                                <group colspan="4">
-                                    <field name="note" nolabel="1" placeholder="Terms and conditions..."/>
-                                </group>
-                                <group class="oe_subtotal_footer oe_right" colspan="2" name="sale_total">
-                                    <field name="balance" widget="monetary" options="{'currency_field': 'currency_id'}"/>
-                                    <field name="expense_amount" widget="monetary" options="{'currency_field': 'currency_id'}"/>
-                                    <div class="oe_subtotal_footer_separator oe_inline o_td_label">
-                                        <label for="remaining_balance"/>
-                                    </div>
-                                    <field name="remaining_balance" nolabel="1" class="oe_subtotal_footer_separator" widget="monetary" options="{'currency_field': 'currency_id'}"/>
-                                </group>
-                                <div class="oe_clear"/>
-                            </group>
-                        </page>
-                       <page name="Asiento de Diario" string="Asiento de Diario">
-                            <field name="account_move_ids_expense" readonly="1">
-                                <tree string="Asientos de Gastos" >
-                                        <field name="name"/>
-                                        <field name="date"/>
-                                        <field name="journal_id"/>
-                                        <field name="state"/>
-                                        <field name="quick_edit_total_amount" />
-                                    </tree>
-                                </field>
-                                            
-                        </page>
-                    </notebook>
-                </sheet>
-                <div class="oe_chatter">
-                    <field name="message_follower_ids"/>
-                    <field name="activity_ids"/>
-                    <field name="message_ids"/>
-                </div>  
-            </form>
-        </field>
-    </record>
--->    
-<!--FORMULARIO VERSION 2-->
+
 <record id="view_petty_cash_expense_form2" model="ir.ui.view">
     <field name="name">view.petty.cash.expense.form2</field>
     <field name="model">petty.cash.expense</field>
     <field name="priority" eval="15"/>
     <field name="arch" type="xml">
-        <form string="Petty Cash Expense 2">
+        <form string="Gasto de Caja Chica">
             <header>
                 <button name="action_confirm" string="Confirm"
                         type="object" class="btn-primary"
@@ -206,58 +75,118 @@
                         <field name="payment_ids" widget="many2many_tags" invisible="1"/>
                     </group>
                 </group>
+                
                 <notebook>
-                    <page string="Expense Lines" >
+                    <page string="Expense Lines">
                         <field name="expense_lines" context="{'default_currency_id': currency_id}"
                             options="{'no_create': True, 'no_delete': True}" mode="tree,form"
-                            attrs="{'readonly': [('state', '=', 'done')]}" >
-                            <tree attrs="{'readonly': [('parent.state', '=', 'done')]}">
+                            attrs="{'readonly': [('state', '=', 'done')]}">
+                            <tree attrs="{'readonly': [('parent.state', '=', 'done')]}" decoration-info="expense_state == 'draft'" decoration-warning="expense_state == 'confirm'" decoration-success="expense_state == 'done'">
                                 <field name="date_expense" required="1"/>
-                                <field name="note_expense"/>
-                                <field name="supplier_id" required="1"/>
-                                <field name="account_id" groups="dev_petty_cash.group_petty_manager" required="1"/>
-                                <field name="analytic_account_id"/>
                                 <field name="invoice_number" required="1"/>
-                                <field name="invoice_amount" widget="monetary" force_save="1" readonly="1"/>
-                                <field name="invoice_tax_id" domain="[('type_tax_use', 'in', ['purchase', 'none'])]"/>
-                                <field name="tax_amount" widget="monetary"/>
-                                <field name="amount" widget="monetary" force_save="1" readonly="1"/>
+                                <field name="supplier_id" required="1"/>
+                                <field name="note_expense" optional="show"/>
+                                <field name="invoice_amount" widget="monetary" force_save="1" readonly="1" sum="Total Facturas"/>
+                                <field name="invoice_tax_id" domain="[('type_tax_use', 'in', ['purchase', 'none'])]" optional="show"/>
+                                <field name="tax_amount" widget="monetary" sum="Total Impuestos"/>
+                                <field name="amount" widget="monetary" force_save="1" readonly="1" sum="Total General"/>
+                                <field name="attachment_count" string="Docs" optional="show"/>
+                                <field name="expense_state" string="Estado" optional="show"/>
                                 <field name="currency_id" invisible="1"/>
-                                <field name="expense_state" invisible="1"/>
-                                <button string="" type="object" name="open_line_form" class="btn-primary o_edit_button" icon="fa-pencil"/>
+                                <button string="" type="object" name="open_line_form" class="btn-primary o_edit_button" icon="fa-pencil" title="Editar Línea"/>
+                                <button string="" type="object" name="action_view_attachments" class="btn-secondary" icon="fa-paperclip" title="Ver Documentos Adjuntos" attrs="{'invisible': [('attachment_count', '=', 0)]}"/>
                             </tree>
                             <form attrs="{'readonly': [('parent.state', '=', 'done')]}">
-                                <group>
+                                <sheet>
+                                    <!-- Campo expense_state invisible necesario para los ribbons -->
+                                    <field name="expense_state" invisible="1"/>
+                                    
+                                    <div>
+                                        <widget name="web_ribbon"
+                                                title="BORRADOR"
+                                                bg_color="bg-secondary"
+                                                attrs="{'invisible': [('expense_state', '!=', 'draft')]}"/>
+                                        <widget name="web_ribbon"
+                                                title="CONFIRMADO"
+                                                bg_color="bg-warning"
+                                                attrs="{'invisible': [('expense_state', '!=', 'confirm')]}"/>
+                                        <widget name="web_ribbon"
+                                                title="VALIDADO"
+                                                bg_color="bg-primary"
+                                                attrs="{'invisible': [('expense_state', '!=', 'validate')]}"/>
+                                        <widget name="web_ribbon"
+                                                title="COMPLETADO"
+                                                bg_color="bg-success"
+                                                attrs="{'invisible': [('expense_state', '!=', 'done')]}"/>
+                                        <widget name="web_ribbon"
+                                                title="CANCELADO"
+                                                bg_color="bg-danger"
+                                                attrs="{'invisible': [('expense_state', '!=', 'cancel')]}"/>
+                                    </div>
+                                    <div class="oe_title">
+                                        <h1>
+                                            <label for="invoice_number"/>
+                                            <field name="invoice_number" placeholder="Número de Factura..." required="1" style="width: 100%; min-width: 300px;"/>
+                                        </h1>
+                                        <h3>
+                                            <label for="supplier_id"/>
+                                            <field name="supplier_id" placeholder="Seleccionar Proveedor..." required="1" style="width: 100%; min-width: 400px;"/>
+                                        </h3>
+                                    </div>
+                                    
                                     <group>
-                                        <field name="date_expense" required="1"/>
-                                        <field name="note_expense"/>
-                                        <field name="supplier_id" required="1"/>
-                                        <field name="account_id" groups="dev_petty_cash.group_petty_manager" required="1"/>
-                                        <field name="analytic_account_id"/>
-                                        <field name="invoice_number" required="1"/>
+                                        <group string="Información General">
+                                            <field name="date_expense" required="1" style="width: 100%; min-width: 200px;"/>
+                                            <field name="note_expense" placeholder="Descripción del gasto..." style="width: 100%; min-width: 300px;"/>
+                                        </group>
+                                        <group string="Información Financiera">
+                                            <field name="invoice_tax_id" domain="[('type_tax_use', 'in', ['purchase', 'none'])]" style="width: 100%; min-width: 250px;"/>
+                                            <field name="tax_amount" widget="monetary" style="width: 100%; min-width: 200px;"/>
+                                            <field name="invoice_amount" widget="monetary" force_save="1" readonly="1" style="width: 100%; min-width: 200px;"/>
+                                            <div class="o_td_label">
+                                                <strong>Total:</strong>
+                                            </div>
+                                            <field name="amount" widget="monetary" force_save="1" readonly="1" class="oe_subtotal_footer_separator" style="width: 100%; min-width: 200px; font-weight: bold;"/>
+                                            <field name="currency_id" invisible="1"/>
+                                        </group>
                                     </group>
-                                    <group>
-                                        <field name="invoice_tax_id" domain="[('type_tax_use', 'in', ['purchase', 'none'])]"/>
-                                        <field name="tax_amount" widget="monetary"/>
-                                        <field name="invoice_amount" widget="monetary" force_save="1" readonly="1"/>
-                                        <field name="amount" widget="monetary" force_save="1" readonly="1"/>
-                                        <field name="currency_id" invisible="1"/>
-                                        <field name="expense_state" invisible="1"/>
-                                    </group>
-                                </group>
-                                <separator string="Product Lines"/>
-                                <field name="product_lines">
-                                    <tree editable="bottom">
-                                        <field name="product_id" required="1" options='{"no_create": True, "no_open": True}'/>
-                                        <field name="quantity"/>
-                                        <field name="price_unit"/>
-                                        <field name="price_subtotal" sum="Total Subtotal" widget="monetary"/>
-                                        <field name="is_credit_note_line" optional="hide"/>
-                                        <field name="inventory_justification_ref" optional="show"/>
-                                        <field name="stock_move_line_id" optional="show"/>
-                                        <field name="currency_id" invisible="1"/>
-                                    </tree>
-                                </field>
+                                
+                                    <notebook>
+                                        <page string="Líneas de Productos del Gasto">
+                                            <field name="product_lines">
+                                                <tree editable="bottom" decoration-muted="is_credit_note_line == True">
+                                                    <field name="product_id" required="1" options="{'no_create': True, 'no_open': True}"/>
+                                                    <field name="quantity" sum="Total Cantidad"/>
+                                                    <field name="price_unit" widget="monetary"/>
+                                                    <field name="price_subtotal" sum="Total Subtotal" widget="monetary"/>
+                                                    <field name="tax_id" optional="show"/>
+                                                    <field name="tax_amount" widget="monetary" sum="Total Impuestos"/>
+                                                    <field name="account_analytic_id" string="Cuenta Analítica" optional="show"/>
+                                                    <field name="phase_id" string="Fase" optional="show"/>
+                                                    <field name="vehiculo_id" string="Vehículo" optional="show"/>
+                                                    <field name="stock_move_line_id" string="Entrada Inventario" optional="show"/>
+                                                    <field name="is_credit_note_line" string="Nota Crédito" optional="hide"/>
+                                                    <field name="currency_id" invisible="1"/>
+                                                </tree>
+                                            </field>
+                                        </page>
+                                        
+                                        <page string="Documentos Adjuntos">
+                                            <group string="Facturas, Recibos y otros Documentos">
+                                                <field name="attachment_ids" widget="many2many_binary" nolabel="1"/>
+                                            </group>
+                                        </page>
+                                        
+                                        <page string="Bitácora y Actividades">
+                                            <div class="oe_chatter">
+                                                <field name="message_follower_ids" widget="mail_followers" nolabel="1"/>
+                                                <field name="activity_ids" widget="mail_activity" nolabel="1"/>
+                                                <field name="message_ids" widget="mail_thread" nolabel="1"/>
+                                            </div>
+                                        </page>
+                                    </notebook>
+                                </sheet>
+                                
                             </form>
                         </field>
                         <group name="note_group" col="6" class="mt-2 mt-md-0">
@@ -267,29 +196,18 @@
                             <group class="o_subtotal_footer o_right" colspan="2" name="sale_total">
                                 <field name="balance" widget="monetary" options="{'currency_field': 'currency_id'}"/>
                                 <field name="expense_amount" widget="monetary" options="{'currency_field': 'currency_id'}"/>
-                                <!--***-->
                                 <field name="total_tax_amount"/>
                                 
                                 <div class="o_subtotal_footer_separator o_inline o_td_label">
                                     <label for="remaining_balance"/>
                                 </div>
 
-                                <!-- Opcional: Mostrar el desglose de impuestos en formato JSON
-                                <div t-if="o.total_tax_amount">
-                                    <t t-foreach="eval(o.total_tax_amount)" t-as="tax">
-                                        <div>
-                                            <strong>Tax:</strong> <span t-esc="tax[0]"/>
-                                            <strong>Amount:</strong> <span t-esc="tax[1]"/>
-                                        </div>
-                                    </t>
-                                </div>
-                                 -->
                                 <field name="remaining_balance" nolabel="1" class="o_subtotal_footer_separator" widget="monetary" options="{'currency_field': 'currency_id'}"/>
                             </group>
                             <div class="o_clear"/>
                         </group>
                     </page>
-                    <page name = "asiento_de_diario" string = "Asiento de Diario">
+                    <page name="asiento_de_diario" string="Asiento de Diario">
                         <field name="account_move_ids_expense" readonly="1">
                             <tree string="Asientos de Gastos">
                                 <field name="name"/>
@@ -311,7 +229,6 @@
     </field>
 </record>
 
-<!---->
     <record id="dev_petty_cash_expense_filter" model="ir.ui.view">
         <field name="name">petty.cash.expense.filter</field>
         <field name="model">petty.cash.expense</field>
@@ -335,14 +252,6 @@
         </field>
     </record>
 
-<!--
-<record id="action_petty_cash_expense_form1" model="ir.actions.act_window">
-    <field name="name">Petty Cash Expense Form 1</field>
-    <field name="res_model">petty.cash.expense</field>
-    <field name="view_mode">form</field>
-    <field name="view_id" ref="view_petty_cash_expense_form"/>
-</record>
--->
 <record id="action_petty_cash_expense_form2" model="ir.actions.act_window">
     <field name="name">Petty Cash Expense Form</field>
     <field name="res_model">petty.cash.expense</field>
@@ -352,12 +261,6 @@
                                    (0, 0, {'view_mode': 'form', 'view_id': ref('view_petty_cash_expense_form2')})]"/>
 </record>
 
-    <!--Menus-->
-<!--
-<menuitem name="Petty Cash Expense Form 1" id="menu_petty_cash_expense_form1"
-          parent="dev_petty_cash_menu"
-          action="action_petty_cash_expense_form1" sequence="4"/>
--->
 <menuitem name="Petty Cash Expense Form" id="menu_petty_cash_expense_form2"
           parent="dev_petty_cash_menu"
           action="action_petty_cash_expense_form2" sequence="5"/>

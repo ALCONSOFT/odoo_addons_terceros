@@ -64,36 +64,33 @@ class petty_cash_expense(models.Model):
     # Campo que almacena el desglose de impuestos en formato JSON (opcional)
     tax_breakdown_json = fields.Text(string='Tax Breakdown', compute='_compute_total_tax_amount', default='{}') 
 
-    @api.depends('expense_lines.tax_amount')
+    @api.depends('expense_lines.product_lines.tax_amount')
     def _compute_total_tax_amount_only(self):
         for expense in self:
-            # Usamos el método que devuelve un diccionario con los impuestos
-            tax_totals = expense.expense_lines.get_total_tax_amount_by_tax()
+            # Calculamos el total de impuestos desde las líneas de producto
+            total_tax = 0.0
+            for line in expense.expense_lines:
+                for product_line in line.product_lines:
+                    total_tax += product_line.tax_amount
             
-            # Si el diccionario está vacío, asignamos 0 como valor predeterminado
-            if tax_totals:
-                # Redondeamos cada valor de impuesto a 2 decimales
-                tax_totals = {tax: round(amount, 2) for tax, amount in tax_totals.items()}
-                total_tax = round(sum(tax_totals.values()), 2)
-            else:
-                total_tax = 0.0
-            
-            # Asignamos el valor calculado al campo computado
-            expense.total_tax_amount = total_tax
-            
-            # Para asegurar que el breakdown se inicializa
-            expense.tax_breakdown_json = str(tax_totals) if tax_totals else '{}'
+            expense.total_tax_amount = round(total_tax, 2)
     
-    @api.depends('expense_lines.tax_amount')
+    @api.depends('expense_lines.product_lines.tax_amount')
     def _compute_total_tax_amount(self):
         for expense in self:
-            tax_totals = expense.expense_lines.get_total_tax_amount_by_tax()
-            # Suma de los valores del diccionario
+            # Calculamos el desglose de impuestos por tipo desde las líneas de producto
+            tax_totals = {}
+            for line in expense.expense_lines:
+                for product_line in line.product_lines:
+                    if product_line.tax_id and product_line.tax_amount > 0:
+                        tax_name = product_line.tax_id.name
+                        if tax_name not in tax_totals:
+                            tax_totals[tax_name] = 0.0
+                        tax_totals[tax_name] += product_line.tax_amount
+            
+            # Suma total de impuestos
             total_tax = sum(tax_totals.values()) if tax_totals else 0.0
-            # Almacenar el total de impuestos
-            expense.total_tax_amount = total_tax
-
-            # Convertir el diccionario en un formato JSON para mostrar o almacenar (opcional)
+            expense.total_tax_amount = round(total_tax, 2)
             expense.tax_breakdown_json = str(tax_totals) if tax_totals else '{}'
 
     @api.depends('account_move_ids_expense')
@@ -254,7 +251,7 @@ class petty_cash_expense(models.Model):
             raise ValidationError(_("In Petty Cash have only %s balance")%(self.balance))
         self.state = 'confirm'
         
-    def action_validate(self):
+    def action_validate_old(self):
         _logger = logging.getLogger(__name__) # Optional: for logging
 
         for expense_line in self.expense_lines:
@@ -262,24 +259,24 @@ class petty_cash_expense(models.Model):
                 product = product_line.product_id
                 # Check only for stockable products
                 if product.type == 'product':
-                    _logger.debug(f"Checking stockable product: {product.display_name} on invoice {expense_line.invoice_number or 'N/A'} with ref {product_line.inventory_justification_ref or 'N/A'}")
+                    _logger.debug(f"Checking stockable product: {product.display_name} on invoice {expense_line.invoice_number or 'N/A'}")
 
                     if not product_line.stock_move_line_id:
                         err_msg = _("Inventory justification missing for stockable product: {product_name} (Invoice: {invoice_num}, Line Note: {line_note}). "
-                                    "A corresponding inventory entry record is required, matching reference '{ref}'. No such stock move found.").format(
+                                    "A corresponding inventory entry record is required. No such stock move found.").format(
                                         product_name=product.display_name,
                                         invoice_num=expense_line.invoice_number or _('N/A'),
-                                        line_note=expense_line.note_expense or _('N/A'),
-                                        ref=product_line.inventory_justification_ref
+                                        line_note=expense_line.note_expense or _('N/A')
                                     )
                         raise ValidationError(err_msg)
-                    _logger.debug(f"Found matching stock move: {product_line.stock_move_line_id} for product {product.display_name} with ref {product_line.inventory_justification_ref}")
+                    _logger.debug(f"Found matching stock move: {product_line.stock_move_line_id} for product {product.display_name}")
 
         account_ids = []
         for line in self.expense_lines:
-            if line.account_id.id not in account_ids:
-                account_ids.append(line.account_id.id)
-                
+            for product_line in line.product_lines:
+                if product_line.account_id and product_line.account_id.id not in account_ids:
+                    account_ids.append(product_line.account_id.id)
+        amount = 0        
         for account in account_ids:
             amount = 0
             for line in self.expense_lines:
@@ -313,6 +310,79 @@ class petty_cash_expense(models.Model):
         self.account_move_ids_expense = [(4, invoice_id.id)]
         self.state = 'done'
 
+    # >>> NUEVO MÉTODO PARA VALIDAR LOS GASTOS DE CAJA CHICA
+    def action_validate(self):
+        for expense in self:
+            # Validar cuentas analíticas en cada línea de producto
+            for line in expense.expense_lines:
+                for product_line in line.product_lines:
+                    if not product_line.account_analytic_id:
+                        raise ValidationError(_(
+                            "Falta cuenta analítica para:\n"
+                            "Factura: %s\n"
+                            "Proveedor: %s\n"
+                            "Producto: %s"
+                        ) % (
+                            line.invoice_number or 'N/A',
+                            line.supplier_id.name or 'N/A', 
+                            product_line.product_id.display_name
+                        ))
+        for expense in self:
+            # … tus validaciones previas …
+            # 1. Recolectar líneas de débito
+            debit_lines = expense._build_debit_lines()
+            # 2. Calcular total y línea de crédito
+            total = sum(l['debit'] for l in debit_lines)
+            credit_line = {
+                'name': _("Crédito Petty Cash %s") % expense.name,
+                'account_id': expense.petty_journal_id.default_account_id.id,
+                'debit': 0.0,
+                'credit': total,
+            }
+            # 3. Crear asiento
+            move_vals = {
+                'move_type': 'entry',
+                'journal_id': expense.petty_journal_id.id,
+                'date': expense.date,
+                'ref': expense.name,
+                'invoice_line_ids': [
+                    (0, 0, x) for x in (debit_lines + [credit_line])
+                ],
+            }
+            move = self.env['account.move'].create(move_vals)
+            move.action_post()
+            expense.account_move_ids_expense = [(4, move.id)]
+            expense.state = 'done'
+    
+    def _build_debit_lines(self):
+        lines = []
+        for line in self.expense_lines:
+            for prod in line.product_lines:
+                # Cuenta de gasto según producto/categoría
+                account_dr = prod.product_id.property_account_expense_id.id \
+                            or prod.product_id.categ_id.property_account_expense_categ_id.id
+                lines.append({
+                    'name': prod.product_id.display_name,
+                    'account_id': account_dr,
+                    'debit': prod.price_subtotal,
+                    'credit': 0.0,
+                    'analytic_distribution': { str(prod.account_analytic_id.id): 100.0 },
+                })
+                # Impuestos
+                if prod.tax_amount:
+                    tax_accts = prod.tax_id.invoice_repartition_line_ids\
+                                    .filtered(lambda l: l.repartition_type=='tax')\
+                                    .mapped('account_id')
+                    if tax_accts:
+                        lines.append({
+                            'name': f"Impuesto {prod.tax_id.name}",
+                            'account_id': tax_accts[0].id,
+                            'debit': prod.tax_amount,
+                            'credit': 0.0,
+                        })
+        return lines
+    
+    
     def create_journals_entry(self, vals):
         # ASIENTO DE DIARIO ORIGEN  DEBITO A LA CUENTA INTERNA DE TRANSFERENCIAS
         #                           CREDITO A LA CUENTA POR DEFAULT DEL DIARIO DE PAGO
@@ -334,56 +404,66 @@ class petty_cash_expense(models.Model):
             }
         ]
 
-        # Líneas de débito (para cada línea de gasto)
+        # Líneas de débito (para cada línea de producto en cada línea de gasto)
         for line in self.expense_lines:
             invoice_number = line.invoice_number
-            account_dr = line.account_id.id
-            product_id = line.product_id.id
-            name_product = line.product_id.name or line.note_expense
             partner_id_expense = line.supplier_id.id
             partner_name = line.supplier_id.name or ''
-            tax_amount = line.tax_amount
-            amount_dr = line.amount - tax_amount
-            analytic_distribution = self.convert_to_distribution(line.analytic_account_id)
-            # Agregar línea de débito para el gasto
-            invoice_lines.append({
-                'name': 'Débito por: ' + name_product + ' # Fact.: ' + invoice_number + ' Prov.: ' + partner_name,
-                'partner_id': partner_id_expense,
-                'account_id': account_dr,  # ID de la cuenta contable de débito
-                'debit': amount_dr,
-                'credit': 0.00,
-                'quantity': 1,
-                'price_unit': amount_dr,
-                'price_subtotal': amount_dr,
-                'price_total': amount_dr,
-                'product_id': product_id,
-                'balance': amount_dr,
-                'amount_currency': amount_dr,
-                'amount_residual': amount_dr,
-                'amount_residual_currency': amount_dr,
-                'analytic_distribution': analytic_distribution
-            })
-
-            # Agregar líneas de débito para cada impuesto relacionado, solo si tiene cuenta válida
-            for tax_line in line.invoice_tax_id.invoice_repartition_line_ids:
-                tax = tax_line.account_id
-
-                # Verificar que la línea de impuesto tenga una cuenta válida
-                if not tax:
-                    continue  # Saltar si no hay una cuenta asociada
-
-                tax_name = tax.display_name if tax.display_name else 'N/A'
+            
+            # Procesar cada línea de producto
+            for product_line in line.product_lines:
+                if not product_line.account_id:
+                    continue  # Saltar si no hay cuenta contable
+                    
+                account_dr = product_line.account_id.id
+                product_id = product_line.product_id.id
+                name_product = product_line.product_id.name or line.note_expense
+                tax_amount = product_line.tax_amount
+                amount_dr = product_line.price_subtotal  # Solo el subtotal sin impuesto
+                analytic_distribution = self.convert_to_distribution(product_line.account_analytic_id)
                 
+                # Agregar línea de débito para el gasto del producto
                 invoice_lines.append({
-                    'name': 'Débito Impuesto: ' + tax_name + ' # Fact.: ' + invoice_number + ' Prov.: ' + partner_name,
-                    'account_id': tax.id,  # ID de la cuenta contable de débito
-                    'debit': tax_amount,
+                    'name': 'Débito por: ' + name_product + ' # Fact.: ' + invoice_number + ' Prov.: ' + partner_name,
+                    'partner_id': partner_id_expense,
+                    'account_id': account_dr,  # ID de la cuenta contable de débito
+                    'debit': amount_dr,
                     'credit': 0.00,
-                    'balance': tax_amount,
-                    'amount_currency': tax_amount,
-                    'amount_residual': tax_amount,
-                    'amount_residual_currency': tax_amount,
+                    'quantity': product_line.quantity,
+                    'price_unit': product_line.price_unit,
+                    'price_subtotal': amount_dr,
+                    'price_total': amount_dr,
+                    'product_id': product_id,
+                    'balance': amount_dr,
+                    'amount_currency': amount_dr,
+                    'amount_residual': amount_dr,
+                    'amount_residual_currency': amount_dr,
+                    'analytic_distribution': analytic_distribution
                 })
+                
+                # Agregar línea de débito para el impuesto del producto, si existe
+                if product_line.tax_id and tax_amount > 0:
+                    for tax_line in product_line.tax_id.invoice_repartition_line_ids:
+                        tax_account = tax_line.account_id
+                        
+                        # Verificar que la línea de impuesto tenga una cuenta válida
+                        if not tax_account:
+                            continue  # Saltar si no hay una cuenta asociada
+                        
+                        tax_name = tax_account.display_name if tax_account.display_name else 'N/A'
+                        
+                        invoice_lines.append({
+                            'name': 'Débito Impuesto: ' + tax_name + ' # Fact.: ' + invoice_number + ' Prov.: ' + partner_name,
+                            'account_id': tax_account.id,  # ID de la cuenta contable de débito
+                            'debit': tax_amount,
+                            'credit': 0.00,
+                            'balance': tax_amount,
+                            'amount_currency': tax_amount,
+                            'amount_residual': tax_amount,
+                            'amount_residual_currency': tax_amount,
+                        })
+
+
 
         # Datos del asiento contable (encabezado)
         invoice_data = {
@@ -438,34 +518,85 @@ class petty_cash_expense(models.Model):
 class petty_expense_lines(models.Model):
     _name ='petty.expense.lines'
     _description = 'Petty Expense Lines'
+    _inherit = ['mail.thread', 'mail.activity.mixin']
+    _order = 'date_expense desc, id desc'
     
     # product_id = fields.Many2one('product.product', string='Particulars')
     product_lines = fields.One2many('petty.expense.line.product', 'expense_line_id', string='Product Lines')
-    account_id = fields.Many2one('account.account', string='Account')
-    analytic_account_id = fields.Many2one('account.analytic.account', string='Analytic Account')
-    invoice_amount = fields.Monetary('Invoice Amount', compute='_compute_invoice_amount', store=True)
-    amount = fields.Monetary('Amount', compute='_compute_amount', store=True)
+    # account_id = fields.Many2one('account.account', string='Account')
+    # analytic_account_id = fields.Many2one('account.analytic.account', string='Analytic Account')
+    invoice_amount = fields.Monetary('Invoice Amount', compute='_compute_invoice_amount', store=True, tracking=True)
+    amount = fields.Monetary('Amount', compute='_compute_amount', store=True, tracking=True)
     currency_id = fields.Many2one('res.currency', string='Currency')
     expense_id = fields.Many2one('petty.cash.expense', string='Expense', ondelete='cascade')
     # Campo relacionado que trae el estado desde el modelo padre
     expense_state = fields.Selection(related='expense_id.state', string='Expense State', store=True)
     # 
-    date_expense = fields.Date('Date Expense', copy=False, default=fields.Datetime.now)
-    invoice_number = fields.Char('Invoice No.', default='', tracking=1)
-    supplier_id = fields.Many2one('res.partner', string='Supplier', domain="[('supplier_rank', '>', 0)]", help="Select the supplier for this expense line")
-    tax_amount = fields.Monetary('Tax Amount')
-    invoice_tax_id = fields.Many2one(comodel_name='account.tax.template', help="The tax set to apply this distribution on invoices. Mutually exclusive with refund_tax_id")
-    note_expense = fields.Char('Note Expense', default='Gasto para: ', tracking=1)
+    date_expense = fields.Date('Date Expense', copy=False, default=fields.Datetime.now, tracking=True)
+    invoice_number = fields.Char('Invoice No.', default='', tracking=True)
+    supplier_id = fields.Many2one('res.partner', string='Supplier', domain="[('supplier_rank', '>', 0)]", help="Select the supplier for this expense line", tracking=True)
+    tax_amount = fields.Monetary('Tax Amount', compute='_compute_tax_amount', store=True, tracking=True)
+    invoice_tax_id = fields.Many2one(comodel_name='account.tax.template', help="The tax set to apply this distribution on invoices. Mutually exclusive with refund_tax_id", tracking=True)
+    note_expense = fields.Char('Note Expense', default='Gasto para: ', tracking=True)
+    
+    # Campo para anexos de documentos (facturas, recibos, etc.)
+    attachment_ids = fields.Many2many(
+        'ir.attachment',
+        'petty_expense_line_attachment_rel',
+        'expense_line_id',
+        'attachment_id',
+        string='Documentos Adjuntos',
+        help='Facturas, recibos y otros documentos relacionados con esta línea de gasto'
+    )
+    
+    # Campo computado para mostrar el número de documentos adjuntos
+    attachment_count = fields.Integer('Número de Documentos', compute='_compute_attachment_count')
+    
+    @api.depends('attachment_ids')
+    def _compute_attachment_count(self):
+        for line in self:
+            line.attachment_count = len(line.attachment_ids)
 
     @api.depends('product_lines.price_subtotal')
     def _compute_invoice_amount(self):
         for line in self:
             line.invoice_amount = sum(p_line.price_subtotal for p_line in line.product_lines)
 
-    @api.depends('invoice_amount', 'tax_amount', 'product_lines.price_subtotal')
+    @api.depends('product_lines.tax_amount')
+    def _compute_tax_amount(self):
+        """
+        Calcula el total de impuestos desde las líneas de producto
+        """
+        for line in self:
+            line.tax_amount = sum(p_line.tax_amount for p_line in line.product_lines)
+
+    @api.depends('invoice_amount', 'tax_amount', 'product_lines.price_subtotal', 'product_lines.tax_amount')
     def _compute_amount(self):
         for line in self:
             line.amount = line.invoice_amount + line.tax_amount
+
+    def recalculate_totals(self):
+        """
+        Método para recalcular todos los totales de la línea de gasto
+        Se ejecuta automáticamente cuando cambian las líneas de producto
+        """
+        self.ensure_one()
+        
+        # Forzar recálculo de campos computados
+        self._compute_invoice_amount()
+        self._compute_tax_amount()
+        self._compute_amount()
+        
+        # Guardar automáticamente los cambios
+        if self.id:
+            # Solo guardar si el registro ya existe en la base de datos
+            self.env.cr.commit()
+        
+        # Recalcular también los totales del gasto padre
+        if self.expense_id:
+            self.expense_id._compute_total_tax_amount_only()
+            self.expense_id._compute_total_tax_amount()
+            self.expense_id._get_expense_amount()
 
     def open_line_form(self):
         """
@@ -479,6 +610,53 @@ class petty_expense_lines(models.Model):
             'res_id': self.id,  # Asegúrate de pasar el id correcto de la línea.
             'target': 'new',  # Para abrirlo como un modal
         }
+    
+    def action_view_attachments(self):
+        """
+        Método para abrir la vista de documentos adjuntos de esta línea de gasto.
+        """
+        return {
+            'type': 'ir.actions.act_window',
+            'name': 'Documentos Adjuntos',
+            'res_model': 'ir.attachment',
+            'view_mode': 'tree,form',
+            'domain': [('id', 'in', self.attachment_ids.ids)],
+            'context': {
+                'default_res_model': 'petty.expense.lines',
+                'default_res_id': self.id,
+            },
+            'target': 'current',
+        }
+    
+    def message_post_expense_line_created(self):
+        """
+        Envía un mensaje automático cuando se crea una nueva línea de gasto.
+        """
+        self.message_post(
+            body=f"Nueva línea de gasto creada para el proveedor {self.supplier_id.name or 'N/A'} "
+                 f"con factura #{self.invoice_number or 'N/A'} por un monto de {self.amount} {self.currency_id.name or ''}",
+            message_type='notification',
+            subtype_xmlid='mail.mt_note'
+        )
+    
+    def message_post_amount_changed(self, old_amount, new_amount):
+        """
+        Envía un mensaje cuando cambia el monto de la línea de gasto.
+        """
+        self.message_post(
+            body=f"Monto actualizado de {old_amount} a {new_amount} {self.currency_id.name or ''}",
+            message_type='notification',
+            subtype_xmlid='mail.mt_note'
+        )
+    
+    @api.model
+    def create(self, vals):
+        """
+        Override create para enviar mensaje automático al crear línea.
+        """
+        line = super(petty_expense_lines, self).create(vals)
+        line.message_post_expense_line_created()
+        return line
     
     # @api.onchange('product_id')
     # def onchange_product(self):
@@ -516,11 +694,13 @@ class petty_expense_lines(models.Model):
     def get_total_tax_amount_by_tax(self):
         tax_totals = {}
         for line in self:
-            tax = line.invoice_tax_id
-            if tax:
-                if tax not in tax_totals:
-                    tax_totals[tax] = 0.0
-                tax_totals[tax] += line.tax_amount
+            # Ahora obtenemos los impuestos desde las líneas de producto
+            for product_line in line.product_lines:
+                tax = product_line.tax_id
+                if tax and product_line.tax_amount > 0:
+                    if tax not in tax_totals:
+                        tax_totals[tax] = 0.0
+                    tax_totals[tax] += product_line.tax_amount
 
         # Ahora tenemos un diccionario con el total de tax_amount para cada tax
         return tax_totals
@@ -547,15 +727,34 @@ class AccountMove(models.Model):
 
 class petty_expense_line_product(models.Model):
     _name = 'petty.expense.line.product'
+    _inherit = 'purchase.order.line'
     _description = 'Petty Expense Line Product'
 
     expense_line_id = fields.Many2one('petty.expense.lines', string='Expense Line', required=True, ondelete='cascade')
     product_id = fields.Many2one('product.product', string='Product', required=True)
     quantity = fields.Float('Quantity', default=1.0)
     price_unit = fields.Float('Unit Price')
-    price_subtotal = fields.Monetary('Subtotal', compute='_compute_subtotal', store=True)
+    price_subtotal = fields.Monetary('Subtotal', compute='_compute_subtotal', store=True, tracking=True)
     currency_id = fields.Many2one(related='expense_line_id.currency_id', store=True)
-    inventory_justification_ref = fields.Char('Inventory Justification Ref')
+    # inventory_justification_ref = fields.Char('Inventory Justification Ref')
+    # Impuesto, Fase, Vehiculo
+    tax_id = fields.Many2one('account.tax', string='Tax', 
+                             domain="[('type_tax_use', '=', 'purchase')]",
+                             help='Impuesto de compra aplicable a este producto')
+    tax_amount = fields.Monetary('Tax Amount', compute='_compute_tax_amount', store=True, tracking=True)
+    price_total = fields.Monetary('Total', compute='_compute_price_total', store=True, tracking=True)
+    account_id = fields.Many2one('account.account', string='Account', required=True, 
+                                 help='Cuenta contable para este producto')
+    account_analytic_id = fields.Many2one(
+        'account.analytic.account',
+        readonly=False, string='Cuenta Analítica')
+
+    phase_id = fields.Many2one("project.phaseproject",
+                               string="Fase",
+                               tracking=True,
+                               )
+
+    vehiculo_id = fields.Many2one('fleet.vehicle', string='Vehículo')
 
     # >>> NUEVO ENLACE A LA LÍNEA DE MOVIMIENTO DE ENTRADA DE INVENTARIO
     stock_move_line_id = fields.Many2one(
@@ -567,21 +766,93 @@ class petty_expense_line_product(models.Model):
 
     is_credit_note_line = fields.Boolean('Is Credit Note Line', default=False)
 
-    # ---------------------------------------------------------------------
-    # CONSTRAINT PARA OBLIGAR EL ENLACE EN PRODUCTOS ALMACENABLES
-    # ---------------------------------------------------------------------
-    @api.constrains('product_id', 'stock_move_line_id')
-    def _check_stock_move_required(self):
-        for rec in self:
-            if rec.product_id and rec.product_id.type == 'product' and not rec.stock_move_line_id:
-                raise ValidationError(_('El campo "Inventory Entry" es obligatorio para productos almacenables (%s).') % rec.product_id.display_name)
+    @api.depends('quantity', 'price_unit','tax_id')
+    def _compute_subtotal(self):
+        for line in self:
+            line.price_subtotal = line.quantity * line.price_unit
 
-    # ---------------------------------------------------------------------
-    # AJUSTE DEL DOMINIO DINÁMICO (opcional)
-    # ---------------------------------------------------------------------
+    @api.depends('price_subtotal', 'tax_id')
+    def _compute_tax_amount(self):
+        self._compute_subtotal()
+        """
+        Calcula el monto del impuesto basado en el subtotal y el impuesto seleccionado
+        """
+        for line in self:
+            if line.tax_id and line.price_subtotal:
+                if line.tax_id.amount_type == 'percent':
+                    line.tax_amount = (line.tax_id.amount / 100.0) * line.price_subtotal
+                elif line.tax_id.amount_type == 'fixed':
+                    line.tax_amount = line.tax_id.amount * line.quantity
+                else:
+                    line.tax_amount = 0.0
+            else:
+                line.tax_amount = 0.0
+
+    @api.depends('price_subtotal', 'tax_amount')
+    def _compute_price_total(self):
+        """
+        Calcula el precio total (subtotal + impuesto)
+        """
+        for line in self:
+            line.price_total = line.price_subtotal + line.tax_amount
+
+    @api.onchange('quantity', 'price_unit', 'tax_id')
+    def _onchange_recalculate_totals(self):
+        """
+        Recalcula automáticamente los totales cuando cambian cantidad, precio unitario o impuesto
+        """
+        # Los campos computados se actualizarán automáticamente
+        # Pero también activamos el recálculo en la línea padre
+        if self.expense_line_id:
+            # Usar call_soon para evitar problemas de recursión
+            self.env.context = dict(self.env.context, recalculate_totals=True)
+
+    @api.model
+    def create(self, vals):
+        """
+        Override create para recalcular totales automáticamente
+        """
+        line = super(petty_expense_line_product, self).create(vals)
+        if line.expense_line_id:
+            line.expense_line_id.recalculate_totals()
+        return line
+
+    def write(self, vals):
+        """
+        Override write para recalcular totales automáticamente cuando se modifica
+        """
+        # Campos que requieren recálculo
+        recalc_fields = ['quantity', 'price_unit', 'tax_id']
+        needs_recalc = any(field in vals for field in recalc_fields)
+        
+        result = super(petty_expense_line_product, self).write(vals)
+        
+        if needs_recalc:
+            for line in self:
+                if line.expense_line_id:
+                    line.expense_line_id.recalculate_totals()
+        
+        return result
+
+    def unlink(self):
+        """
+        Override unlink para recalcular totales cuando se elimina una línea
+        """
+        expense_lines = self.mapped('expense_line_id')
+        result = super(petty_expense_line_product, self).unlink()
+        
+        # Recalcular totales de las líneas padre después de eliminar
+        for expense_line in expense_lines:
+            if expense_line.exists():
+                expense_line.recalculate_totals()
+        
+        return result
+
     @api.onchange('product_id')
     def _onchange_product_id(self):
         if self.product_id:
+            # Cada producto maneja su propia cuenta analítica independientemente
+            # No necesitamos heredar de la línea padre
             return {
                 'domain': {
                     'stock_move_line_id': [
@@ -602,11 +873,15 @@ class petty_expense_line_product(models.Model):
             }
 
     # ---------------------------------------------------------------------
+    # CONSTRAINT PARA OBLIGAR EL ENLACE EN PRODUCTOS ALMACENABLES
+    # ---------------------------------------------------------------------
+    @api.constrains('product_id', 'stock_move_line_id')
+    def _check_stock_move_required(self):
+        for rec in self:
+            if rec.product_id and rec.product_id.type == 'product' and not rec.stock_move_line_id:
+                raise ValidationError(_('El campo "Inventory Entry" es obligatorio para productos almacenables (%s).') % rec.product_id.display_name)
+
+    # ---------------------------------------------------------------------
     # NO OLVIDES importar ValidationError al inicio del archivo si no existe:
     # from odoo.exceptions import ValidationError
     # ---------------------------------------------------------------------
-
-    @api.depends('quantity', 'price_unit')
-    def _compute_subtotal(self):
-        for line in self:
-            line.price_subtotal = line.quantity * line.price_unit

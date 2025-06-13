@@ -143,7 +143,7 @@ class TestPettyCashExpenseFlow(TransactionCase):
                 'account_id': self.expense_account_generic.id, 'invoice_number': 'INVT01',
                 'product_lines': [(0, 0, {
                     'product_id': self.product_stockable.id, 'quantity': 1, 'price_unit': 100.0,
-                    'inventory_justification_ref': move_ref, 'is_credit_note_line': False,
+                    'stock_move_line_id': stock_move.move_line_ids[0].id, 'is_credit_note_line': False,
                 })], 'tax_amount': 0,
             })]
         })
@@ -177,7 +177,7 @@ class TestPettyCashExpenseFlow(TransactionCase):
                  'account_id': self.expense_account_generic.id, 'invoice_number': 'INVT03',
                 'product_lines': [(0, 0, {
                     'product_id': self.product_stockable.id, 'quantity': 1, 'price_unit': 100.0,
-                    'inventory_justification_ref': 'NONEXISTENT/T03/REF',
+                    # 'inventory_justification_ref': 'NONEXISTENT/T03/REF',  # Campo eliminado
                 })],
             })]
         })
@@ -197,7 +197,7 @@ class TestPettyCashExpenseFlow(TransactionCase):
                 'account_id': self.expense_account_generic.id, 'invoice_number': 'CNT04',
                 'product_lines': [(0, 0, {
                     'product_id': self.product_stockable.id, 'quantity': 1, 'price_unit': -100.0,
-                    'inventory_justification_ref': move_ref, 'is_credit_note_line': True,
+                    'stock_move_line_id': stock_move.move_line_ids[0].id, 'is_credit_note_line': True,
                 })],
             })]
         })
@@ -232,7 +232,8 @@ class TestPettyCashExpenseFlow(TransactionCase):
                 'account_id': self.expense_account_generic.id, 'invoice_number': 'CNT06',
                 'product_lines': [(0, 0, {
                     'product_id': self.product_stockable.id, 'quantity': 1, 'price_unit': -100.0,
-                    'inventory_justification_ref': 'NONEXISTENT/T06/CNREF', 'is_credit_note_line': True,
+                    # 'inventory_justification_ref': 'NONEXISTENT/T06/CNREF',  # Campo eliminado
+                    'is_credit_note_line': True,
                 })],
             })]
         })
@@ -266,7 +267,8 @@ class TestPettyCashExpenseFlow(TransactionCase):
             'product_lines': [
                 (0, 0, {'product_id': self.product_service.id, 'quantity': 2, 'price_unit': 50.0}),
                 (0, 0, {'product_id': self.product_stockable.id, 'quantity': 1, 'price_unit': 75.0,
-                         'inventory_justification_ref': 'dummy_T08_calc_test'})
+                         # 'inventory_justification_ref': 'dummy_T08_calc_test'  # Campo eliminado
+                         })
             ], 'tax_amount': 17.5, # tax_amount is manually set for this test case
         }
         # Create the expense line as part of the petty_expense to ensure computes are triggered
