@@ -29,6 +29,16 @@
                    <field name="total_expense_amount"/>
                 <field name="currency_id"/>
                 <field name="color"/>
+                <!-- Campos adicionales para los nuevos estados -->
+                <field name="sent_state"/>
+                <field name="received_state"/>
+                <field name="paid_state"/>
+                <field name="audited_state"/>
+                <field name="rejected_state"/>
+                <!-- Campo para el saldo total -->
+                <field name="petty_cash_balance"/>
+                <!-- Campo para solicitudes aprobadas pendientes -->
+                <field name="pending_approved_amount"/>
                 <templates>
                      <!--<t t-name="kanban-menu">
                             <div role="menuitem" aria-haspopup="true" class="o_no_padding_kanban_colorpicker">
@@ -61,85 +71,213 @@
                                         </div>
                                      </div>
                                 </div>
+                                
+                                <!-- Sección del Saldo Total de Caja Chica -->
+                                <div class="o_kanban_card_balance mb16" style="background-color: #f8f9fa; padding: 15px; border-radius: 8px; border-left: 4px solid #28a745;">
+                                    <div class="row">
+                                        <div class="col-12 text-center">
+                                            <h5 class="text-success mb-2">
+                                                <i class="fa fa-money" style="margin-right: 8px;"></i>
+                                                Saldo Actual de Caja Chica
+                                            </h5>
+                                            <div class="d-flex justify-content-center align-items-center">
+                                                <a name="action_get_balance_detail" type="object" class="text-decoration-none">
+                                                    <h3 class="mb-0" style="color: #28a745; font-weight: bold;">
+                                                        <field name="petty_cash_balance" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                                                    </h3>
+                                                </a>
+                                            </div>
+                                            <small class="text-muted">Ingresos - Gastos</small>
+                                        </div>
+                                    </div>
+                                </div>
                              <div class="container o_kanban_card_content mt1" >
                                     <div class="row mb16">
                                         <div class="col-6 o_kanban_primary_left">
                                         	 <button class="btn btn-primary" name="action_create_new_request" type="object">
-		                                    Create Request
+		                                    Crear Solicitud
 		                                </button>
+		                                
+		                                <!-- Estadísticas de Solicitudes -->
 		                                <div style="margin-top:20px;" class="d-flex" name="info__slides">
 		                                    <a name="action_get_all_request" type="object">
 		                                        <span class="me-auto">
-		                                            <label for="total_request" class="mb0">Total Request</label>
+		                                            <label for="total_request" class="mb0">Total Solicitudes</label>
 		                                        </span>
-		                                        <field style="margin-left:39px;" name="total_request"/>
+		                                        <field style="margin-left:20px;" name="total_request"/>
 		                                    </a>
 		                                </div>
-		                                <div class="d-flex" name="info__slides">
-		                                    <a name="action_get_approve" type="object">
-		                                        <span class="me-auto">
-		                                            <label for="approve_state" class="mb0">Approve</label>
-		                                        </span>
-		                                        <field style="margin-left:70px;" name="approve_state"/>
-		                                    </a>
-		                                </div>
+		                                
 		                                <div class="d-flex" name="info__slides">
 		                                    <a name="action_get_pending" type="object">
 		                                        <span class="me-auto">
-		                                            <label for="request_state" class="mb0">Pending</label>
+		                                            <label for="request_state" class="mb0">Pendientes</label>
 		                                        </span>
-		                                        <field style="margin-left:72px;" name="request_state"/>
+		                                        <field style="margin-left:50px;" name="request_state"/>
 		                                    </a>
 		                                </div>
+		                                
+		                                <div class="d-flex" name="info__slides">
+		                                    <a name="action_get_approve" type="object">
+		                                        <span class="me-auto">
+		                                            <label for="approve_state" class="mb0">Aprobadas</label>
+		                                        </span>
+		                                        <field style="margin-left:50px;" name="approve_state"/>
+		                                    </a>
+		                                </div>
+		                                
 		                               <div class="d-flex" name="info__slides">
 		                                    <a name="action_get_approve_request_amount" type="object">
 		                                        <span class="me-auto">
-		                                            <label for="total_request_amount" class="mb0">Request Amount</label>
+		                                            <label for="total_request_amount" class="mb0">Monto Aprobado</label>
 		                                        </span>
-		                                        <field style="margin-left:20px;" name="total_request_amount" 
+		                                        <field style="margin-left:15px;" name="total_request_amount" 
 		                                        widget="monetary" options="{'currency_field': 'currency_id'}"/>
 		                                    </a>
 		                                </div>
 		                            </div>
                                          
                                            <div class="col-6 o_kanban_primary_right" style="margin-bottom:5%;">
-                                               <button class="btn btn-primary" name="action_create_new_expense" type="object">
-		                                    Create Expense
+                                               <button class="btn btn-success" name="action_create_new_expense" type="object">
+		                                    Crear Gasto
 		                                </button>
+		                                
+		                                <!-- Estadísticas de Gastos -->
 		                                 <div style="margin-top:20px;" class="d-flex" name="info__slides">
 		                                    <a name="action_get_all_expense" type="object">
 		                                        <span class="me-auto">
-		                                            <label for="total_expense" class="mb0">Total Expense</label>
+		                                            <label for="total_expense" class="mb0">Total Gastos</label>
 		                                        </span>
-		                                        <field style="margin-left:39px;" name="total_expense"/>
+		                                        <field style="margin-left:40px;" name="total_expense"/>
 		                                    </a>
 		                                </div>   
-		                                <div class="d-flex" name="info__slides">
-		                                    <a name="action_get_done_state" type="object">
-		                                        <span class="me-auto">
-		                                            <label for="total_done_state" class="mb0">Done</label>
-		                                        </span>
-		                                        <field style="margin-left:91px;" name="total_done_state"/>
-		                                    </a>
-		                                </div> 
+		                                
 		                                <div class="d-flex" name="info__slides">
 		                                    <a name="action_get_expense_state" type="object">
 		                                        <span class="me-auto">
-		                                            <label for="total_expense_state" class="mb0">Pending</label>
+		                                            <label for="total_expense_state" class="mb0">Pendientes</label>
 		                                        </span>
-		                                        <field style="margin-left:74px;" name="total_expense_state"/>
+		                                        <field style="margin-left:50px;" name="total_expense_state"/>
 		                                    </a>
 		                                </div>  
+		                                
+		                                <div class="d-flex" name="info__slides">
+		                                    <a name="action_get_done_state" type="object">
+		                                        <span class="me-auto">
+		                                            <label for="total_done_state" class="mb0">Completados</label>
+		                                        </span>
+		                                        <field style="margin-left:35px;" name="total_done_state"/>
+		                                    </a>
+		                                </div> 
+		                                
 		                                <div class="d-flex" name="info__slides">
 		                                    <a name="action_get_done_expense_amount" type="object">
 		                                        <span class="me-auto">
-		                                            <label for="total_expense_amount" class="mb0">Expense Amount</label>
+		                                            <label for="total_expense_amount" class="mb0">Monto Gastado</label>
 		                                        </span>
-		                                        <field name="total_expense_amount" style="margin-left:22px;"
+		                                        <field name="total_expense_amount" style="margin-left:20px;"
 		                                         widget="monetary" options="{'currency_field': 'currency_id'}"/>
 		                                    </a>
 		                                </div> 
 		                            </div>
+		                         </div>
+		                         
+		                         <!-- Nueva sección para mostrar estados adicionales del flujo -->
+		                         <div class="row mt16" style="border-top: 1px solid #dee2e6; padding-top: 15px;">
+		                             <div class="col-12">
+		                                 <div class="text-center mb-3">
+		                                     <h6 class="text-muted">Estados del Flujo de Caja Chica</h6>
+		                                 </div>
+		                                 <div class="row">
+		                                     <div class="col-6">
+		                                         <div class="d-flex justify-content-between align-items-center mb-2">
+		                                             <a name="action_get_sent" type="object" class="text-decoration-none">
+		                                                 <span class="badge badge-info">Enviadas</span>
+		                                             </a>
+		                                             <field name="sent_state" class="font-weight-bold"/>
+		                                         </div>
+		                                         <div class="d-flex justify-content-between align-items-center mb-2">
+		                                             <a name="action_get_received" type="object" class="text-decoration-none">
+		                                                 <span class="badge badge-warning">Recibidas</span>
+		                                             </a>
+		                                             <field name="received_state" class="font-weight-bold"/>
+		                                         </div>
+		                                         <div class="d-flex justify-content-between align-items-center mb-2">
+		                                             <a name="action_get_paid" type="object" class="text-decoration-none">
+		                                                 <span class="badge badge-primary">Pagadas</span>
+		                                             </a>
+		                                             <field name="paid_state" class="font-weight-bold"/>
+		                                         </div>
+		                                     </div>
+		                                     <div class="col-6">
+		                                         <div class="d-flex justify-content-between align-items-center mb-2">
+		                                             <a name="action_get_audited" type="object" class="text-decoration-none">
+		                                                 <span class="badge badge-success">Auditadas</span>
+		                                             </a>
+		                                             <field name="audited_state" class="font-weight-bold"/>
+		                                         </div>
+		                                         <div class="d-flex justify-content-between align-items-center mb-2">
+		                                             <a name="action_get_rejected" type="object" class="text-decoration-none">
+		                                                 <span class="badge badge-danger">Rechazadas</span>
+		                                             </a>
+		                                             <field name="rejected_state" class="font-weight-bold"/>
+		                                         </div>
+		                                         <div class="d-flex justify-content-between align-items-center mb-2">
+		                                             <span class="badge badge-secondary">Canceladas</span>
+		                                             <span class="font-weight-bold text-muted">-</span>
+		                                         </div>
+		                                     </div>
+		                                 </div>
+		                             </div>
+		                         </div>
+		                         
+		                         <!-- Resumen Financiero -->
+		                         <div class="row mt16" style="border-top: 1px solid #dee2e6; padding-top: 15px;">
+		                             <div class="col-12">
+		                                 <div class="text-center mb-3">
+		                                     <h6 class="text-muted">Resumen Financiero</h6>
+		                                 </div>
+		                                 <div class="row">
+		                                     <div class="col-3 text-center">
+		                                         <div class="mb-2">
+		                                             <span class="badge badge-success">Ingresos</span>
+		                                         </div>
+		                                         <div class="font-weight-bold text-success">
+		                                             <field name="total_request_amount" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+		                                         </div>
+		                                         <small class="text-muted">Pagadas/Auditadas</small>
+		                                     </div>
+		                                     <div class="col-3 text-center">
+		                                         <div class="mb-2">
+		                                             <span class="badge badge-warning">Pendientes</span>
+		                                         </div>
+		                                         <div class="font-weight-bold text-warning">
+		                                             <a name="action_get_pending_approved_detail" type="object" class="text-decoration-none">
+		                                                 <field name="pending_approved_amount" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+		                                             </a>
+		                                         </div>
+		                                         <small class="text-muted">Aprobadas</small>
+		                                     </div>
+		                                     <div class="col-3 text-center">
+		                                         <div class="mb-2">
+		                                             <span class="badge badge-danger">Gastos</span>
+		                                         </div>
+		                                         <div class="font-weight-bold text-danger">
+		                                             <field name="total_expense_amount" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+		                                         </div>
+		                                         <small class="text-muted">Completados</small>
+		                                     </div>
+		                                     <div class="col-3 text-center">
+		                                         <div class="mb-2">
+		                                             <span class="badge badge-primary">Saldo</span>
+		                                         </div>
+		                                         <div class="font-weight-bold text-primary">
+		                                             <field name="petty_cash_balance" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+		                                         </div>
+		                                         <small class="text-muted">Disponible</small>
+		                                     </div>
+		                                 </div>
+		                             </div>
 		                         </div>
                                    </div>
                              </div>
@@ -151,7 +289,7 @@
     </record>
 
     <record id="action_petty_cash_dashboard" model="ir.actions.act_window">
-        <field name="name">Petty Cash Dashboard</field>
+        <field name="name">Dashboard de Caja Chica</field>
         <field name="res_model">account.journal</field>
         <field name="type">ir.actions.act_window</field>
         <field name="domain">[('is_petty_cash', '=', True)]</field>
@@ -162,7 +300,7 @@
 
     <!--Menus-->
 
-    <menuitem name="Petty Cash Dashboard" id="dev_petty_cash_dashboard_menu"
+    <menuitem name="Dashboard de Caja Chica" id="dev_petty_cash_dashboard_menu"
               parent='dev_petty_cash_menu'
               action="action_petty_cash_dashboard" sequence="1"/>
 

@@ -44,18 +44,28 @@ class petty_cash_expense(models.Model):
     'Balance', 
     compute='saldo_caja_chica', 
     store=True, 
-    help="El Balance es de la caja chica seleccionada y solicitudes con estado = Pagadas")   # se desarrollo nuestro propio calculador de saldo y se quito: '_get_balance'
+    help="Saldo disponible en caja chica = Ingresos reales (solicitudes paid/audited) - Gastos completados (done)")   # Lógica corregida para consistencia con dashboard
     expense_amount = fields.Monetary('Expense Amount', compute='_get_expense_amount', tracking=3)
     request_ids = fields.Many2many('petty.cash.request', string='Requests')
     remaining_balance = fields.Monetary('Remaining Balance', compute='_get_expense_amount', store=True)
     note = fields.Text('Notes')
     payment_count = fields.Integer('Payment Count', compute='_count_payment')
+    preview_count = fields.Integer('Preview Count', compute='_count_preview')
     account_move_ids_expense = fields.One2many(
         'account.move',
         'petty_cash_expense_id',
         string='Asientos de Gastos de Caja Chica',
         readonly=True,
         copy=False
+    )
+    # Campo para enlazar asientos de vista previa
+    preview_move_ids = fields.One2many(
+        'account.move',
+        'petty_cash_expense_preview_id',
+        string='Asientos de Vista Previa',
+        readonly=True,
+        copy=False,
+        help='Asientos temporales creados para vista previa'
     )
     account_move_name = fields.Char(string="Account Move Name", compute="_compute_account_move_name")
     # Campo que totaliza todos los impuestos
@@ -109,10 +119,25 @@ class petty_cash_expense(models.Model):
         action['domain'] = [('id','in',self.payment_ids.ids)]
         return action
     
+    def action_view_preview_moves(self):
+        """
+        Muestra los asientos de vista previa enlazados a este gasto.
+        """
+        action = self.env["ir.actions.actions"]._for_xml_id("account.action_move_journal_line")
+        action['context'] = {}
+        action['domain'] = [('id', 'in', self.preview_move_ids.ids)]
+        action['name'] = _('Asientos de Vista Previa - %s') % self.name
+        return action
+    
     @api.depends('payment_ids')
     def _count_payment(self):
         for expense in self:
             expense.payment_count = len(expense.payment_ids)
+    
+    @api.depends('preview_move_ids')
+    def _count_preview(self):
+        for expense in self:
+            expense.preview_count = len(expense.preview_move_ids.filtered(lambda m: m.state == 'draft'))
             
     @api.depends('expense_lines.amount', 'balance')
     def _get_expense_amount(self):
@@ -196,22 +221,58 @@ class petty_cash_expense(models.Model):
 
     @api.depends('employee_id', 'petty_journal_id', 'expense_lines', 'expense_lines.amount', 'state')
     def saldo_caja_chica(self):
+        """
+        Calcula el saldo de la caja chica de forma consistente con el dashboard.
+        
+        LÓGICA CORREGIDA:
+        - INGRESOS: Solicitudes en estado 'paid' o 'audited' (dinero real en caja)
+        - GASTOS: Gastos en estado 'done' (dinero realmente gastado)
+        - SALDO = INGRESOS REALES - GASTOS REALES
+        
+        NOTA: Solo se consideran gastos completados ('done'), no gastos en borrador o confirmados.
+        """
         for expense in self:
-            expense.balance = expense.solicitudes_caja_chica_aprobadas() - expense.gastos_confirmados2()
+            ingresos_reales = expense.solicitudes_caja_chica_pagadas_auditadas()
+            gastos_reales = expense.gastos_completados_caja_chica()
+            expense.balance = ingresos_reales - gastos_reales
         return expense.balance
 
-    def solicitudes_caja_chica_aprobadas(self):
-        sumatoria = 0
+    def solicitudes_caja_chica_pagadas_auditadas(self):
+        """
+        Calcula el total de ingresos reales a la caja chica.
+        Solo considera solicitudes que han sido efectivamente pagadas o auditadas.
+        """
+        total_ingresos = 0.0
         for expense in self:
-            # Se quito los dineros pedidos para los colaboradores('request_by','=',expense.employee_id.id),
-            request_ids = expense.env['petty.cash.request'].search([('petty_journal_id','=',expense.petty_journal_id.id),
-                                                                 ('state','=','paid'),
-                                                                 ('balance','>',0)])
-            for request in request_ids:
-                sumatoria += request.request_amount
-        return sumatoria
+            if expense.petty_journal_id:
+                # Buscar solicitudes pagadas y auditadas para esta caja chica
+                request_ids = expense.env['petty.cash.request'].search([
+                    ('petty_journal_id', '=', expense.petty_journal_id.id),
+                    ('state', 'in', ['paid', 'audited'])
+                ])
+                total_ingresos = sum(request.request_amount for request in request_ids)
+        return total_ingresos
     
+    def gastos_completados_caja_chica(self):
+        """
+        Calcula el total de gastos realmente completados de esta caja chica.
+        Solo considera gastos en estado 'done' (completados).
+        """
+        total_gastos = 0.0
+        for expense in self:
+            if expense.petty_journal_id:
+                # Buscar todos los gastos completados de esta caja chica
+                expense_records = expense.env['petty.cash.expense'].search([
+                    ('petty_journal_id', '=', expense.petty_journal_id.id),
+                    ('state', '=', 'done')
+                ])
+                total_gastos = sum(exp.expense_amount for exp in expense_records)
+        return total_gastos
+
     def gastos_confirmados(self):
+        """
+        MÉTODO OBSOLETO - Mantener por compatibilidad pero no usar
+        """
         sumatoria = 0
         for expense in self:
             if self.state == 'confirm':
@@ -221,28 +282,11 @@ class petty_cash_expense(models.Model):
         return sumatoria
 
     def gastos_confirmados2(self):
-        max_expense_id = self.id
-        petty_cash_id = self.petty_journal_id.id
-        total = 0.0
-
-        # Verifica que max_expense_id y petty_cash_id tengan valores válidos
-        if max_expense_id and petty_cash_id:
-            # Si ambos valores existen, buscar registros con id menor que max_expense_id
-            expense_lines = self.search([('id', '<', max_expense_id), ('petty_journal_id', '=', petty_cash_id)])
-            total = sum(line.expense_amount for line in expense_lines)
-        else:
-            # Si max_expense_id es un objeto y tiene un atributo 'origin', verifica su tipo
-            if hasattr(max_expense_id, 'origin'):
-                if isinstance(max_expense_id.origin, bool):
-                    # Si el tipo es bool, buscar líneas con petty_journal_id
-                    expense_lines = self.search([('petty_journal_id', '=', petty_cash_id)])
-                    total = sum(line.expense_amount for line in expense_lines)
-                elif isinstance(max_expense_id.origin, int):
-                    # Si el tipo es int, buscar líneas con id menor que max_expense_id
-                    expense_lines = self.search([('id', '<', max_expense_id.origin), ('petty_journal_id', '=', petty_cash_id)])
-                    total = sum(line.expense_amount for line in expense_lines)
-
-        return total
+        """
+        MÉTODO OBSOLETO - Reemplazado por gastos_completados_caja_chica()
+        Mantener por compatibilidad pero usar el nuevo método
+        """
+        return self.gastos_completados_caja_chica()
 
 
     def action_confirm(self):
@@ -310,9 +354,129 @@ class petty_cash_expense(models.Model):
         self.account_move_ids_expense = [(4, invoice_id.id)]
         self.state = 'done'
 
+    def action_preview_journal_entries(self):
+        """
+        Genera una vista previa de los asientos contables que se crearán al validar.
+        Permite al contador revisar los asientos antes de confirmarlos.
+        MEJORA: Evita duplicados y enlaza asientos con el gasto.
+        """
+        self.ensure_one()
+        
+        # Validar que hay líneas de gasto
+        if not self.expense_lines:
+            raise ValidationError(_("No hay líneas de gasto para generar asientos contables."))
+        
+        # Verificar si ya existe un asiento de vista previa para este gasto
+        existing_preview = self.preview_move_ids.filtered(lambda m: m.state == 'draft')
+        if existing_preview:
+            # Si ya existe, mostrar el existente en lugar de crear uno nuevo
+            return {
+                'type': 'ir.actions.act_window',
+                'name': _('Vista Previa - Asientos Contables (Existente)'),
+                'res_model': 'account.move',
+                'res_id': existing_preview[0].id,
+                'view_mode': 'form',
+                'target': 'new',
+                'context': {
+                    'default_move_type': 'entry',
+                    'is_preview': True,
+                    'preview_expense_id': self.id,
+                },
+            }
+        
+        # Validar cuentas analíticas (misma validación que en action_validate)
+        for line in self.expense_lines:
+            for product_line in line.product_lines:
+                if not product_line.account_analytic_id:
+                    raise ValidationError(_(
+                        "Falta cuenta analítica para:\n"
+                        "Factura: %s\n"
+                        "Proveedor: %s\n"
+                        "Producto: %s"
+                    ) % (
+                        line.invoice_number or 'N/A',
+                        line.supplier_id.name or 'N/A', 
+                        product_line.product_id.display_name
+                    ))
+        
+        # Generar las líneas de débito (misma lógica que action_validate)
+        debit_lines = self._build_debit_lines()
+        total = sum(l['debit'] for l in debit_lines)
+        
+        # Línea de crédito
+        credit_line = {
+            'name': _("Credito Petty Cash %s") % self.name,
+            'account_id': self.petty_journal_id.default_account_id.id,
+            'debit': 0.0,
+            'credit': total,
+        }
+        
+        # Crear asiento temporal (borrador) para vista previa
+        move_vals = {
+            'move_type': 'entry',
+            'journal_id': self.petty_journal_id.id,
+            'date': self.date,
+            'ref': _("VISTA PREVIA - %s") % self.name,
+            'state': 'draft',  # Mantener en borrador
+            'petty_cash_expense_preview_id': self.id,  # ENLACE DIRECTO AL GASTO
+            'line_ids': [
+                (0, 0, x) for x in (debit_lines + [credit_line])
+            ],
+        }
+        
+        # Crear el asiento temporal enlazado
+        preview_move = self.env['account.move'].create(move_vals)
+        
+        # Retornar acción para mostrar el asiento en una ventana modal
+        return {
+            'type': 'ir.actions.act_window',
+            'name': _('Vista Previa - Asientos Contables'),
+            'res_model': 'account.move',
+            'res_id': preview_move.id,
+            'view_mode': 'form',
+            'target': 'new',  # Abrir en modal
+            'context': {
+                'default_move_type': 'entry',
+                'is_preview': True,  # Flag para identificar que es vista previa
+                'preview_expense_id': self.id,  # Referencia al gasto
+            },
+        }
+
+    def action_clean_preview_entries(self):
+        """
+        Limpia los asientos de vista previa creados para este gasto.
+        Se ejecuta automáticamente al validar o cancelar.
+        MEJORA: Usa relación directa para mayor eficiencia.
+        """
+        # Usar la relación directa en lugar de búsqueda por referencia
+        preview_moves = self.preview_move_ids.filtered(lambda m: m.state == 'draft')
+        if preview_moves:
+            preview_moves.unlink()
+        return True
+    
+    def action_clean_all_preview_entries(self):
+        """
+        Método adicional para limpiar TODOS los asientos de vista previa huérfanos.
+        Útil para mantenimiento del sistema.
+        """
+        # Buscar asientos huérfanos (sin enlace o con enlace a gastos inexistentes)
+        orphan_moves = self.env['account.move'].search([
+            ('ref', 'ilike', 'VISTA PREVIA'),
+            ('state', '=', 'draft'),
+            '|',
+            ('petty_cash_expense_preview_id', '=', False),
+            ('petty_cash_expense_preview_id.state', 'in', ['done', 'cancel'])
+        ])
+        if orphan_moves:
+            orphan_moves.unlink()
+        return len(orphan_moves)
+
     # >>> NUEVO MÉTODO PARA VALIDAR LOS GASTOS DE CAJA CHICA
     def action_validate(self):
         for expense in self:
+            # Limpiar asientos de vista previa antes de validar
+            expense.action_clean_preview_entries()
+            
             # Validar cuentas analíticas en cada línea de producto
             for line in expense.expense_lines:
                 for product_line in line.product_lines:
@@ -487,10 +651,6 @@ class petty_cash_expense(models.Model):
         else:
             return {}
     
-    def action_create_payment(self):
-        self.create_payment()
-        self.state = 'payment'
-        
     def action_reconcile(self):
         self.reconcile_payment()
         self.state = 'done'
@@ -713,6 +873,13 @@ class AccountMove(models.Model):
         'petty.cash.expense',
         string='Petty Cash Expense',
         ondelete='cascade'
+    )
+    # Campo para enlazar asientos de vista previa
+    petty_cash_expense_preview_id = fields.Many2one(
+        'petty.cash.expense',
+        string='Petty Cash Expense Preview',
+        ondelete='cascade',
+        help='Enlace a gasto de caja chica para asientos de vista previa'
     )
 
 # PARCHES PROPUESTOS PARA ENLAZAR LA ENTRADA DE INVENTARIO A CADA PRODUCTO ALMACENABLE

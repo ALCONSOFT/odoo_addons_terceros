@@ -23,6 +23,19 @@ class ProductTemplate(models.Model):
     total_expense_state = fields.Integer(string='Pending', compute="compute_expense_total_state", copy=False)
     total_request_amount = fields.Float(string='Request Amount', compute="compute_total_request_amount", copy=False)
     total_expense_amount = fields.Float(string='Expense Amount', compute="compute_total_expense_amount", copy=False)
+    
+    # Nuevos campos para estados adicionales del flujo de caja chica
+    sent_state = fields.Integer(string='Sent', compute="compute_sent_state", copy=False)
+    received_state = fields.Integer(string='Received', compute="compute_received_state", copy=False)
+    paid_state = fields.Integer(string='Paid', compute="compute_paid_state", copy=False)
+    audited_state = fields.Integer(string='Audited', compute="compute_audited_state", copy=False)
+    rejected_state = fields.Integer(string='Rejected', compute="compute_rejected_state", copy=False)
+    
+    # Campo para el saldo total de la caja chica
+    petty_cash_balance = fields.Monetary(string='Saldo de Caja Chica', compute="compute_petty_cash_balance", copy=False)
+    
+    # Campo adicional para solicitudes aprobadas pendientes de pago
+    pending_approved_amount = fields.Monetary(string='Monto Aprobado Pendiente', compute="compute_pending_approved_amount", copy=False)
 
     def action_create_new_request(self):
         ctx = self._context.copy()
@@ -79,7 +92,7 @@ class ProductTemplate(models.Model):
     def compute_approve_state(self):
         for data in self:
             approve_ids = self.env['petty.cash.request'].search_count(
-                [('petty_journal_id', '=', data.id), ('state', '=', 'approve')])
+                [('petty_journal_id', '=', data.id), ('state', '=', 'approved')])
             data.approve_state = approve_ids
 
 
@@ -87,7 +100,7 @@ class ProductTemplate(models.Model):
         tree_id = self.env.ref('dev_petty_cash.view_petty_cash_request_tree').id
         form_id = self.env.ref('dev_petty_cash.view_petty_cash_request_form').id
         for data in self:
-            total_approve_ids = self.env['petty.cash.request'].search([('petty_journal_id', '=', data.id), ('state', '=', 'approve')])
+            total_approve_ids = self.env['petty.cash.request'].search([('petty_journal_id', '=', data.id), ('state', '=', 'approved')])
             return {
                 'name': 'Approve Request',
                 'type': 'ir.actions.act_window',
@@ -102,7 +115,7 @@ class ProductTemplate(models.Model):
     def compute_request_state(self):
         for data in self:
             request_ids = self.env['petty.cash.request'].search_count(
-                [('petty_journal_id', '=', data.id), ('state', 'in', ['request','draft'])])
+                [('petty_journal_id', '=', data.id), ('state', 'in', ['requested','draft'])])
             data.request_state = request_ids
 
 
@@ -110,7 +123,7 @@ class ProductTemplate(models.Model):
         tree_id = self.env.ref('dev_petty_cash.view_petty_cash_request_tree').id
         form_id = self.env.ref('dev_petty_cash.view_petty_cash_request_form').id
         for data in self:
-            total_pending_ids = self.env['petty.cash.request'].search([('petty_journal_id', '=', data.id), ('state', '=', ['request','draft'])])
+            total_pending_ids = self.env['petty.cash.request'].search([('petty_journal_id', '=', data.id), ('state', 'in', ['requested','draft'])])
             return {
                 'name': 'Pending Request',
                 'type': 'ir.actions.act_window',
@@ -124,7 +137,12 @@ class ProductTemplate(models.Model):
 
     def compute_total_request_amount(self):
         for data in self:
-            request_amount_ids = self.env['petty.cash.request'].search([('petty_journal_id', '=', data.id), ('state', '=', 'approve')])
+            # Cambiar para usar los mismos estados que el saldo: 'paid' y 'audited'
+            # Estos son los ingresos reales que han entrado a la caja chica
+            request_amount_ids = self.env['petty.cash.request'].search([
+                ('petty_journal_id', '=', data.id), 
+                ('state', 'in', ['paid', 'audited'])
+            ])
             amount = sum(line.request_amount for line in request_amount_ids)
             data.total_request_amount = amount
            
@@ -133,9 +151,13 @@ class ProductTemplate(models.Model):
         tree_id = self.env.ref('dev_petty_cash.view_petty_cash_request_tree').id
         form_id = self.env.ref('dev_petty_cash.view_petty_cash_request_form').id
         for data in self:
-            total_approve_amount_ids = self.env['petty.cash.request'].search([('petty_journal_id', '=', data.id), ('state', '=', 'approve')])
+            # Cambiar para mostrar solicitudes pagadas/auditadas (ingresos reales)
+            total_approve_amount_ids = self.env['petty.cash.request'].search([
+                ('petty_journal_id', '=', data.id), 
+                ('state', 'in', ['paid', 'audited'])
+            ])
             return {
-                'name': 'Approve Amount',
+                'name': 'Ingresos Reales - Solicitudes Pagadas/Auditadas',
                 'type': 'ir.actions.act_window',
                 'view_mode': 'tree, form',
                 'res_model': 'petty.cash.request',
@@ -236,6 +258,204 @@ class ProductTemplate(models.Model):
                           (form_id, 'form')],
                 'target': 'current',
                 'domain': [('id', 'in', total_paymnet_ids.ids)]
+            }
+
+    # ============================================================================
+    # MÉTODOS COMPUTADOS PARA NUEVOS ESTADOS DEL FLUJO DE CAJA CHICA
+    # ============================================================================
+
+    def compute_sent_state(self):
+        for data in self:
+            sent_ids = self.env['petty.cash.request'].search_count(
+                [('petty_journal_id', '=', data.id), ('state', '=', 'sent')])
+            data.sent_state = sent_ids
+
+    def action_get_sent(self):
+        tree_id = self.env.ref('dev_petty_cash.view_petty_cash_request_tree').id
+        form_id = self.env.ref('dev_petty_cash.view_petty_cash_request_form').id
+        for data in self:
+            total_sent_ids = self.env['petty.cash.request'].search([('petty_journal_id', '=', data.id), ('state', '=', 'sent')])
+            return {
+                'name': 'Solicitudes Enviadas',
+                'type': 'ir.actions.act_window',
+                'view_mode': 'tree, form',
+                'res_model': 'petty.cash.request',
+                'views': [(tree_id, 'tree'), (form_id, 'form')],
+                'target': 'current',
+                'domain': [('id', 'in', total_sent_ids.ids)]
+            }
+
+    def compute_received_state(self):
+        for data in self:
+            received_ids = self.env['petty.cash.request'].search_count(
+                [('petty_journal_id', '=', data.id), ('state', '=', 'received')])
+            data.received_state = received_ids
+
+    def action_get_received(self):
+        tree_id = self.env.ref('dev_petty_cash.view_petty_cash_request_tree').id
+        form_id = self.env.ref('dev_petty_cash.view_petty_cash_request_form').id
+        for data in self:
+            total_received_ids = self.env['petty.cash.request'].search([('petty_journal_id', '=', data.id), ('state', '=', 'received')])
+            return {
+                'name': 'Solicitudes Recibidas',
+                'type': 'ir.actions.act_window',
+                'view_mode': 'tree, form',
+                'res_model': 'petty.cash.request',
+                'views': [(tree_id, 'tree'), (form_id, 'form')],
+                'target': 'current',
+                'domain': [('id', 'in', total_received_ids.ids)]
+            }
+
+    def compute_paid_state(self):
+        for data in self:
+            paid_ids = self.env['petty.cash.request'].search_count(
+                [('petty_journal_id', '=', data.id), ('state', '=', 'paid')])
+            data.paid_state = paid_ids
+
+    def action_get_paid(self):
+        tree_id = self.env.ref('dev_petty_cash.view_petty_cash_request_tree').id
+        form_id = self.env.ref('dev_petty_cash.view_petty_cash_request_form').id
+        for data in self:
+            total_paid_ids = self.env['petty.cash.request'].search([('petty_journal_id', '=', data.id), ('state', '=', 'paid')])
+            return {
+                'name': 'Solicitudes Pagadas',
+                'type': 'ir.actions.act_window',
+                'view_mode': 'tree, form',
+                'res_model': 'petty.cash.request',
+                'views': [(tree_id, 'tree'), (form_id, 'form')],
+                'target': 'current',
+                'domain': [('id', 'in', total_paid_ids.ids)]
+            }
+
+    def compute_audited_state(self):
+        for data in self:
+            audited_ids = self.env['petty.cash.request'].search_count(
+                [('petty_journal_id', '=', data.id), ('state', '=', 'audited')])
+            data.audited_state = audited_ids
+
+    def action_get_audited(self):
+        tree_id = self.env.ref('dev_petty_cash.view_petty_cash_request_tree').id
+        form_id = self.env.ref('dev_petty_cash.view_petty_cash_request_form').id
+        for data in self:
+            total_audited_ids = self.env['petty.cash.request'].search([('petty_journal_id', '=', data.id), ('state', '=', 'audited')])
+            return {
+                'name': 'Solicitudes Auditadas',
+                'type': 'ir.actions.act_window',
+                'view_mode': 'tree, form',
+                'res_model': 'petty.cash.request',
+                'views': [(tree_id, 'tree'), (form_id, 'form')],
+                'target': 'current',
+                'domain': [('id', 'in', total_audited_ids.ids)]
+            }
+
+    def compute_rejected_state(self):
+        for data in self:
+            rejected_ids = self.env['petty.cash.request'].search_count(
+                [('petty_journal_id', '=', data.id), ('state', '=', 'rejected')])
+            data.rejected_state = rejected_ids
+
+    def action_get_rejected(self):
+        tree_id = self.env.ref('dev_petty_cash.view_petty_cash_request_tree').id
+        form_id = self.env.ref('dev_petty_cash.view_petty_cash_request_form').id
+        for data in self:
+            total_rejected_ids = self.env['petty.cash.request'].search([('petty_journal_id', '=', data.id), ('state', '=', 'rejected')])
+            return {
+                'name': 'Solicitudes Rechazadas',
+                'type': 'ir.actions.act_window',
+                'view_mode': 'tree, form',
+                'res_model': 'petty.cash.request',
+                'views': [(tree_id, 'tree'), (form_id, 'form')],
+                'target': 'current',
+                'domain': [('id', 'in', total_rejected_ids.ids)]
+            }
+
+    # ============================================================================
+    # MÉTODO COMPUTADO PARA EL SALDO TOTAL DE CAJA CHICA
+    # ============================================================================
+
+    def compute_petty_cash_balance(self):
+        """
+        Calcula el saldo total de la caja chica.
+        
+        LÓGICA DE CÁLCULO:
+        - INGRESOS: Solo solicitudes que han sido efectivamente pagadas ('paid') o auditadas ('audited')
+          Estas representan el dinero que realmente ha entrado a la caja chica.
+        - GASTOS: Solo gastos completados ('done')
+          Estos representan el dinero que realmente ha salido de la caja chica.
+        - SALDO = INGRESOS REALES - GASTOS REALES
+        
+        NOTA: Las solicitudes 'approved' NO se incluyen en ingresos porque aún no se ha 
+        transferido el dinero físicamente a la caja chica.
+        """
+        for data in self:
+            # Calcular ingresos REALES: solicitudes en estado 'paid' o 'audited'
+            income_requests = self.env['petty.cash.request'].search([
+                ('petty_journal_id', '=', data.id), 
+                ('state', 'in', ['paid', 'audited'])
+            ])
+            total_income = sum(request.request_amount for request in income_requests)
+            
+            # Calcular gastos REALES: gastos en estado 'done'
+            expense_records = self.env['petty.cash.expense'].search([
+                ('petty_journal_id', '=', data.id), 
+                ('state', '=', 'done')
+            ])
+            total_expenses = sum(expense.expense_amount for expense in expense_records)
+            
+            # Calcular saldo: Ingresos REALES - Gastos REALES
+            data.petty_cash_balance = total_income - total_expenses
+
+    def action_get_balance_detail(self):
+        """
+        Acción para mostrar el detalle del saldo de caja chica
+        """
+        tree_id = self.env.ref('dev_petty_cash.view_petty_cash_request_tree').id
+        form_id = self.env.ref('dev_petty_cash.view_petty_cash_request_form').id
+        for data in self:
+            balance_requests = self.env['petty.cash.request'].search([
+                ('petty_journal_id', '=', data.id), 
+                ('state', 'in', ['paid', 'audited'])
+            ])
+            return {
+                'name': 'Detalle del Saldo - Solicitudes Pagadas/Auditadas',
+                'type': 'ir.actions.act_window',
+                'view_mode': 'tree, form',
+                'res_model': 'petty.cash.request',
+                'views': [(tree_id, 'tree'), (form_id, 'form')],
+                'target': 'current',
+                'domain': [('id', 'in', balance_requests.ids)]
+            }
+
+    def compute_pending_approved_amount(self):
+        """
+        Calcula el monto de solicitudes aprobadas pero aún no pagadas
+        """
+        for data in self:
+            pending_requests = self.env['petty.cash.request'].search([
+                ('petty_journal_id', '=', data.id), 
+                ('state', '=', 'approved')
+            ])
+            data.pending_approved_amount = sum(request.request_amount for request in pending_requests)
+
+    def action_get_pending_approved_detail(self):
+        """
+        Acción para mostrar solicitudes aprobadas pendientes de pago
+        """
+        tree_id = self.env.ref('dev_petty_cash.view_petty_cash_request_tree').id
+        form_id = self.env.ref('dev_petty_cash.view_petty_cash_request_form').id
+        for data in self:
+            pending_requests = self.env['petty.cash.request'].search([
+                ('petty_journal_id', '=', data.id), 
+                ('state', '=', 'approved')
+            ])
+            return {
+                'name': 'Solicitudes Aprobadas Pendientes de Pago',
+                'type': 'ir.actions.act_window',
+                'view_mode': 'tree, form',
+                'res_model': 'petty.cash.request',
+                'views': [(tree_id, 'tree'), (form_id, 'form')],
+                'target': 'current',
+                'domain': [('id', 'in', pending_requests.ids)]
             }
 
 

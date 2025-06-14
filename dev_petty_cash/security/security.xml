@@ -1,27 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    
+    <!-- Categoría de módulo -->
     <record model="ir.module.category" id="module_category_petty_cash">
          <field name="name">Petty Cash</field>
          <field name="description">Helps you handle your Petty Cash Entry.</field>
-        <field name="sequence">7</field>
+         <field name="sequence">7</field>
     </record>
     
+    <!-- Roles existentes -->
     <record id="group_petty_user" model="res.groups">
         <field name="name">User: Own Documents Only</field>
         <field name="category_id" ref="dev_petty_cash.module_category_petty_cash"/>
         <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
-        <field name="comment">the user will have access to his own data in the Petty Cash application.</field>
     </record>
-
     <record id="group_petty_manager" model="res.groups">
         <field name="name">Manager: All Documents</field>
         <field name="category_id" ref="dev_petty_cash.module_category_petty_cash"/>
-        <field name="implied_ids" eval="[(4, ref('group_petty_user'))]"/>
-        <field name="comment">the user will have access to all records of everyone in the Petty Cash application.</field>
+        <field name="implied_ids" eval="[(4, ref('dev_petty_cash.group_petty_user'))]"/>
     </record>
-    
-    
+    <record id="group_petty_auditor" model="res.groups">
+        <field name="name">Auditor: Limited Access</field>
+        <field name="category_id" ref="dev_petty_cash.module_category_petty_cash"/>
+        <field name="implied_ids" eval="[(4, ref('dev_petty_cash.group_petty_manager'))]"/>
+    </record>
+
+    <!-- NUEVOS ROLES -->
+    <record id="group_petty_treasurer" model="res.groups">
+        <field name="name">Tesorero: Gestión de Efectivo</field>
+        <field name="category_id" ref="dev_petty_cash.module_category_petty_cash"/>
+        <field name="implied_ids" eval="[(4, ref('dev_petty_cash.group_petty_manager'))]"/>
+        <field name="comment">Confirma envíos y recepciones de efectivo.</field>
+    </record>
+    <record id="group_petty_accountant" model="res.groups">
+        <field name="name">Contador: Registro de Pagos</field>
+        <field name="category_id" ref="dev_petty_cash.module_category_petty_cash"/>
+        <field name="implied_ids" eval="[(4, ref('dev_petty_cash.group_petty_manager'))]"/>
+        <field name="comment">Registra pagos y actualiza asientos contables.</field>
+    </record>
+
+    <!-- Reglas de acceso por grupo -->
     <record id="petty_cash_personal_rule" model="ir.rule">
         <field name="name">Personal Request</field>
         <field ref="model_petty_cash_request" name="model_id"/>
@@ -34,8 +51,6 @@
         <field name="domain_force">[(1,'=',1)]</field>
         <field name="groups" eval="[(4, ref('dev_petty_cash.group_petty_manager'))]"/>
     </record>
-    
-    
     <record id="petty_cash_exp_personal_rule" model="ir.rule">
         <field name="name">Personal Expense</field>
         <field ref="model_petty_cash_expense" name="model_id"/>
@@ -48,54 +63,49 @@
         <field name="domain_force">[(1,'=',1)]</field>
         <field name="groups" eval="[(4, ref('dev_petty_cash.group_petty_manager'))]"/>
     </record>
-    <!-- Inicia: 2024-10-05-->    
-    <!-- Grupo Auditor: Hereda reglas del Manager -->
-    <record id="group_petty_auditor" model="res.groups">
-        <field name="name">Auditor: Limited Access</field>
-        <field name="category_id" ref="dev_petty_cash.module_category_petty_cash"/>
-        <!-- Hereda los permisos del grupo de Manager -->
-        <field name="implied_ids" eval="[(4, ref('dev_petty_cash.group_petty_manager'))]"/>
-        <field name="comment">The auditor will have access to specific auditing features in the Petty Cash application.</field>
-    </record>
-
-    <!-- Ejemplo de una regla de seguridad específica para el grupo Auditor -->
+    <!-- Auditor: solo lectura -->
     <record id="petty_cash_auditor_view_only_rule" model="ir.rule">
         <field name="name">Auditor View Only</field>
         <field ref="model_petty_cash_request" name="model_id"/>
-        <!-- Esta regla limita al auditor solo a la visualización (read-only) -->
         <field name="domain_force">[(1, '=', 1)]</field>
-        <field name="perm_read" eval="True"/>
-        <field name="perm_create" eval="False"/>
-        <field name="perm_write" eval="False"/>
-        <field name="perm_unlink" eval="False"/>
+        <field name="perm_read" eval="True"/><field name="perm_create" eval="False"/>
+        <field name="perm_write" eval="False"/><field name="perm_unlink" eval="False"/>
         <field name="groups" eval="[(4, ref('dev_petty_cash.group_petty_auditor'))]"/>
     </record>
-
-    <!-- Otra regla para un modelo diferente, si se necesita -->
     <record id="petty_cash_exp_auditor_view_only_rule" model="ir.rule">
         <field name="name">Auditor View Only Expenses</field>
         <field ref="model_petty_cash_expense" name="model_id"/>
-        <!-- Esta regla limita al auditor solo a la visualización (read-only) -->
         <field name="domain_force">[(1, '=', 1)]</field>
-        <field name="perm_read" eval="True"/>
-        <field name="perm_create" eval="False"/>
-        <field name="perm_write" eval="False"/>
-        <field name="perm_unlink" eval="False"/>
+        <field name="perm_read" eval="True"/><field name="perm_create" eval="False"/>
+        <field name="perm_write" eval="False"/><field name="perm_unlink" eval="False"/>
         <field name="groups" eval="[(4, ref('dev_petty_cash.group_petty_auditor'))]"/>
     </record>
 
-    <!-- Finaliza: 2024-10-05-->    
+    <!-- Reglas multi-company -->
     <data noupdate="0">
         <record model="ir.rule" id="petty_cash_request_multi_company_rule">
             <field name="name">Petty Cash Request multi-company</field>
             <field name="model_id" ref="model_petty_cash_request"/>
-            <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+            <field name="domain_force">['|', ('company_id','=',False), ('company_id','in',company_ids)]</field>
         </record>
-        
         <record model="ir.rule" id="petty_cash_exp_multi_company_rule">
             <field name="name">Petty Cash Expense multi-company</field>
             <field name="model_id" ref="model_petty_cash_expense"/>
-            <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+            <field name="domain_force">['|', ('company_id','=',False), ('company_id','in',company_ids)]</field>
         </record>
     </data>
+
+    <!--
+    ======================================================
+    LEYENDA DE ROLES POR ESTADO:
+      • draft (Borrador):           Usuario
+      • requested (Solicitado):     Gerente
+      • approved (Aprobado):        Tesorero (y Contador para abrir pagos)
+      • sent (Enviado):             Tesorero
+      • received (Recibido):        Contador
+      • paid (Pago Registrado):     Auditor
+      • audited (Auditado):         Auditor
+      • cancel (Cancelado):         Usuario, Gerente, Administrador
+    ======================================================
+    -->
 </odoo>

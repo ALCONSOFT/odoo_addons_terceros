@@ -34,13 +34,25 @@ class petty_cash_request(models.Model):
     currency_id = fields.Many2one('res.currency', string='Currency', default=lambda self:self.env.company.currency_id)
     user_id = fields.Many2one('res.users', string='User', default=lambda self:self.env.user)
     company_id = fields.Many2one('res.company', default=lambda self:self.env.company)
-    state = fields.Selection(string='State', selection=[('draft', 'Draft'),
+    state_old = fields.Selection(string='State', selection=[('draft', 'Draft'),
                                                         ('request', 'Requested'),
                                                         ('approve', 'Approved'),
                                                         ('audited', 'Audited'),
                                                         ('paid', 'Paid'),
                                                         ('cancel','Cancel'),
                                                         ('reject','Reject')], default='draft', tracking=4)
+    state = fields.Selection([
+        ('draft',    'Borrador'),
+        ('requested','Solicitado'),
+        ('approved', 'Aprobado'),
+        ('rejected', 'Rechazado'),
+        ('sent',     'Enviado'),
+        ('received', 'Recibido'),
+        ('paid',     'Pago Registrado'),
+        ('audited',  'Auditado'),
+        ('cancel',   'Cancelado'),
+    ], string='Estado', default='draft', tracking=True)
+
     payment_id = fields.Many2one('account.payment', string='Payment', copy=False)
     balance = fields.Monetary('Balance', compute='_get_balance')
     account_move_ids_send = fields.One2many(
@@ -88,69 +100,87 @@ class petty_cash_request(models.Model):
     expense_id = fields.Many2one('petty.cash.expense', string='Petty Cash Expense', tracking=1)
     # 2024-10-05: Nuevo campo para la razón de rechazo
     reject_reason = fields.Text('Reject Reason', tracking=True)
+
+    # ============================================================================
+    # MÉTODOS ACTION UTILIZADOS EN LA VISTA FORM
+    # ============================================================================
    
+    def action_request(self):
+        if self.request_amount <= 0:
+            raise ValidationError(_('Request Amount must be positive.'))
+        self.state='requested'
+    
+    def action_approve(self):
+        if not self.note:
+            raise ValidationError(_("You cannot approve a request without a description."))
+        self.create_payment()
+        self.state='approved'
+    
+    def action_draft(self):
+        self.state = 'draft'
+    
+    def action_reject(self):
+        """
+        Método para rechazar la solicitud y especificar la razón del rechazo.
+        """
+        for request in self:
+            # Verificar si hay una razón de rechazo proporcionada
+            if not request.reject_reason:
+                raise ValidationError(_('Debe proporcionar una razón para rechazar la solicitud.'))
+            
+            # Cambiar el estado a 'reject' y registrar la razón
+            request.state = 'rejected'    
+
+    def action_cancel(self):
+        self.state='cancel'
+
     def action_audit(self):
         """
         Método para marcar el documento de caja chica como 'auditado'.
         """
         for request in self:
             # Validar si la solicitud está en un estado que permite ser auditada
-            if request.state not in ['approve']:
-                raise ValidationError(_('Solo se pueden auditar las solicitudes aprobadas.'))
+            if request.state not in ['paid']:
+                raise ValidationError(_('Solo se pueden auditar las solicitudes pagadas.'))
 
             # Cambiar el estado a 'audited'
             request.state = 'audited'
             # Aquí puedes agregar lógica adicional, como enviar notificaciones, etc.    
-    
-    def action_open_payment_form_opcion1(self):
-        """Abrir el formulario de pagos con contexto personalizado"""
-        self.ensure_one()
-
-        # IDs de los diarios (ajusta estos valores según tu configuración)
-        journal_payment_id = self.payment_journal_id.id  # Diario de pago (origen)
-        petty_cash_journal_id = self.petty_journal_id.id  # Diario de caja chica (destino)
-        amount = self.request_amount
-        payment_type = 'outbound'
-        # Preparar el contexto para pasar los diarios
-        context = {
-            'default_journal_id': journal_payment_id,  # Diario de pago (origen)
-            'default_destination_journal_id': petty_cash_journal_id,  # Diario de caja chica (destino)
-            'default_is_internal_transfer': True,  # Marcar como transferencia interna
-            'default_amount': amount,
-            'default_payment_type': payment_type
-        }
-
-        # Abrir el formulario account.payment.form con el contexto
-        return {
-            'name': 'Registrar Pago',
-            'type': 'ir.actions.act_window',
-            'res_model': 'account.payment',
-            'view_mode': 'form',
-            'view_id': self.env.ref('account.view_account_payment_form').id,
-            'target': 'new',
-            'context': context,
-        }
 
     def action_state_petty_cash_payment(self):
-        # Cambiar la cuenta contable de la segunda linea del asiento de diario
-        # Cambiar el parametro: is_iinternal_tranfer a True; para que se pueda cambiar la cuenta contable de la segunda linea
-        self.env['account.payment'].set_internal_transfer(self.payment_id.id)
-        # Suponiendo que move_id y new_account_id son válidos
-        move_id = self.payment_id.move_id.id  # ID del asiento de diario
-        new_account_id = self.petty_journal_id.default_account_id.id  # ID de la nueva cuenta contable
-        # Llamar al método para cambiar la cuenta de la segunda línea
-        if not move_id:
-            pass
+        """Registrar el pago (marcar como pagado)."""
+        if self.pay_method == 'cash':
+            # Cambiar la cuenta contable de la segunda linea del asiento de diario
+            # Cambiar el parametro: is_iinternal_tranfer a True; para que se pueda cambiar la cuenta contable de la segunda linea
+            self.env['account.payment'].set_internal_transfer(self.payment_id.id)
+            # Suponiendo que move_id y new_account_id son válidos
+            move_id = self.payment_id.move_id.id  # ID del asiento de diario
+            new_account_id = self.petty_journal_id.default_account_id.id  # ID de la nueva cuenta contable
+            # Llamar al método para cambiar la cuenta de la segunda línea
+            if not move_id:
+                pass
+            else:
+                self.env['account.move'].change_second_line_account_sql(move_id, new_account_id)
+            # Cambiar el estado de la Solicitud de Caja Chica - Pagado
+            self.state = 'paid'
+            #self.save()
+
         else:
-            self.env['account.move'].change_second_line_account_sql(move_id, new_account_id)
-        # Cambiar el estado de la Solicitud de Caja Chica - Pagado
-        self.state = 'paid'
-        #self.save()
+            # Si el pago es en Cheque o ACH, se debe crear el cheque o la transferencia electrónica
+            # Si existe el id de un pago, entonces
+            # ya existe el ck o ACH (trasnfe. Electronica) y
+            # se debe cambiar el estado de la solicitud a 'sent'    
+            if self.payment_id:
+                self.state = 'paid'
+            else:
+                # Si no existe el id de un pago, entonces
+                # se debe crear el pago
+                vals = self.create_payment()
+                payment_cash_data = self.get_datos_factura(vals, 'payment_cash', 'destination')
 
     def action_open_payment_form(self):
         """Abrir el formulario de pagos con contexto personalizado y guardar el ID del pago"""
         self.ensure_one()
-
 
         # IDs de los diarios (ajusta estos valores según tu configuración)
         journal_payment_id = self.payment_journal_id.id  # Diario de pago (origen)
@@ -208,6 +238,98 @@ class petty_cash_request(models.Model):
             'context': dict(self.env.context, create=False),  # Evitar crear un nuevo pago
         }
 
+    def action_confirm_send(self):
+        # CREACION DEL ENCABEZADO DEL REGISTRO DEL PAGO POR TRANSFERENCIA INTERNO
+        # ASIENTO DEL DIARIO ORIGEN - PAYMENT
+        #######################################################################################
+        
+        if self.pay_method == 'cash':
+            vals = self.create_payment()
+            payment_cash_data = self.get_datos_factura(vals, 'payment_cash', 'origin')
+            print(payment_cash_data)
+            if payment_cash_data:
+                # Transferencia de Efectivo o Liquidez
+                # Asiento de Diario Origen de la Transferencia
+                invoice_id = self.env['account.move'].create(payment_cash_data)
+                invoice_id.action_post()
+            else:
+                raise UserError("Los datos del pago en efectivo están vacíos o no son válidos.")
+            print(f"Transferencia Interna de Caja Chica creada con ID: {invoice_id}")
+            self.account_move_ids_send = invoice_id
+        else:
+            # Si el pago es en Cheque o ACH, se debe crear el cheque o la transferencia electrónica
+            # Si existe el id de un pago, entonces
+            # ya existe el ck o ACH (trasnfe. Electronica) y
+            # se debe cambiar el estado de la solicitud a 'sent'
+            if self.payment_id:
+                self.state = 'sent'
+            else:
+                # Si no existe el id de un pago, entonces
+                # se debe crear el pago
+                vals = self.create_payment()
+                payment_cash_data = self.get_datos_factura(vals, 'payment_cash', 'origin')
+                            
+    def action_confirm_receive(self):
+        # REGISTRO EN MODELO: ACCOUNT.PAYMENT DE LA TRANSACCION
+        # ASIENTO DEL DIARIO DESTINO - PETTY CASH (CAJA CHICA)
+        if self.pay_method == 'cash':
+            vals = self.create_payment()        
+            payment_cash_data = self.get_datos_factura(vals, 'payment_cash', 'destination')
+            print(payment_cash_data)
+            if payment_cash_data:
+                # Transferencia de Efectivo o Liquidez
+                # Asiento de Diario Destino de la Transferencia
+                invoice_id = self.env['account.move'].create(payment_cash_data)
+                invoice_id.action_post()
+            else:
+                raise UserError("Los datos del pago en efectivo están vacíos o no son válidos.")
+            print(f"Transferencia Interna de Caja Chica creada con ID: {invoice_id}")
+            self.account_move_ids_receive = invoice_id
+        else:
+            # Si el pago es en Cheque o ACH, se debe crear el cheque o la transferencia electrónica
+            # Si existe el id de un pago, entonces
+            # ya existe el ck o ACH (trasnfe. Electronica) y
+            # se debe cambiar el estado de la solicitud a 'received'
+            if self.payment_id:
+                self.state = 'received'
+            else:
+                # Si no existe el id de un pago, entonces
+                # se debe crear el pago
+                vals = self.create_payment()
+                payment_cash_data = self.get_datos_factura(vals, 'payment_cash', 'destination')
+
+    # ============================================================================
+    # MÉTODOS ACTION NO UTILIZADOS EN LA VISTA FORM
+    # ============================================================================
+    
+    def action_open_payment_form_opcion1(self):
+        """Abrir el formulario de pagos con contexto personalizado"""
+        self.ensure_one()
+
+        # IDs de los diarios (ajusta estos valores según tu configuración)
+        journal_payment_id = self.payment_journal_id.id  # Diario de pago (origen)
+        petty_cash_journal_id = self.petty_journal_id.id  # Diario de caja chica (destino)
+        amount = self.request_amount
+        payment_type = 'outbound'
+        # Preparar el contexto para pasar los diarios
+        context = {
+            'default_journal_id': journal_payment_id,  # Diario de pago (origen)
+            'default_destination_journal_id': petty_cash_journal_id,  # Diario de caja chica (destino)
+            'default_is_internal_transfer': True,  # Marcar como transferencia interna
+            'default_amount': amount,
+            'default_payment_type': payment_type
+        }
+
+        # Abrir el formulario account.payment.form con el contexto
+        return {
+            'name': 'Registrar Pago',
+            'type': 'ir.actions.act_window',
+            'res_model': 'account.payment',
+            'view_mode': 'form',
+            'view_id': self.env.ref('account.view_account_payment_form').id,
+            'target': 'new',
+            'context': context,
+        }
     
     def action_register_payment(self):
         ''' Open the account.payment.register wizard to pay the selected journal entries.
@@ -244,6 +366,10 @@ class petty_cash_request(models.Model):
             res.update({"context": ctx})
         return res
 
+    # ============================================================================
+    # MÉTODOS AUXILIARES Y ONCHANGE
+    # ============================================================================
+
     @api.onchange('expense_id')
     def _onchange_expense_id(self):
         if self.expense_id:
@@ -254,13 +380,16 @@ class petty_cash_request(models.Model):
     @api.onchange('payment_id')
     def _get_balance(self):
         for request in self:
-            request.balance = request.balance
+            request.balance = 0.0  # Inicializar con 0 en lugar de usar el valor actual
             if request.payment_id and request.payment_id.move_id:
                 move_id = request.payment_id.move_id
                 account_id = request.petty_journal_id.default_account_id
-                line_id = move_id.line_ids.filtered(lambda t: t.account_id.id == account_id.id)
-                request.balance = abs(line_id.amount_residual_currency)
-    
+                line_ids = move_id.line_ids.filtered(lambda t: t.account_id.id == account_id.id)
+                
+                # Manejar múltiples líneas sumando los valores
+                if line_ids:
+                    total_residual = sum(abs(line.amount_residual_currency) for line in line_ids)
+                    request.balance = total_residual
     
     def create_payment(self):
         payment_method_id= self.env['account.payment.method'].search([('name','=','Manual')],limit=1)
@@ -293,38 +422,6 @@ class petty_cash_request(models.Model):
         # self.payment_id= payment_id and payment_id.id or False
 
         #######################################################################################
-    def action_confirm_send(self):
-        # CREACION DEL ENCABEZADO DEL REGISTRO DEL PAGO POR TRSANSGFERENCIA INTERNO
-        # ASIENTO DEL DIARIO ORIGEN - PAYMENT
-        #######################################################################################
-        vals = self.create_payment()
-        payment_cash_data = self.get_datos_factura(vals, 'payment_cash', 'origin')
-        print(payment_cash_data)
-        if payment_cash_data:
-            # Transferencia de Efectivo o Liquidez
-            # Asiento de Diario Origen de la Transferencia
-            invoice_id = self.env['account.move'].create(payment_cash_data)
-            invoice_id.action_post()
-        else:
-            raise UserError("Los datos del pago en efectivo están vacíos o no son válidos.")
-        print(f"Transferencia Interna de Caja Chica creada con ID: {invoice_id}")
-        self.account_move_ids_send = invoice_id
-                            
-    def action_confirm_receive(self):
-        # REGISTRO EN MODELO: ACCOUNT.PAYMENT DE LA TRANSACCION
-        # ASIENTO DEL DIARIO DESTINO - PETTY CASH (CAJA CHICA)
-        vals = self.create_payment()        
-        payment_cash_data = self.get_datos_factura(vals, 'payment_cash', 'destination')
-        print(payment_cash_data)
-        if payment_cash_data:
-            # Transferencia de Efectivo o Liquidez
-            # Asiento de Diario Destino de la Transferencia
-            invoice_id = self.env['account.move'].create(payment_cash_data)
-            invoice_id.action_post()
-        else:
-            raise UserError("Los datos del pago en efectivo están vacíos o no son válidos.")
-        print(f"Transferencia Interna de Caja Chica creada con ID: {invoice_id}")
-        self.account_move_ids_receive = invoice_id
 
     ##############################
     def get_datos_factura(self, vals, erp_origen=None, category=None):
@@ -421,34 +518,6 @@ class petty_cash_request(models.Model):
         }
         return invoice_data
     ##############################
-    def action_request(self):
-        if self.request_amount <= 0:
-            raise ValidationError(_('Request Amount must be positive.'))
-        self.state='request'
-    
-    def action_approve(self):
-        if not self.note:
-            raise ValidationError(_("You cannot approve a request without a description."))
-        self.create_payment()
-        self.state='approve'
-    
-    def action_cancel(self):
-        self.state='cancel'
-    
-    def action_reject(self):
-        """
-        Método para rechazar la solicitud y especificar la razón del rechazo.
-        """
-        for request in self:
-            # Verificar si hay una razón de rechazo proporcionada
-            if not request.reject_reason:
-                raise ValidationError(_('Debe proporcionar una razón para rechazar la solicitud.'))
-            
-            # Cambiar el estado a 'reject' y registrar la razón
-            request.state = 'reject'    
-
-    def action_draft(self):
-        self.state = 'draft'
         
     def unlink(self):
         for request in self:

@@ -25,6 +25,7 @@
     <field name="arch" type="xml">
         <form string="Gasto de Caja Chica">
             <header>
+                <!--
                 <button name="action_confirm" string="Confirm"
                         type="object" class="btn-primary"
                         attrs="{'invisible': [('state', '!=', 'draft')]}"/>
@@ -45,7 +46,53 @@
                 <button name="action_cancel" string="Cancel"
                         type="object"
                         attrs="{'invisible': [('state', 'not in', ('confirm', 'validate'))]}"/>
-
+                -->
+                <!-- Sólo Usuario → confirma su propio borrador -->
+                <button name="action_confirm"
+                        string="Confirm"
+                        type="object"
+                        class="btn-primary"
+                        groups="dev_petty_cash.group_petty_manager"
+                        attrs="{'invisible': [('state','!=','draft')]}"/>
+                                    
+                <!-- Sólo Contador → vista previa de asientos contables -->
+                <button name="action_preview_journal_entries"
+                        string="Vista Previa Asientos"
+                        type="object"
+                        class="btn-info"
+                        groups="dev_petty_cash.group_petty_accountant"
+                        attrs="{'invisible': [('state','!=','confirm')]}"
+                        help="Revisar los asientos contables antes de validar"/>
+                        
+                <!-- Sólo Contador → genera asientos contables -->
+                <button name="action_validate"
+                        string="Validate"
+                        type="object"
+                        class="btn-primary"
+                        groups="dev_petty_cash.group_petty_accountant"
+                        attrs="{'invisible': [('state','!=','confirm')]}"/>
+                            
+                <!-- Sólo Contador → concilia pagos -->
+                <button name="action_reconcile"
+                        string="Reconcile Payment"
+                        type="object"
+                        class="btn-primary"
+                        groups="dev_petty_cash.group_petty_accountant"
+                        attrs="{'invisible': [('state','!=','validate')]}"/>
+                                    
+                <!-- Usuario y Manager pueden volver a borrador -->
+                <button name="action_draft"
+                        string="Set To Draft"
+                        type="object"
+                        attrs="{'invisible': [('state','not in',('cancel','confirm'))]}"/>
+                                    
+                <!-- Sólo Manager → puede cancelar -->
+                <button name="action_cancel"
+                        string="Cancel"
+                        type="object"
+                        class="btn-danger"
+                        groups="dev_petty_cash.group_petty_manager"
+                        attrs="{'invisible': [('state','not in',('confirm','validate'))]}"/>                
                 <field name="state" widget="statusbar" statusbar_visible="draft,confirm,validate,done"/>
             </header>
             <sheet>
@@ -56,6 +103,13 @@
                             icon="fa-edit"
                             attrs="{'invisible': [('payment_count', '=', 0)]}">
                         <field name="payment_count" widget="statinfo" string="Payments"/>
+                    </button>
+                    <button name="action_view_preview_moves"
+                            type="object"
+                            class="o_stat_button"
+                            icon="fa-eye"
+                            attrs="{'invisible': [('preview_count', '=', 0)]}">
+                        <field name="preview_count" widget="statinfo" string="Vista Previa"/>
                     </button>
                 </div>
                 <h3>

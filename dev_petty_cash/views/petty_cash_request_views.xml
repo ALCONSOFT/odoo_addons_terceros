@@ -27,37 +27,64 @@
     <field name="arch" type="xml">
         <form string="Solicitud de Caja Chica">
             <header>
-                <!-- Botones del encabezado existentes -->
-                <button name="action_request" string="Solicitar Efectivo"
-                        type="object" class="oe_highlight"
-                        states="draft"/>
-                <button name="action_approve" string="Aprobar Solicitud"
-                        type="object" class="oe_highlight"
-                        states="request"/>
-                <button name="action_draft" string="Volver a Borrador"
-                        type="object"
-                        groups="dev_petty_cash.group_petty_auditor,dev_petty_cash.group_petty_manager"
-                        states="approve,audited,cancel,reject"/>
-                <button name="action_reject" string="Rechazar"
-                        type="object"
-                        groups="dev_petty_cash.group_petty_auditor,dev_petty_cash.group_petty_manager"
-                        states="request,approve"/>
-                <button name="action_cancel" string="Cancelar"
-                        type="object"
-                        states="request"/>
-                <button name="action_state_petty_cash_payment" string="Marcar Pagado"
-                        type="object"
-                        groups="dev_petty_cash.group_petty_manager"                        
-                        class="btn-primary"
-                        states="audited"/>
-                <button name="action_audit"
-                        string="Auditor: Pasar a auditado"
-                        type="object"
-                        class="btn-primary"
-                        groups="dev_petty_cash.group_petty_auditor"
-                        attrs="{'invisible': [('state', 'not in', ['approve'])]}"/>
+                <!-- draft -->
+                <button name="action_request" type="object" string="Enviar Solicitud"
+                        states="draft" class="btn-primary"/>
+                <button name="action_cancel" type="object" string="Cancelar"
+                        states="draft" class="btn-secondary"/>
 
-                <field name="state" widget="statusbar" statusbar_visible="draft,request,approve,audited,cancel,paid,reject"/>
+                <!-- requested -->
+                <button name="action_approve" type="object" string="Aprobar"
+                        states="requested" class="btn-success"/>
+                <button name="action_reject" type="object" string="Rechazar"
+                        states="requested" class="btn-danger"/>
+                <button name="action_draft" type="object" string="Revertir a Borrador"
+                        states="requested" class="btn-secondary"/>
+                <button name="action_cancel" type="object" string="Cancelar"
+                        states="requested" class="btn-secondary"/>
+
+                <!-- approved -->
+                <button name="action_confirm_send" type="object" string="Confirmar Envío"
+                        states="approved" class="btn-info"/>
+                <button name="action_open_payment_form" type="object" string="Abrir Pago"
+                        states="approved" class="btn-warning"/>
+                <button name="action_draft" type="object" string="Revertir a Borrador"
+                        states="approved" class="btn-secondary"/>
+
+                <!-- sent -->
+                <button name="action_confirm_receive" type="object" string="Confirmar Recepción"
+                        states="sent" class="btn-warning"/>
+                <button name="action_draft" type="object" string="Revertir a Borrador"
+                        states="sent" class="btn-secondary"/>
+
+                <!-- received -->
+                <button name="action_state_petty_cash_payment" type="object" string="Registrar Pago"
+                        states="received" class="btn-primary"/>
+                <button name="action_draft" type="object" string="Revertir a Borrador"
+                        states="received" class="btn-secondary"/>
+
+                <!-- paid -->
+                <button name="action_audit" type="object" string="Auditar"
+                        states="paid" class="btn-outline-primary"/>
+                <button name="action_draft" type="object" string="Revertir a Borrador"
+                        states="paid" class="btn-secondary"/>
+
+                <!-- audited -->
+                <button name="action_draft" type="object" string="Revertir a Borrador"
+                        states="audited" class="btn-secondary"
+                        groups="dev_petty_cash.group_petty_auditor"
+                        />
+                <field name="state" widget="statusbar" statusbar_visible="draft,requested,approved,audited,cancel,paid,rejected"/>
+                <!-- rejected -->
+                <button name="action_draft" type="object" string="Revertir a Borrador"
+                        states="rejected" class="btn-secondary"/>
+                        
+                <button name="action_cancel" type="object" string="Cancelar"
+                        states="rejected" class="btn-secondary"/>
+                <!-- cance-->
+                <button name="action_draft" type="object" string="Revertir a Borrador"
+                        states="cancel" class="btn-secondary"/>            
+
             </header>
             <sheet>
                 <h1>
@@ -166,8 +193,8 @@
                 <field name="request_by"/>
                 <field name="date"/>
                 <filter string="Draft" name="draft" domain="[('state','=','draft')]"/>
-                <filter string="Requested" name="request" domain="[('state','=','request')]"/>
-                <filter string="Approved" name="approve" domain="[('state','=','approve')]"/>
+                <filter string="Requested" name="request" domain="[('state','=','requested')]"/>
+                <filter string="Approved" name="approve" domain="[('state','=','approved')]"/>
                 <filter string="Cancel" name="cancel" domain="[('state','=','cancel')]"/>
                 <filter string="Date" name="date" date="date"/>
 
