@@ -675,6 +675,21 @@ class petty_cash_expense(models.Model):
         })
         return super(petty_cash_expense, self).create(vals)
 
+    def action_open_product_lines_full(self):
+        """
+        Abre la vista de lista editable de petty.expense.line.product filtrada por las líneas de este gasto.
+        """
+        self.ensure_one()
+        return {
+            'type': 'ir.actions.act_window',
+            'name': 'Líneas de Productos de Gasto',
+            'res_model': 'petty.expense.line.product',
+            'view_mode': 'tree,form',
+            'target': 'current',
+            'domain': [('expense_line_id', 'in', self.expense_lines.ids)],
+            'context': dict(self.env.context),
+        }
+
 class petty_expense_lines(models.Model):
     _name ='petty.expense.lines'
     _description = 'Petty Expense Lines'
@@ -916,6 +931,13 @@ class petty_expense_line_product(models.Model):
         'account.analytic.account',
         readonly=False, string='Cuenta Analítica')
 
+    dest_location_id = fields.Many2one(
+        'stock.location',
+        string='Almacén de Entrega',
+        domain="[('usage','=','internal')]",
+        help='Almacén donde se entregará físicamente el producto de este gasto.'
+    )
+
     phase_id = fields.Many2one("project.phaseproject",
                                string="Fase",
                                tracking=True,
@@ -1052,3 +1074,37 @@ class petty_expense_line_product(models.Model):
     # NO OLVIDES importar ValidationError al inicio del archivo si no existe:
     # from odoo.exceptions import ValidationError
     # ---------------------------------------------------------------------
+
+    @api.onchange('product_id', 'dest_location_id')
+    def _onchange_product_or_location(self):
+        """
+        - Si el producto es almacenable, el campo dest_location_id es obligatorio.
+        - Filtra las entradas de inventario (stock_move_line_id) para que solo muestre las que su referencia (picking_id.name) comience con el código corto del almacén seleccionado.
+        """
+        if self.product_id and self.product_id.type == 'product':
+            self._fields['dest_location_id'].required = True
+        else:
+            self._fields['dest_location_id'].required = False
+
+        domain = [('state', '=', 'done'), ('picking_id.picking_type_id.code', '=', 'incoming')]
+        if self.product_id:
+            domain.append(('product_id', '=', self.product_id.id))
+        warehouse_code = None
+        if self.dest_location_id:
+            warehouse = self.env['stock.warehouse'].search([('view_location_id', 'child_of', self.dest_location_id.id)], limit=1)
+            if not warehouse:
+                warehouse = self.env['stock.warehouse'].search([('lot_stock_id', '=', self.dest_location_id.id)], limit=1)
+            if warehouse and warehouse.code:
+                warehouse_code = warehouse.code
+        if warehouse_code:
+            domain.append(('picking_id.name', 'ilike', warehouse_code + '%'))
+        return {'domain': {'stock_move_line_id': domain}}
+
+    @api.constrains('product_id', 'stock_move_line_id', 'dest_location_id')
+    def _check_stock_move_required(self):
+        for rec in self:
+            if rec.product_id and rec.product_id.type == 'product':
+                if not rec.dest_location_id:
+                    raise ValidationError(_('El campo "Almacén de Entrega" es obligatorio para productos almacenables (%s).') % rec.product_id.display_name)
+                if not rec.stock_move_line_id:
+                    raise ValidationError(_('El campo "Inventory Entry" es obligatorio para productos almacenables (%s).') % rec.product_id.display_name)

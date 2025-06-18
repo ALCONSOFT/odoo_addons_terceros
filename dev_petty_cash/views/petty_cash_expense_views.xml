@@ -111,6 +111,7 @@
                             attrs="{'invisible': [('preview_count', '=', 0)]}">
                         <field name="preview_count" widget="statinfo" string="Vista Previa"/>
                     </button>
+                    <button name="action_open_product_lines_full" type="object" class="btn-secondary o_stat_button" icon="fa-list" string="Líneas Pantalla Completa" help="Ver y editar todas las líneas de productos de este gasto en pantalla completa"/>
                 </div>
                 <h3>
                     <field name="name" readonly="1"/>
@@ -118,7 +119,7 @@
                 <group>
                     <group>
                         <field name="employee_id" required="1" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
-                        <field name="payment_journal_id" required="1" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                        <field name="payment_journal_id" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
                         <field name="petty_journal_id" required="1" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
                     </group>
                     <group>
@@ -150,7 +151,7 @@
                                 <button string="" type="object" name="open_line_form" class="btn-primary o_edit_button" icon="fa-pencil" title="Editar Línea"/>
                                 <button string="" type="object" name="action_view_attachments" class="btn-secondary" icon="fa-paperclip" title="Ver Documentos Adjuntos" attrs="{'invisible': [('attachment_count', '=', 0)]}"/>
                             </tree>
-                            <form attrs="{'readonly': [('parent.state', '=', 'done')]}">
+                            <form attrs="{'readonly': [('parent.state', '=', 'done')]}" width="1200">
                                 <sheet>
                                     <!-- Campo expense_state invisible necesario para los ribbons -->
                                     <field name="expense_state" invisible="1"/>
@@ -208,7 +209,7 @@
                                     <notebook>
                                         <page string="Líneas de Productos del Gasto">
                                             <field name="product_lines">
-                                                <tree editable="bottom" decoration-muted="is_credit_note_line == True">
+                                                <tree editable="bottom" decoration-muted="is_credit_note_line == True" width="1200">
                                                     <field name="product_id" required="1" options="{'no_create': True, 'no_open': True}"/>
                                                     <field name="quantity" sum="Total Cantidad"/>
                                                     <field name="price_unit" widget="monetary"/>
@@ -216,6 +217,7 @@
                                                     <field name="tax_id" optional="show"/>
                                                     <field name="tax_amount" widget="monetary" sum="Total Impuestos"/>
                                                     <field name="account_analytic_id" string="Cuenta Analítica" optional="show"/>
+                                                    <field name="dest_location_id" string="Almacén de Entrega" optional="show"/>
                                                     <field name="phase_id" string="Fase" optional="show"/>
                                                     <field name="vehiculo_id" string="Vehículo" optional="show"/>
                                                     <field name="stock_move_line_id" string="Entrada Inventario" optional="show"/>
@@ -318,5 +320,41 @@
 <menuitem name="Petty Cash Expense Form" id="menu_petty_cash_expense_form2"
           parent="dev_petty_cash_menu"
           action="action_petty_cash_expense_form2" sequence="5"/>
+
+<!-- Vista tree editable para pantalla completa -->
+<record id="view_petty_expense_line_product_tree_full" model="ir.ui.view">
+    <field name="name">petty.expense.line.product.tree.full</field>
+    <field name="model">petty.expense.line.product</field>
+    <field name="arch" type="xml">
+        <tree editable="bottom" string="Líneas de Productos de Gasto" create="true" delete="true">
+            <field name="expense_line_id"/>
+            <field name="product_id"/>
+            <field name="quantity"/>
+            <field name="price_unit"/>
+            <field name="price_subtotal"/>
+            <field name="tax_id"/>
+            <field name="tax_amount"/>
+            <field name="account_analytic_id"/>
+            <field name="dest_location_id"/>
+            <field name="phase_id"/>
+            <field name="vehiculo_id"/>
+            <field name="stock_move_line_id"/>
+            <field name="is_credit_note_line"/>
+            <field name="currency_id" invisible="1"/>
+        </tree>
+    </field>
+</record>
+
+<!-- Acción para abrir la vista de lista editable -->
+<record id="action_petty_expense_line_product_full" model="ir.actions.act_window">
+    <field name="name">Líneas de Productos de Gasto</field>
+    <field name="res_model">petty.expense.line.product</field>
+    <field name="view_mode">tree,form</field>
+    <field name="view_id" ref="view_petty_expense_line_product_tree_full"/>
+    <field name="context">{}</field>
+</record>
+
+<!-- Menú para acceder a la vista pantalla completa -->
+<menuitem id="menu_petty_expense_line_product_full" name="Líneas de Productos de Gasto" parent="dev_petty_cash_menu" action="action_petty_expense_line_product_full" sequence="99"/>
 
 </odoo>
