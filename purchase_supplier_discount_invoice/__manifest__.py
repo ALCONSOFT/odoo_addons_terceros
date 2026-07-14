@@ -3,7 +3,7 @@
 
 {
     'name': 'Purchase and Vendor Bills Discount in odoo',
-    'version': '16.0.0.0',
+    'version': '18.0.0.0.0',
     'category': 'Purchases',
     'sequence': 14,
     'price': 10,

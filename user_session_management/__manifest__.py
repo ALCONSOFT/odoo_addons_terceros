@@ -21,7 +21,7 @@
 #############################################################################
 {
     'name': "Odoo User Session Management And Activity Tracking",
-    'version': '15.0.1.0.0',
+    'version': '18.0.1.0.0',
     'category': 'Productivity',
     'summary': """User session management and activity tracking on each 
                     session.""",

@@ -3,7 +3,7 @@
 # © 2020 Kanak Infosystems LLP. (<https://www.kanakinfosystems.com>).
 {
     'name': 'Purchase Return',
-    'version': '16.0.1.0',
+    'version': '18.0.1.0.0',
     "summary": 'Purchase Return Module allows user to efficiently track and manage purchase order along with their delivery returns, user can return products from purchase order itself without interacting with stock picking.  | Purchase Return | Return Order | Purchase Picking | In Picking | Return Picking | Return Purchase Order |',
     'description': """
 Purchase Return

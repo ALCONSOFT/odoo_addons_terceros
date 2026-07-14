@@ -21,7 +21,7 @@
 
 {
     'name': "User Log Details",
-    'version': '16.0.1.0.0',
+    'version': '18.0.1.0.0',
     'summary': """Login User Details & IP Address""",
     'description': """This module records login information of user""",
     'author': "Cybrosys Techno Solutions ",

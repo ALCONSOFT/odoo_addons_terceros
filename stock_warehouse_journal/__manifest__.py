@@ -3,7 +3,7 @@
 {
     'name': 'Stock Warehouse Journal',
     'summary': 'Stock Warehouse Journal',
-    'version': '16.0.2.0',
+    'version': '18.0.2.0.0',
     'category': 'Warehouse',
     'website': 'www.openvalue.cloud',
     'author': "OpenValue",

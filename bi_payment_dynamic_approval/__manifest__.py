@@ -2,7 +2,7 @@
 # Part of BrowseInfo. See LICENSE file for full copyright and licensing details.
 {
     'name': "Account Payment Dynamic Approval | Accounting Payment Multi Level Approval",
-    'version': '16.0.0.1',
+    'version': '18.0.0.1.0',
     'category': 'Accounting',
     'summary': "Accounting Payment Dynamic Approval on payment double approval payment triple approval payment user approval Account dynamic approval dynamic payment approval payment multi approval Account payment multi level approval payment multiple approval payment",
     'description': """

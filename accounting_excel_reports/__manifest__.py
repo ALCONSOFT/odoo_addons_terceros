@@ -3,7 +3,7 @@
 
 {
     'name': 'Odoo 16 Accounting Excel Reports',
-    'version': '16.0.1.0.1',
+    'version': '18.0.1.0.1',
     'category': 'Invoicing Management',
     'summary': 'Accounting Excel Reports, Odoo Excel Reports, Odoo Accounting Excel Reports, Odoo Financial Reports, '
                'Accounting Reports In Excel For Odoo 16, Financial Reports in Excel, Odoo Account Reports',

@@ -2,7 +2,7 @@
 
 {
     'name': 'Odoo 16 Account Bank Statement Import',
-    'version': '16.0.2.0.0',
+    'version': '18.0.2.0.0',
     'category': 'Accounting',
     'depends': ['account'],
     'website': 'https://www.odoomates.tech',

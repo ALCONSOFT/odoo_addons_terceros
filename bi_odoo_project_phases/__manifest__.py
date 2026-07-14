@@ -3,7 +3,7 @@
 
 {
     'name': 'Project by Phases',
-    'version': '16.0.0.1',
+    'version': '18.0.0.1.0',
     'category': 'Projects',
     'license': 'OPL-1',
     'summary': 'This apps helps to manage Project and Task Phases',

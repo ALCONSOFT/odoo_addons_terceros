@@ -5,7 +5,7 @@
 {
     "name": "Purchase Approval Rules",
     'summary': 'Purchase order approval rules',
-    "version": "16.0.1.1",
+    "version": "18.0.1.1.0",
     "category": "Inventory/Purchase",
     "license": "OPL-1",
     "summary": "This module allow to approve purchase order in a flow of action of various stakeholder on the basis of their roles | sale approve| purchase | purchase approve | approval rules | purchase order approval | Approval Rules | Purchase Approval| Purchase Order Rules | Purchase Order Approval | Purchase Approve | Sale Approval |",
